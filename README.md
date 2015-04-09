@@ -10,8 +10,17 @@ code, using [american-fuzzy-lop][].
 This was performed on one core of an [i7-4790K][] at 4.8 GHz. The code under
 test is [`examples/hello.rs`][example] in this repository.
 
-Once you've added this library as a [Cargo][] dependency, you can enable afl
-instrumentation with
+To use `afl.rs`, add it as a [Cargo][] dependency:
+
+```toml
+[dependencies.afl-coverage-plugin]
+git = "https://github.com/kmcallister/afl.rs"
+
+[dependencies.afl-coverage]
+git = "https://github.com/kmcallister/afl.rs"
+```
+
+Then you can add afl instrumentation to a crate with
 
 ```rust
 #![feature(plugin)]
@@ -46,7 +55,7 @@ If you've changed the afl config variable `SHM_ENV_VAR`, `MAP_SIZE`, or
 [build script]: https://github.com/kmcallister/afl.rs/blob/master/plugin/build.bash
 [mailing-list]: https://groups.google.com/forum/#!msg/afl-users/gpa_igE8G50/uLAmT6v-bQEJ
 [from source]: https://github.com/rust-lang/rust#building-from-source
-[screenshot]: https://camo.githubusercontent.com/ce24f64d6226654988de3ec2bf7719255d91beb6/687474703a2f2f692e696d6775722e636f6d2f7067784c337a722e706e67
+[screenshot]: http://i.imgur.com/SbjNZKr.png
 [LLVM pass]: https://github.com/kmcallister/afl.rs/blob/master/plugin/src/afl_cov.cc
 [i7-4790k]: http://ark.intel.com/products/80807/Intel-Core-i7-4790K-Processor-8M-Cache-up-to-4_40-GHz
 [example]: https://github.com/kmcallister/afl.rs/blob/master/examples/hello.rs
