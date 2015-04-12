@@ -3,8 +3,6 @@
 This package allows you to find bugs in Rust code, particularly [`unsafe`][unsafe] Rust
 code, using [american-fuzzy-lop][].
 
-*(Pending [this patch to `rustc`](https://github.com/rust-lang/rust/pull/24207).)*
-
 ![Screenshot of afl: 3 crashes (1 unique) found in 1 minute 43 seconds][screenshot]
 
 This was performed on one core of an [i7-4790K][] at 4.8 GHz. The code under
@@ -59,5 +57,5 @@ If you've changed the afl config variable `SHM_ENV_VAR`, `MAP_SIZE`, or
 [LLVM pass]: https://github.com/kmcallister/afl.rs/blob/master/plugin/src/afl_cov.cc
 [i7-4790k]: http://ark.intel.com/products/80807/Intel-Core-i7-4790K-Processor-8M-Cache-up-to-4_40-GHz
 [example]: https://github.com/kmcallister/afl.rs/blob/master/examples/hello.rs
-[unsafe]: http://doc.rust-lang.org/book/unsafe.html
+[unsafe]: http://doc.rust-lang.org/book/unsafe-code.html
 [Cargo]: http://doc.crates.io/
