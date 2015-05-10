@@ -23,6 +23,11 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+/* OSX uses MAP_ANON instead of MAP_ANONYMOUS */
+#ifndef MAP_ANONYMOUS
+#  define MAP_ANONYMOUS MAP_ANON
+#endif
+
 /* Globals. */
 unsigned char *__afl_area_ptr;
 unsigned short __afl_prev_loc;
