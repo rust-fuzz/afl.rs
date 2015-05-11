@@ -47,6 +47,12 @@ Your C++ compiler must support C++11.
 If you've changed the afl config variable `SHM_ENV_VAR`, `MAP_SIZE`, or
 `FORKSRV_FD`, you need to change `src/config.h` to match.
 
+## Trophy case
+
+Here are some bugs afl.rs has found:
+
+* [rust-url#108][rust-url#108]
+
 [conditional compilation]: http://doc.rust-lang.org/reference.html#conditional-compilation
 [american-fuzzy-lop]: http://lcamtuf.coredump.cx/afl/
 [Cargo feature]: http://doc.crates.io/manifest.html#the-[features]-section
@@ -59,3 +65,4 @@ If you've changed the afl config variable `SHM_ENV_VAR`, `MAP_SIZE`, or
 [example]: https://github.com/kmcallister/afl.rs/blob/master/examples/hello.rs
 [unsafe]: http://doc.rust-lang.org/book/unsafe-code.html
 [Cargo]: http://doc.crates.io/
+[rust-url#108]: https://github.com/servo/rust-url/pull/108
