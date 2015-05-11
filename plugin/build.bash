@@ -14,7 +14,7 @@ set -e
 
 if [ "$LLVM_CONFIG" == "" ]; then
     echo '[*] $LLVM_CONFIG not set. Will assume you built rustc from source.'
-    LLVM_CONFIG=$(dirname $(which rustc))/../../llvm/Release+Asserts/bin/llvm-config
+    LLVM_CONFIG=$(find $(dirname $(which rustc))/../.. -name llvm-config -type f | head -n 1)
 fi
 
 if ! [ -x "$LLVM_CONFIG" ]; then
