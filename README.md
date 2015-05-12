@@ -59,6 +59,20 @@ If you've changed the afl config variable `SHM_ENV_VAR`, `MAP_SIZE`, or
 
 `afl.rs` uses an [LLVM pass][] based on [László Szekeres's work][mailing-list].
 
+## Trophy case
+
+* rustc: [#24275](https://github.com/rust-lang/rust/issues/24275), [#24276](https://github.com/rust-lang/rust/issues/24276)
+* rust-url: [#108](https://github.com/servo/rust-url/pull/108)
+* regex: [#84](https://github.com/rust-lang/regex/issues/84)
+* Logic errors in [tendril](https://github.com/kmcallister/tendril) and its [html5ever](https://github.com/servo/html5ever) integration
+
+These bugs aren't nearly as serious as the [memory-safety issues AFL has
+discovered](http://lcamtuf.coredump.cx/afl/#bugs) in C and C++ projects.
+That's because Rust is memory-safe by default, but also because not many people
+have tried afl.rs yet! Over time we will update this section with the most
+interesting bugs, whether they're logic errors or memory-safety problems
+arising from `unsafe` code. Pull requests are welcome!
+
 [conditional compilation]: http://doc.rust-lang.org/reference.html#conditional-compilation
 [american-fuzzy-lop]: http://lcamtuf.coredump.cx/afl/
 [Cargo feature]: http://doc.crates.io/manifest.html#the-[features]-section
