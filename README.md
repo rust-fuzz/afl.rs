@@ -1,14 +1,15 @@
 # Fuzzing Rust with american-fuzzy-lop
 
-This package allows you to find bugs in Rust code, particularly [`unsafe`][unsafe] Rust
-code, using [american-fuzzy-lop][].
+This package allows you to find bugs in Rust code using [american-fuzzy-lop][].
 
 ![Screenshot of afl: 3 crashes (1 unique) found in 1 minute 43 seconds][screenshot]
 
 This was performed on one core of an [i7-4790K][] at 4.8 GHz. The code under
 test is [`examples/hello.rs`][example] in this repository.
 
-To use `afl.rs`, add it as a [Cargo][] dependency:
+## Using it
+
+First, add this project as a [Cargo][] dependency:
 
 ```toml
 [dependencies.afl-coverage-plugin]
@@ -18,13 +19,18 @@ git = "https://github.com/kmcallister/afl.rs"
 git = "https://github.com/kmcallister/afl.rs"
 ```
 
-Then you can add afl instrumentation to a crate with
+Then you can add afl instrumentation to one or more crates:
 
 ```rust
 #![feature(plugin)]
-
 #![plugin(afl_coverage_plugin)]
+```
 
+You will also need a test executable that exercises the instrumented functions,
+in a deterministic way based on input from stdin. This executable should link
+the `afl_coverage` run-time library:
+
+```
 extern crate afl_coverage;
 ```
 
@@ -32,20 +38,26 @@ This will produce a binary that you can pass to `afl-fuzz` in the usual manner.
 afl instrumentation adds some run-time overhead, so it's a good candidate for
 [conditional compilation][], perhaps through a [Cargo feature][].
 
-**Note**: `afl.rs` needs to compile against a version of LLVM that matches
-`rustc`'s. The easy solution (if you can wait on a slow build) is to [build
-`rustc` from source][from source] and put it in your `$PATH`. Then `afl.rs`'s
-[build script][] will find `llvm-config` automatically. Otherwise, the environment
+To look for logic errors in safe Rust code, set the environment variable
+`AFL_RS_CRASH_ON_PANIC` when you invoke `afl-fuzz`. This causes the fuzzer
+to treat any Rust panic as a crash.
+
+## Building it
+
+`afl.rs` needs to compile against a version of LLVM that matches `rustc`'s. The
+easy solution (if you can wait on a slow build) is to [build `rustc` from
+source][from source] and put it in your `$PATH`. Then `afl.rs`'s [build
+script][] will find `llvm-config` automatically. Otherwise, the environment
 variable `$LLVM_CONFIG` should hold the path to `llvm-config` when you build
 `afl.rs`.
 
 It does *not* require `clang++`; it will use `$CXX` with a fallback to `g++`.
 Your C++ compiler must support C++11.
 
-`afl.rs` uses an [LLVM pass][] based on [László Szekeres's work][mailing-list].
-
 If you've changed the afl config variable `SHM_ENV_VAR`, `MAP_SIZE`, or
 `FORKSRV_FD`, you need to change `src/config.h` to match.
+
+`afl.rs` uses an [LLVM pass][] based on [László Szekeres's work][mailing-list].
 
 [conditional compilation]: http://doc.rust-lang.org/reference.html#conditional-compilation
 [american-fuzzy-lop]: http://lcamtuf.coredump.cx/afl/
