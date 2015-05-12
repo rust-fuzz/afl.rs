@@ -64,6 +64,7 @@ If you've changed the afl config variable `SHM_ENV_VAR`, `MAP_SIZE`, or
 * rustc: [#24275](https://github.com/rust-lang/rust/issues/24275), [#24276](https://github.com/rust-lang/rust/issues/24276)
 * rust-url: [#108](https://github.com/servo/rust-url/pull/108)
 * regex: [#84](https://github.com/rust-lang/regex/issues/84)
+* tar-rs: [#23](https://github.com/alexcrichton/tar-rs/issues/23)
 * Logic errors in [tendril](https://github.com/kmcallister/tendril) and its [html5ever](https://github.com/servo/html5ever) integration
 
 These bugs aren't nearly as serious as the [memory-safety issues AFL has
