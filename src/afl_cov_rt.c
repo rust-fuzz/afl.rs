@@ -92,9 +92,13 @@ void __afl_start_forkserver() {
   }
 }
 
+/* Defined in lib.rs. */
+void __afl_rs_init();
+
 /* Initialize as global ctor. */
 __attribute__((constructor (0)))
 void __afl_init() {
   __afl_map_shm();
+  __afl_rs_init();
   __afl_start_forkserver();
 }
