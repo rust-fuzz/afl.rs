@@ -62,6 +62,7 @@ If you've changed the afl config variable `SHM_ENV_VAR`, `MAP_SIZE`, or
 ## Trophy case
 
 * httparse: [#9](https://github.com/seanmonstar/httparse/issues/9)
+* image: [#414](https://github.com/PistonDevelopers/image/issues/414)
 * rustc: [#24275](https://github.com/rust-lang/rust/issues/24275), [#24276](https://github.com/rust-lang/rust/issues/24276)
 * rust-url: [#108](https://github.com/servo/rust-url/pull/108)
 * regex: [#84](https://github.com/rust-lang/regex/issues/84)
