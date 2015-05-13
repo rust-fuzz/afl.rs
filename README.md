@@ -30,7 +30,7 @@ You will also need a test executable that exercises the instrumented functions,
 in a deterministic way based on input from stdin. This executable should link
 the `afl_coverage` run-time library:
 
-```
+```rust
 extern crate afl_coverage;
 ```
 
@@ -39,7 +39,7 @@ afl instrumentation adds some run-time overhead, so it's a good candidate for
 [conditional compilation][], perhaps through a [Cargo feature][].
 
 To look for logic errors in safe Rust code, set the environment variable
-`AFL_RS_CRASH_ON_PANIC` when you invoke `afl-fuzz`. This causes the fuzzer
+`$AFL_RS_CRASH_ON_PANIC` when you invoke `afl-fuzz`. This causes the fuzzer
 to treat any Rust panic as a crash.
 
 ## Building it
@@ -69,7 +69,7 @@ If you've changed the afl config variable `SHM_ENV_VAR`, `MAP_SIZE`, or
 * tar-rs: [#23](https://github.com/alexcrichton/tar-rs/issues/23)
 * Logic errors in [tendril](https://github.com/kmcallister/tendril) and its [html5ever](https://github.com/servo/html5ever) integration
 
-These bugs aren't nearly as serious as the [memory-safety issues AFL has
+These bugs aren't nearly as serious as the [memory-safety issues afl has
 discovered](http://lcamtuf.coredump.cx/afl/#bugs) in C and C++ projects.
 That's because Rust is memory-safe by default, but also because not many people
 have tried afl.rs yet! Over time we will update this section with the most
