@@ -12,7 +12,7 @@ use std::{env, rt, intrinsics, any};
 use libc::exit;
 
 #[cfg(not(test))]
-#[link(name="afl_cov_rt", kind="static")]
+#[link(name="afl-llvm-rt", kind="static")]
 extern "C" { }
 
 #[no_mangle]

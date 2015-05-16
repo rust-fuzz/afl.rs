@@ -15,5 +15,5 @@ fn main() {
 
     println!("cargo:rustc-link-search=native={}",
         env::var("OUT_DIR").unwrap());
-    println!("cargo:rustc-link-lib=static=afl_cov");
+    println!("cargo:rustc-link-lib=static=afl-llvm-pass");
 }

@@ -26,5 +26,5 @@ set -x
 
 CXXFLAGS="$($LLVM_CONFIG --cxxflags) -O2 -fPIC -Wall -Werror -fno-rtti"
 
-$CXX $CXXFLAGS -c src/afl_cov.cc -o $OUT_DIR/afl_cov.o
-$AR rcs $OUT_DIR/libafl_cov.a $OUT_DIR/afl_cov.o
+$CXX $CXXFLAGS -c src/afl-llvm-pass.so.cc -o $OUT_DIR/afl-llvm-pass.o
+$AR rcs $OUT_DIR/libafl-llvm-pass.a $OUT_DIR/afl-llvm-pass.o

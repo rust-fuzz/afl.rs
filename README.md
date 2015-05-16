@@ -86,7 +86,7 @@ arising from `unsafe` code. Pull requests are welcome!
 [mailing-list]: https://groups.google.com/forum/#!msg/afl-users/gpa_igE8G50/uLAmT6v-bQEJ
 [from source]: https://github.com/rust-lang/rust#building-from-source
 [screenshot]: http://i.imgur.com/SbjNZKr.png
-[LLVM pass]: https://github.com/kmcallister/afl.rs/blob/master/plugin/src/afl_cov.cc
+[LLVM pass]: https://github.com/kmcallister/afl.rs/blob/master/plugin/src/afl-llvm-pass.o.cc
 [i7-4790k]: http://ark.intel.com/products/80807/Intel-Core-i7-4790K-Processor-8M-Cache-up-to-4_40-GHz
 [example]: https://github.com/kmcallister/afl.rs/blob/master/examples/hello.rs
 [unsafe]: http://doc.rust-lang.org/book/unsafe-code.html
