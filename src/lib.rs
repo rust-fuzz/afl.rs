@@ -13,7 +13,9 @@ use libc::exit;
 
 #[cfg(not(test))]
 #[link(name="afl-llvm-rt", kind="static")]
-extern "C" { }
+extern "C" {
+    fn __afl_manual_init();
+}
 
 #[no_mangle]
 pub unsafe extern "C" fn __afl_rs_init() {
@@ -28,4 +30,20 @@ pub unsafe extern "C" fn __afl_rs_init() {
             exit(1);
         }
     }
+}
+
+#[cfg(not(test))]
+/// Initialize the afl runtime.
+///
+/// Only needed when the env var `AFL_DEFER_FORKSRV` is set.
+///
+/// It's undefined behavior to call this function from multiple
+/// threads. You almost certainly need to call it before any
+/// additional threads are created.
+///
+/// However, calling this more than once in a single-threaded
+/// program, or calling it when not running with
+/// `AFL_DEFER_FORKSRV` is safe and a no-op.
+pub unsafe fn init() {
+    __afl_manual_init();
 }
