@@ -38,26 +38,37 @@ This will produce a binary that you can pass to `afl-fuzz` in the usual manner.
 afl instrumentation adds some run-time overhead, so it's a good candidate for
 [conditional compilation][], perhaps through a [Cargo feature][].
 
-To look for logic errors in safe Rust code, set the environment variable
-`$AFL_RS_CRASH_ON_PANIC` when you invoke `afl-fuzz`. This causes the fuzzer
-to treat any Rust panic as a crash.
+## Tweakables
+
+To look for logic errors in safe Rust code, set `AFL_RS_CRASH_ON_PANIC=1` in
+the environment when you invoke `afl-fuzz`. This causes the fuzzer to treat any
+Rust panic as a crash.
+
+If your program has a slow set-up phase that does not depend on the input data,
+you can set `AFL_DEFER_FORKSRV=1` for a substantial speed-up, provided that you
+insert a call to `afl_coverage::init()` after the set-up and before any
+dependence on input. There are various other caveats, described in the section
+"Bonus feature: deferred instrumentation" in `llvm_mode/README.llvm`
+distributed with afl. See also [`examples/deferred-init.rs`][example-defer] in
+this repository.
+
+See the afl documentation for other configuration variables. Some of these are
+set at compile time in `config.h`. For the most part they only affect
+`afl-fuzz` itself, and will work fine with this library. However, if you change
+`SHM_ENV_VAR`, `MAP_SIZE`, or `FORKSRV_FD`, you should update this library's
+`src/config.h` to match.
 
 ## Building it
 
 `afl.rs` needs to compile against a version of LLVM that matches `rustc`'s. The
 easy solution (if you can wait on a slow build) is to [build `rustc` from
-source][from source] and put it in your `$PATH`. Then `afl.rs`'s [build
+source][from source] and put it in your `PATH`. Then `afl.rs`'s [build
 script][] will find `llvm-config` automatically. Otherwise, the environment
-variable `$LLVM_CONFIG` should hold the path to `llvm-config` when you build
+variable `LLVM_CONFIG` should hold the path to `llvm-config` when you build
 `afl.rs`.
 
-It does *not* require `clang++`; it will use `$CXX` with a fallback to `g++`.
+It does *not* require `clang++`; it will use `CXX` with a fallback to `g++`.
 Your C++ compiler must support C++11.
-
-If you've changed the afl config variable `SHM_ENV_VAR`, `MAP_SIZE`, or
-`FORKSRV_FD`, you need to change `src/config.h` to match.
-
-`afl.rs` uses an [LLVM pass][] based on [László Szekeres's work][mailing-list].
 
 ## Trophy case
 
@@ -82,8 +93,8 @@ arising from `unsafe` code. Pull requests are welcome!
 [conditional compilation]: http://doc.rust-lang.org/reference.html#conditional-compilation
 [american-fuzzy-lop]: http://lcamtuf.coredump.cx/afl/
 [Cargo feature]: http://doc.crates.io/manifest.html#the-[features]-section
+[example-defer]: https://github.com/kmcallister/afl.rs/blob/master/examples/deferred-init.rs
 [build script]: https://github.com/kmcallister/afl.rs/blob/master/plugin/build.bash
-[mailing-list]: https://groups.google.com/forum/#!msg/afl-users/gpa_igE8G50/uLAmT6v-bQEJ
 [from source]: https://github.com/rust-lang/rust#building-from-source
 [screenshot]: http://i.imgur.com/SbjNZKr.png
 [LLVM pass]: https://github.com/kmcallister/afl.rs/blob/master/plugin/src/afl-llvm-pass.o.cc
