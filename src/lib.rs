@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // See `LICENSE` in this repository.
 
-#![feature(core, std_misc)]
+#![feature(core_intrinsics, rt)]
 
 extern crate libc;
 

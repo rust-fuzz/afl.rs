@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // See `LICENSE` in this repository.
 
-#![feature(plugin, core)]
+#![feature(plugin, raw)]
 
 #![plugin(afl_coverage_plugin)]
 
