@@ -13,10 +13,10 @@ First, add this project as a [Cargo][] dependency:
 
 ```toml
 [dependencies.afl-coverage-plugin]
-git = "https://github.com/kmcallister/afl.rs"
+git = "https://github.com/frewsxcv/afl.rs"
 
 [dependencies.afl-coverage]
-git = "https://github.com/kmcallister/afl.rs"
+git = "https://github.com/frewsxcv/afl.rs"
 ```
 
 Then you can add afl instrumentation to one or more crates:
@@ -93,12 +93,12 @@ arising from `unsafe` code. Pull requests are welcome!
 [conditional compilation]: http://doc.rust-lang.org/reference.html#conditional-compilation
 [american-fuzzy-lop]: http://lcamtuf.coredump.cx/afl/
 [Cargo feature]: http://doc.crates.io/manifest.html#the-[features]-section
-[example-defer]: https://github.com/kmcallister/afl.rs/blob/master/examples/deferred-init.rs
-[build script]: https://github.com/kmcallister/afl.rs/blob/master/plugin/build.bash
+[example-defer]: https://github.com/frewsxcv/afl.rs/blob/master/examples/deferred-init.rs
+[build script]: https://github.com/frewsxcv/afl.rs/blob/master/plugin/build.bash
 [from source]: https://github.com/rust-lang/rust#building-from-source
 [screenshot]: http://i.imgur.com/SbjNZKr.png
-[LLVM pass]: https://github.com/kmcallister/afl.rs/blob/master/plugin/src/afl-llvm-pass.o.cc
+[LLVM pass]: https://github.com/frewsxcv/afl.rs/blob/master/plugin/src/afl-llvm-pass.o.cc
 [i7-4790k]: http://ark.intel.com/products/80807/Intel-Core-i7-4790K-Processor-8M-Cache-up-to-4_40-GHz
-[example]: https://github.com/kmcallister/afl.rs/blob/master/examples/hello.rs
+[example]: https://github.com/frewsxcv/afl.rs/blob/master/examples/hello.rs
 [unsafe]: http://doc.rust-lang.org/book/unsafe-code.html
 [Cargo]: http://doc.crates.io/
