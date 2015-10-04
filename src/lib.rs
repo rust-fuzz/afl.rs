@@ -24,12 +24,6 @@ pub unsafe extern "C" fn __afl_rs_init() {
             intrinsics::abort();
         }
     }
-
-    if env::var_os("AFL_RS_CRASH_ON_PANIC").is_some() {
-        if !rt::unwind::register(crash) {
-            exit(1);
-        }
-    }
 }
 
 #[cfg(not(test))]
