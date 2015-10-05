@@ -14,7 +14,6 @@ Vagrant.configure(2) do |config|
     cd rust
     ./configure --prefix=/rust --enable-clang --disable-libcpp --enable-optimize
     make
-    make install
     cd ..
 
     git clone https://github.com/rust-lang/cargo
