@@ -8,7 +8,7 @@ Vagrant.configure(2) do |config|
 
   config.vm.provision "shell", inline: <<-SHELL
     sudo apt-get update
-    sudo apt-get install -y git clang cmake
+    sudo apt-get install -y git clang cmake libssl-dev
 
     git clone https://github.com/rust-lang/rust.git
     cd rust
@@ -16,8 +16,10 @@ Vagrant.configure(2) do |config|
     make
     cd ..
 
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/vagrant/rust/x86_64-unknown-linux-gnu/stage2/lib/
+
     git clone https://github.com/rust-lang/cargo
     cd cargo
-    ./configure
+    ./configure --local-rust-root=../rust/x86_64-unknown-linux-gnu/stage2/ --enable -optimize
   SHELL
 end
