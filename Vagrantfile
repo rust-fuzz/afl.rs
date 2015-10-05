@@ -12,7 +12,7 @@ Vagrant.configure(2) do |config|
 
     git clone https://github.com/rust-lang/rust.git
     cd rust
-    ./configure --prefix=/rust --enable-clang --disable-libcpp --enable-optimize
+    ./configure --enable-clang --disable-libcpp --enable-optimize
     make
     cd ..
 
