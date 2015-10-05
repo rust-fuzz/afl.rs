@@ -21,5 +21,8 @@ Vagrant.configure(2) do |config|
     git clone https://github.com/rust-lang/cargo
     cd cargo
     ./configure --local-rust-root=../rust/x86_64-unknown-linux-gnu/stage2/ --enable -optimize
+
+    echo "PATH=$PATH:/home/vagrant/cargo/target/snapshot/cargo/bin/:/home/vagrant/rust/x86_64-unknown-linux-gnu/stage2/bin" > ~/.bashrc
+    exec bash
   SHELL
 end
