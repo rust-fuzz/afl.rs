@@ -40,10 +40,6 @@ afl instrumentation adds some run-time overhead, so it's a good candidate for
 
 ## Tweakables
 
-To look for logic errors in safe Rust code, set `AFL_RS_CRASH_ON_PANIC=1` in
-the environment when you invoke `afl-fuzz`. This causes the fuzzer to treat any
-Rust panic as a crash.
-
 If your program has a slow set-up phase that does not depend on the input data,
 you can set `AFL_DEFER_FORKSRV=1` for a substantial speed-up, provided that you
 insert a call to `afl_coverage::init()` after the set-up and before any
