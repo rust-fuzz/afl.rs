@@ -24,5 +24,9 @@ Vagrant.configure(2) do |config|
 
     echo "PATH=$PATH:/home/vagrant/cargo/target/snapshot/cargo/bin/:/home/vagrant/rust/x86_64-unknown-linux-gnu/stage2/bin" > ~/.bashrc
     exec bash
+
+    # export CXX="$(which clang++) -Wno-c++11-extensions"
+    # export LLVM_CONFIG=$(which llvm-config-3.4)
+    # build repo with rust plugin
   SHELL
 end
