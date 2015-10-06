@@ -7,9 +7,6 @@ authors = ["Keegan McAllister <mcallister.keegan@gmail.com>"]
 description = "Fuzzing Rust code with american-fuzzy-lop"
 build = "build.rs"
 
-[dependencies]
-libc = "*"
-
 [build-dependencies]
 gcc = "0"
 

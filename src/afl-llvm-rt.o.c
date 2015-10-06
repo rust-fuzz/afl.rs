@@ -129,9 +129,6 @@ static void __afl_start_forkserver(void) {
 
 }
 
-/* Defined in lib.rs. */
-void __afl_rs_init();
-
 /* This one can be called from user code when AFL_DEFER_FORKSRV is set. */
 
 void __afl_manual_init(void) {
@@ -141,7 +138,6 @@ void __afl_manual_init(void) {
   if (!init_done) {
 
     __afl_map_shm();
-    __afl_rs_init();
     __afl_start_forkserver();
     init_done = 1;
 
