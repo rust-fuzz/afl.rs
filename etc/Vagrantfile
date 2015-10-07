@@ -13,7 +13,7 @@ Vagrant.configure(2) do |config|
     git clone https://github.com/rust-lang/rust.git
     cd rust
     ./configure --enable-clang --disable-libcpp --enable-optimize
-    make
+    make -j 8
     cd ..
 
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/vagrant/rust/x86_64-unknown-linux-gnu/stage2/lib/
