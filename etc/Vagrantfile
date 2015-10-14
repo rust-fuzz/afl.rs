@@ -12,6 +12,9 @@ Vagrant.configure(2) do |config|
 
     git clone https://github.com/rust-lang/rust.git
     cd rust
+
+    git checkout 717e8831b  # https://github.com/frewsxcv/afl.rs/issues/11
+
     ./configure --enable-clang --disable-libcpp --enable-optimize
     make -j 8
     cd ..
@@ -20,6 +23,10 @@ Vagrant.configure(2) do |config|
 
     git clone https://github.com/rust-lang/cargo
     cd cargo
+
+    apt-get install -y pkg-config  # https://github.com/frewsxcv/afl.rs/issues/11
+    git checkout 1ae683a1496be2e35f213e3e11645adcb3ed62b1  # https://github.com/frewsxcv/afl.rs/issues/11
+
     ./configure --local-rust-root=../rust/x86_64-unknown-linux-gnu/stage2/ --enable-optimize
     make
 
