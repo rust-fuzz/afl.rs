@@ -10,6 +10,8 @@ Vagrant.configure(2) do |config|
     sudo apt-get update
     sudo apt-get install -y git clang cmake libssl-dev
 
+    cd /opt
+
     git clone https://github.com/rust-lang/rust.git
     cd rust
 
@@ -19,7 +21,7 @@ Vagrant.configure(2) do |config|
     make -j 8
     cd ..
 
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/vagrant/rust/x86_64-unknown-linux-gnu/stage2/lib/
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/rust/x86_64-unknown-linux-gnu/stage2/lib/
 
     git clone https://github.com/rust-lang/cargo
     cd cargo
@@ -30,7 +32,7 @@ Vagrant.configure(2) do |config|
     ./configure --local-rust-root=../rust/x86_64-unknown-linux-gnu/stage2/ --enable-optimize
     make
 
-    echo "PATH=\$PATH:/home/vagrant/cargo/target/x86_64-unknown-linux-gnu/release:/home/vagrant/rust/x86_64-unknown-linux-gnu/stage2/bin" > ~/.bashrc
+    echo "PATH=\$PATH:/opt/cargo/target/x86_64-unknown-linux-gnu/release:/opt/rust/x86_64-unknown-linux-gnu/stage2/bin" > ~/.bashrc
     exec bash
 
     # export CXX="$(which clang++) -Wno-c++11-extensions"
