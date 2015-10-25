@@ -12,27 +12,28 @@ Vagrant.configure(2) do |config|
 
     cd /opt
 
+    # Build rust
+
     git clone https://github.com/rust-lang/rust.git
     cd rust
-
     git checkout 717e8831b  # https://github.com/frewsxcv/afl.rs/issues/11
-
     ./configure --enable-clang --disable-libcpp --enable-optimize
     make -j 8
     cd ..
+    echo "PATH=\$PATH:/opt/rust/x86_64-unknown-linux-gnu/stage2/bin" >> ~/.bashrc
+    echo "LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:/opt/rust/x86_64-unknown-linux-gnu/stage2/lib/" >> ~/.bashrc
+    exec bash
 
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/rust/x86_64-unknown-linux-gnu/stage2/lib/
+    # Build cargo
 
     git clone https://github.com/rust-lang/cargo
     cd cargo
-
     apt-get install -y pkg-config  # https://github.com/frewsxcv/afl.rs/issues/11
     git checkout 1ae683a1496be2e35f213e3e11645adcb3ed62b1  # https://github.com/frewsxcv/afl.rs/issues/11
-
     ./configure --local-rust-root=../rust/x86_64-unknown-linux-gnu/stage2/ --enable-optimize
     make
-
-    echo "PATH=\$PATH:/opt/cargo/target/x86_64-unknown-linux-gnu/release:/opt/rust/x86_64-unknown-linux-gnu/stage2/bin" > ~/.bashrc
+    make install
+    echo "PATH=\$PATH:/opt/cargo/target/x86_64-unknown-linux-gnu/release" >> ~/.bashrc
     exec bash
 
     # export CXX="$(which clang++) -Wno-c++11-extensions"
