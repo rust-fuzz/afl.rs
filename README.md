@@ -68,6 +68,7 @@ Your C++ compiler must support C++11.
 
 ## Trophy case
 
+* rust-asn1: [#32](https://github.com/alex/rust-asn1/issues/32)
 * httparse: [#9](https://github.com/seanmonstar/httparse/issues/9)
 * image: [#414](https://github.com/PistonDevelopers/image/issues/414)
 * rustc: [#24275](https://github.com/rust-lang/rust/issues/24275), [#24276](https://github.com/rust-lang/rust/issues/24276)
