@@ -69,12 +69,12 @@ Your C++ compiler must support C++11.
 ## Trophy case
 
 * brotli-rs: [#2](https://github.com/ende76/brotli-rs/issues/2)
-* rust-asn1: [#32](https://github.com/alex/rust-asn1/issues/32)
 * httparse: [#9](https://github.com/seanmonstar/httparse/issues/9)
 * image: [#414](https://github.com/PistonDevelopers/image/issues/414), [#473](https://github.com/PistonDevelopers/image/issues/473)
 * rustc: [#24275](https://github.com/rust-lang/rust/issues/24275), [#24276](https://github.com/rust-lang/rust/issues/24276)
 * rust-url: [#108](https://github.com/servo/rust-url/pull/108)
 * regex: [#84](https://github.com/rust-lang/regex/issues/84)
+* rust-asn1: [#32](https://github.com/alex/rust-asn1/issues/32)
 * rustc-serialize: [#109](https://github.com/rust-lang/rustc-serialize/issues/109), [#110](https://github.com/rust-lang/rustc-serialize/issues/110)
 * serde: [#75](https://github.com/serde-rs/serde/issues/75), [#77](https://github.com/serde-rs/serde/issues/77), [#82](https://github.com/serde-rs/serde/issues/82)
 * tar-rs: [#23](https://github.com/alexcrichton/tar-rs/issues/23)
