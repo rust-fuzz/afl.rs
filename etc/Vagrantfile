@@ -43,6 +43,9 @@ Vagrant.configure(2) do |config|
     make
     make install
 
+    # To avoid having crashes misinterpreted as hangs (recommended by afl-fuzz when first run)
+    echo core > /proc/sys/kernel/core_pattern
+
     # export CXX="$(which clang++) -Wno-c++11-extensions"
     # export LLVM_CONFIG=$(which llvm-config-3.4)
     # build repo with rust plugin
