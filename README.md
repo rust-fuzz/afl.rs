@@ -36,7 +36,19 @@ extern crate afl_coverage;
 
 This will produce a binary that you can pass to `afl-fuzz` in the usual manner.
 afl instrumentation adds some run-time overhead, so it's a good candidate for
-[conditional compilation][], perhaps through a [Cargo feature][].
+[conditional compilation][], perhaps through a [Cargo feature][]:
+
+```toml
+# You may need to add `optional = true` to the above dependencies.
+[features]
+afl = ["afl-coverage-plugin", "afl-coverage"]
+```
+
+```rust
+// Active only with `cargo [...] --feature afl`
+#![cfg_attr(feature = "afl", feature(plugin))]
+#![cfg_attr(feature = "afl", plugin(afl_coverage_plugin))]
+```
 
 ## Tweakables
 
