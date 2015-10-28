@@ -16,7 +16,7 @@ Vagrant.configure(2) do |config|
 
     git clone https://github.com/rust-lang/rust.git
     cd rust
-    git checkout 717e8831b  # https://github.com/frewsxcv/afl.rs/issues/11
+    git checkout 71a8d313c8351771dc5507dde14f654ca4f0707d # https://github.com/frewsxcv/afl.rs/issues/11
     ./configure --enable-clang --disable-libcpp --enable-optimize --disable-docs
     make -j 8
     cd ..
