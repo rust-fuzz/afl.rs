@@ -34,6 +34,7 @@ Vagrant.configure(2) do |config|
     make
     echo "export PATH=\$PATH:/opt/cargo/target/x86_64-unknown-linux-gnu/release" >> /home/vagrant/.bashrc
     source /home/vagrant/.bashrc
+    cd ..
 
     # Build afl
 
