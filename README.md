@@ -36,7 +36,19 @@ extern crate afl_coverage;
 
 This will produce a binary that you can pass to `afl-fuzz` in the usual manner.
 afl instrumentation adds some run-time overhead, so it's a good candidate for
-[conditional compilation][], perhaps through a [Cargo feature][].
+[conditional compilation][], perhaps through a [Cargo feature][]:
+
+```toml
+# You may need to add `optional = true` to the above dependencies.
+[features]
+afl = ["afl-coverage-plugin", "afl-coverage"]
+```
+
+```rust
+// Active only with `cargo [...] --feature afl`
+#![cfg_attr(feature = "afl", feature(plugin))]
+#![cfg_attr(feature = "afl", plugin(afl_coverage_plugin))]
+```
 
 ## Tweakables
 
@@ -70,7 +82,8 @@ Your C++ compiler must support C++11.
 
 * brotli-rs: [#2](https://github.com/ende76/brotli-rs/issues/2), [#3](https://github.com/ende76/brotli-rs/issues/3), [#4](https://github.com/ende76/brotli-rs/issues/4), [#5](https://github.com/ende76/brotli-rs/issues/5), [#6](https://github.com/ende76/brotli-rs/issues/6), [#7](https://github.com/ende76/brotli-rs/issues/7), [#8](https://github.com/ende76/brotli-rs/issues/8), [#9](https://github.com/ende76/brotli-rs/issues/9), [#10](https://github.com/ende76/brotli-rs/issues/10), [#11](https://github.com/ende76/brotli-rs/issues/11), [#12](https://github.com/ende76/brotli-rs/issues/12)
 * httparse: [#9](https://github.com/seanmonstar/httparse/issues/9)
-* image: [#414](https://github.com/PistonDevelopers/image/issues/414), [#473](https://github.com/PistonDevelopers/image/issues/473), [#474](https://github.com/PistonDevelopers/image/issues/474)
+* image: [#414](https://github.com/PistonDevelopers/image/issues/414), [#473](https://github.com/PistonDevelopers/image/issues/473), [#474](https://github.com/PistonDevelopers/image/issues/474), [#477](https://github.com/PistonDevelopers/image/issues/477)
+* mp4parse-rust: [#2](https://github.com/mozilla/mp4parse-rust/issues/2), [#4](https://github.com/mozilla/mp4parse-rust/issues/4)
 * rustc: [#24275](https://github.com/rust-lang/rust/issues/24275), [#24276](https://github.com/rust-lang/rust/issues/24276)
 * rust-url: [#108](https://github.com/servo/rust-url/pull/108)
 * regex: [#84](https://github.com/rust-lang/regex/issues/84)
