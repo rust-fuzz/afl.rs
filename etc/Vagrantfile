@@ -20,9 +20,10 @@ Vagrant.configure(2) do |config|
     ./configure --enable-clang --disable-libcpp --enable-optimize --disable-docs
     make -j 8
     cd ..
-    echo "export PATH=\$PATH:/opt/rust/x86_64-unknown-linux-gnu/stage2/bin" >> /home/vagrant/.bashrc
-    echo "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:/opt/rust/x86_64-unknown-linux-gnu/stage2/lib/" >> /home/vagrant/.bashrc
-    source /home/vagrant/.bashrc
+    export PATH=$PATH:/opt/rust/x86_64-unknown-linux-gnu/stage2/bin
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/rust/x86_64-unknown-linux-gnu/stage2/lib/
+    echo 'export PATH=$PATH:/opt/rust/x86_64-unknown-linux-gnu/stage2/bin' >> /home/vagrant/.bashrc
+    echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/rust/x86_64-unknown-linux-gnu/stage2/lib/' >> /home/vagrant/.bashrc
 
     # Build cargo
 
@@ -32,8 +33,8 @@ Vagrant.configure(2) do |config|
     git checkout 1ae683a1496be2e35f213e3e11645adcb3ed62b1  # https://github.com/frewsxcv/afl.rs/issues/11
     ./configure --local-rust-root=../rust/x86_64-unknown-linux-gnu/stage2/ --enable-optimize
     make
-    echo "export PATH=\$PATH:/opt/cargo/target/x86_64-unknown-linux-gnu/release" >> /home/vagrant/.bashrc
-    source /home/vagrant/.bashrc
+    export PATH=$PATH:/opt/cargo/target/x86_64-unknown-linux-gnu/release
+    echo 'export PATH=$PATH:/opt/cargo/target/x86_64-unknown-linux-gnu/release' >> /home/vagrant/.bashrc
     cd ..
 
     # Build afl
