@@ -78,6 +78,12 @@ variable `LLVM_CONFIG` should hold the path to `llvm-config` when you build
 It does *not* require `clang++`; it will use `CXX` with a fallback to `g++`.
 Your C++ compiler must support C++11.
 
+For the time being, because of [this unresolved issue][unresolved issue], using
+afl.rs with the latest Rust nightly does not work. Because of these unfortunate
+complexities, a Vagrantfile (for use with [Vagrant][]) has been provided in
+`etc/Vagrantfile` which will setup a build environment that includes compatible
+versions of Rust, Cargo, and afl.
+
 ## Trophy case
 
 * brotli-rs: [#2](https://github.com/ende76/brotli-rs/issues/2), [#3](https://github.com/ende76/brotli-rs/issues/3), [#4](https://github.com/ende76/brotli-rs/issues/4), [#5](https://github.com/ende76/brotli-rs/issues/5), [#6](https://github.com/ende76/brotli-rs/issues/6), [#7](https://github.com/ende76/brotli-rs/issues/7), [#8](https://github.com/ende76/brotli-rs/issues/8), [#9](https://github.com/ende76/brotli-rs/issues/9), [#10](https://github.com/ende76/brotli-rs/issues/10), [#11](https://github.com/ende76/brotli-rs/issues/11), [#12](https://github.com/ende76/brotli-rs/issues/12)
@@ -113,3 +119,5 @@ arising from `unsafe` code. Pull requests are welcome!
 [example]: https://github.com/frewsxcv/afl.rs/blob/master/examples/hello.rs
 [unsafe]: http://doc.rust-lang.org/book/unsafe-code.html
 [Cargo]: http://doc.crates.io/
+[unresolved issue]: https://github.com/frewsxcv/afl.rs/issues/11
+[vagrant]: https://www.vagrantup.com/
