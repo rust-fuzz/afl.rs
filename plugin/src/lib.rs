@@ -6,9 +6,9 @@
 
 #![feature(plugin_registrar, rustc_private)]
 
-extern crate rustc;
+extern crate rustc_registry;
 
-use rustc::plugin::Registry;
+use rustc_registry::registry::Registry;
 
 #[plugin_registrar]
 pub fn plugin_registrar(reg: &mut Registry) {
