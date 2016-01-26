@@ -68,19 +68,19 @@ set at compile time in `config.h`. For the most part they only affect
 
 ## Building it
 
-`afl.rs` needs to compile against a version of LLVM that matches `rustc`'s. The
+Requirements:
+
+* `afl.rs` needs to compile against a version of LLVM that matches `rustc`'s. The
 easy solution (if you can wait on a slow build) is to [build `rustc` from
 source][from source] and put it in your `PATH`. Then `afl.rs`'s [build
 script][] will find `llvm-config` automatically. Otherwise, the environment
 variable `LLVM_CONFIG` should hold the path to `llvm-config` when you build
 `afl.rs`.
-
-It does *not* require `clang++`; it will use `CXX` with a fallback to `g++`.
+* You must use a nightly build of Rust from any day after January 24, 2016.
+* It does *not* require `clang++`; it will use `CXX` with a fallback to `g++`.
 Your C++ compiler must support C++11.
 
-For the time being, because of [this unresolved issue][unresolved issue], using
-afl.rs with the latest Rust nightly does not work. Because of these unfortunate
-complexities, a Vagrantfile (for use with [Vagrant][]) has been provided in
+A Vagrantfile (for use with [Vagrant][]) has been provided in
 `etc/Vagrantfile` which will setup a build environment that includes compatible
 versions of Rust, Cargo, and afl.
 
