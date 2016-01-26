@@ -68,7 +68,7 @@ bool AFLCoverage::runOnModule(Module &M) {
 
   if (isatty(2) && !getenv("AFL_QUIET")) {
 
-    fprintf(stderr, "afl-llvm-pass 1.77b by <lszekeres@google.com>\n");
+    fprintf(stderr, "afl-llvm-pass by <lszekeres@google.com>\n");
 
   } else be_quiet = 1;
 
