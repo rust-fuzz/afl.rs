@@ -52,6 +52,13 @@ afl = ["afl-coverage-plugin", "afl-coverage"]
 
 ## Tweakables
 
+To look for logic errors in safe Rust code, use the `no-landing-pads` rustc
+upon compilation of the AFL entrypoint.  This causes the fuzzer to treat any
+Rust panic as a crash. Examples of usage:
+
+* `rustc -Z no-landing-pads`
+* `cargo rustc -- -Z no-landing-pads`
+
 If your program has a slow set-up phase that does not depend on the input data,
 you can set `AFL_DEFER_FORKSRV=1` for a substantial speed-up, provided that you
 insert a call to `afl_coverage::init()` after the set-up and before any
