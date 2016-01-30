@@ -2,9 +2,9 @@
 
 This package allows you to find bugs in Rust code using [american-fuzzy-lop][].
 
-![Screenshot of afl: 3 crashes (1 unique) found in 1 minute 43 seconds][screenshot]
+<img src="http://i.imgur.com/RUZRyTO.gif" width="563" height="368" alt="Screen recording of afl">
 
-This was performed on one core of an [i7-4790K][] at 4.8 GHz. The code under
+This was performed on one core of an [i7-4870HQ][] at 2.5 GHz. The code under
 test is [`examples/hello.rs`][example] in this repository.
 
 ## Using it
@@ -122,9 +122,8 @@ arising from `unsafe` code. Pull requests are welcome!
 [example-defer]: https://github.com/frewsxcv/afl.rs/blob/master/examples/deferred-init.rs
 [build script]: https://github.com/frewsxcv/afl.rs/blob/master/plugin/build.bash
 [from source]: https://github.com/rust-lang/rust#building-from-source
-[screenshot]: http://i.imgur.com/SbjNZKr.png
 [LLVM pass]: https://github.com/frewsxcv/afl.rs/blob/master/plugin/src/afl-llvm-pass.o.cc
-[i7-4790k]: http://ark.intel.com/products/80807/Intel-Core-i7-4790K-Processor-8M-Cache-up-to-4_40-GHz
+[i7-4870HQ]: http://ark.intel.com/products/83504/Intel-Core-i7-4870HQ-Processor-6M-Cache-up-to-3_70-GHz
 [example]: https://github.com/frewsxcv/afl.rs/blob/master/examples/hello.rs
 [unsafe]: http://doc.rust-lang.org/book/unsafe-code.html
 [Cargo]: http://doc.crates.io/
