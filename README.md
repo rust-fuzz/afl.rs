@@ -1,11 +1,23 @@
-# Fuzzing Rust with american-fuzzy-lop
+# afl.rs
 
-This package allows you to find bugs in Rust code using [american-fuzzy-lop][].
+Fuzzing [Rust][] code with [american fuzzy lop (AFL)][american-fuzzy-lop]
 
 <img src="http://i.imgur.com/RUZRyTO.gif" width="563" height="368" alt="Screen recording of afl">
 
-This was performed on one core of an [i7-4870HQ][] at 2.5 GHz. The code under
+Screen recording of AFL running on Rust code. This specific instance was performed on one core of an [i7-4870HQ][] at 2.5 GHz. The code under
 test is [`examples/hello.rs`][example] in this repository.
+
+## What is it?
+
+[Fuzz testing][] is a software testing technique used to find security and stability issues by providing pseudo-random data as input to the software. [American fuzzy lop][american-fuzzy-lop] is a popular, effective, and modern fuzz testing tool. This library, afl.rs, allows one to run AFL on code written in [the Rust programming language][rust].
+
+## Requirements
+
+* Nightly build of Rust from any time after January 24, 2016 ([this issue](https://github.com/rust-lang/rust/pull/31176) prevented compatibility with previous builds of Rust)
+* C++ compiler that supports C++11
+* afl.rs needs to compile against a version of LLVM that matches `rustc`'s. The easy solution (if you can wait on a slow build) is to [build `rustc` from source][from source] and put it in your `PATH`. Then afl.rs's [build script][] will find `llvm-config` automatically. Otherwise, the environment variable `LLVM_CONFIG` should hold the path to `llvm-config` when you build afl.rs.
+
+Because of these relatively strict requirements, there is a Vagrantfile provided that assists in bootstraping an afl.rs compatible environment. View the README in the [`vagrant/`](vagrant) directory for more information.
 
 ## Using it
 
@@ -50,6 +62,8 @@ afl = ["afl-coverage-plugin", "afl-coverage"]
 #![cfg_attr(feature = "afl", plugin(afl_coverage_plugin))]
 ```
 
+C++ code will be compiled by default with `g++`, though one can specify a different C++ compiler by setting the `CXX` environment variable to point to a different compiler binary.
+
 ## Tweakables
 
 To look for logic errors in safe Rust code, use the `no-landing-pads` rustc
@@ -72,24 +86,6 @@ set at compile time in `config.h`. For the most part they only affect
 `afl-fuzz` itself, and will work fine with this library. However, if you change
 `SHM_ENV_VAR`, `MAP_SIZE`, or `FORKSRV_FD`, you should update this library's
 `src/config.h` to match.
-
-## Building it
-
-Requirements:
-
-* `afl.rs` needs to compile against a version of LLVM that matches `rustc`'s. The
-easy solution (if you can wait on a slow build) is to [build `rustc` from
-source][from source] and put it in your `PATH`. Then `afl.rs`'s [build
-script][] will find `llvm-config` automatically. Otherwise, the environment
-variable `LLVM_CONFIG` should hold the path to `llvm-config` when you build
-`afl.rs`.
-* You must use a nightly build of Rust from any day after January 24, 2016.
-* It does *not* require `clang++`; it will use `CXX` with a fallback to `g++`.
-Your C++ compiler must support C++11.
-
-A Vagrantfile (for use with [Vagrant][]) has been provided in
-`etc/Vagrantfile` which will setup a build environment that includes compatible
-versions of Rust, Cargo, and afl.
 
 ## Trophy case
 
@@ -128,4 +124,5 @@ arising from `unsafe` code. Pull requests are welcome!
 [unsafe]: http://doc.rust-lang.org/book/unsafe-code.html
 [Cargo]: http://doc.crates.io/
 [unresolved issue]: https://github.com/frewsxcv/afl.rs/issues/11
-[vagrant]: https://www.vagrantup.com/
+[fuzz testing]: https://en.wikipedia.org/wiki/Fuzz_testing
+[Rust]: https://www.rust-lang.org
