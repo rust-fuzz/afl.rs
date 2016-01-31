@@ -74,8 +74,8 @@ bool AFLCoverage::runOnModule(Module &M) {
 
   /* Decide instrumentation ratio */
 
-  char* inst_ratio_str = getenv("AFL_INST_RATIO");
-  int   inst_ratio     = 100;
+  char*    inst_ratio_str = getenv("AFL_INST_RATIO");
+  unsigned inst_ratio     = 100;
 
   if (inst_ratio_str) {
 
