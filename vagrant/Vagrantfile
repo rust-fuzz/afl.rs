@@ -37,9 +37,10 @@ Vagrant.configure(2) do |config|
 
     # Build afl
 
-    wget http://lcamtuf.coredump.cx/afl/releases/afl-1.96b.tgz
-    tar xf afl-1.94b.tgz
-    cd afl-1.94b
+    VERSION=1.96b
+    wget http://lcamtuf.coredump.cx/afl/releases/afl-$VERSION.tgz
+    tar xf afl-$VERSION.tgz
+    cd afl-$VERSION
     make
     make install
 
