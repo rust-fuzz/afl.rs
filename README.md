@@ -24,11 +24,9 @@ Because of these relatively strict requirements, there is a Vagrantfile provided
 First, add this project as a [Cargo][] dependency:
 
 ```toml
-[dependencies.afl-plugin]
-git = "https://github.com/frewsxcv/afl.rs"
-
-[dependencies.afl]
-git = "https://github.com/frewsxcv/afl.rs"
+[dependencies]
+afl = "0.1"
+afl-plugin = "0.1"
 ```
 
 Then you can add afl instrumentation to one or more crates:
