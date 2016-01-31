@@ -7,7 +7,7 @@ authors = ["Keegan McAllister <mcallister.keegan@gmail.com>",
            "Corey Farwell <coreyf@rwell.org>"]
 description = "Fuzzing Rust code with american-fuzzy-lop"
 build = "build.rs"
-repostiory = "https://github.com/frewsxcv/afl.rs"
+repository = "https://github.com/frewsxcv/afl.rs"
 homepage = "https://github.com/frewsxcv/afl.rs"
 
 [build-dependencies]
