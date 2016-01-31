@@ -8,9 +8,9 @@
 
 #![feature(plugin)]
 
-#![plugin(afl_coverage_plugin)]
+#![plugin(afl_plugin)]
 
-extern crate afl_coverage;
+extern crate afl;
 
 use std::io::{self, Read};
 use std::thread;
@@ -20,7 +20,7 @@ fn main() {
     thread::sleep_ms(500);
 
     unsafe {
-        afl_coverage::init();
+        afl::init();
     }
 
     println!("the blink of an eye.");

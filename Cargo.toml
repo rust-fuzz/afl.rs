@@ -1,12 +1,13 @@
 [package]
-name = "afl-coverage"
-version = "0.0.1"
+name = "afl"
+version = "0.1.0"
 readme = "README.md"
 license = "Apache-2.0"
 authors = ["Keegan McAllister <mcallister.keegan@gmail.com>",
            "Corey Farwell <coreyf@rwell.org>"]
 description = "Fuzzing Rust code with american-fuzzy-lop"
 build = "build.rs"
+repostiory = "https://github.com/frewsxcv/afl.rs"
 
 [build-dependencies]
 gcc = "0"
@@ -14,5 +15,5 @@ gcc = "0"
 [dev-dependencies]
 byteorder = "0"
 
-[dev-dependencies.afl-coverage-plugin]
+[dev-dependencies.afl-plugin]
 path = "plugin/"

@@ -1,10 +1,12 @@
 [package]
-name = "afl-coverage-plugin"
-version = "0.0.1"
+name = "afl-plugin"
+version = "0.1.0"
 license = "Apache-2.0"
-authors = ["Keegan McAllister <mcallister.keegan@gmail.com>"]
+authors = ["Keegan McAllister <mcallister.keegan@gmail.com>",
+           "Corey Farwell <coreyf@rwell.org>"]
 build = "build.rs"
+repository = "https://github.com/frewsxcv/afl.rs"
 
 [lib]
-name = "afl_coverage_plugin"
+name = "afl_plugin"
 plugin = true
