@@ -24,10 +24,10 @@ Because of these relatively strict requirements, there is a Vagrantfile provided
 First, add this project as a [Cargo][] dependency:
 
 ```toml
-[dependencies.afl-coverage-plugin]
+[dependencies.afl-plugin]
 git = "https://github.com/frewsxcv/afl.rs"
 
-[dependencies.afl-coverage]
+[dependencies.afl]
 git = "https://github.com/frewsxcv/afl.rs"
 ```
 
@@ -35,15 +35,15 @@ Then you can add afl instrumentation to one or more crates:
 
 ```rust
 #![feature(plugin)]
-#![plugin(afl_coverage_plugin)]
+#![plugin(afl_plugin)]
 ```
 
 You will also need a test executable that exercises the instrumented functions,
 in a deterministic way based on input from stdin. This executable should link
-the `afl_coverage` run-time library:
+the `afl` run-time library:
 
 ```rust
-extern crate afl_coverage;
+extern crate afl;
 ```
 
 This will produce a binary that you can pass to `afl-fuzz` in the usual manner.
@@ -53,13 +53,13 @@ afl instrumentation adds some run-time overhead, so it's a good candidate for
 ```toml
 # You may need to add `optional = true` to the above dependencies.
 [features]
-afl = ["afl-coverage-plugin", "afl-coverage"]
+afl = ["afl-plugin", "afl"]
 ```
 
 ```rust
 // Active only with `cargo [...] --feature afl`
 #![cfg_attr(feature = "afl", feature(plugin))]
-#![cfg_attr(feature = "afl", plugin(afl_coverage_plugin))]
+#![cfg_attr(feature = "afl", plugin(afl_plugin))]
 ```
 
 C++ code will be compiled by default with `g++`, though one can specify a different C++ compiler by setting the `CXX` environment variable to point to a different compiler binary.
@@ -75,7 +75,7 @@ Rust panic as a crash. Examples of usage:
 
 If your program has a slow set-up phase that does not depend on the input data,
 you can set `AFL_DEFER_FORKSRV=1` for a substantial speed-up, provided that you
-insert a call to `afl_coverage::init()` after the set-up and before any
+insert a call to `afl::init()` after the set-up and before any
 dependence on input. There are various other caveats, described in the section
 "Bonus feature: deferred instrumentation" in `llvm_mode/README.llvm`
 distributed with afl. See also [`examples/deferred-init.rs`][example-defer] in

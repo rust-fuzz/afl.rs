@@ -6,13 +6,13 @@
 
 #![feature(plugin, raw)]
 
-#![plugin(afl_coverage_plugin)]
+#![plugin(afl_plugin)]
 
 // Integer overflow bug.
 // Loosely based on:
 //   https://github.com/sandstorm-io/capnproto/blob/master/security-advisories/2015-03-02-0-c%2B%2B-integer-overflow.md
 
-extern crate afl_coverage;
+extern crate afl;
 extern crate byteorder;
 
 use std::{mem, io, raw};

@@ -1,5 +1,5 @@
 [package]
-name = "afl-coverage"
+name = "afl"
 version = "0.0.1"
 readme = "README.md"
 license = "Apache-2.0"
@@ -14,5 +14,5 @@ gcc = "0"
 [dev-dependencies]
 byteorder = "0"
 
-[dev-dependencies.afl-coverage-plugin]
+[dev-dependencies.afl-plugin]
 path = "plugin/"
