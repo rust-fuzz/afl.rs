@@ -6,6 +6,7 @@ authors = ["Keegan McAllister <mcallister.keegan@gmail.com>",
            "Corey Farwell <coreyf@rwell.org>"]
 build = "build.rs"
 repository = "https://github.com/frewsxcv/afl.rs"
+description = "LLVM instrumentation compiler plugin for afl.rs"
 
 [lib]
 name = "afl_plugin"
