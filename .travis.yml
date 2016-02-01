@@ -2,5 +2,19 @@ language: rust
 dist: trusty
 sudo: required
 rust: nightly
+env:
+  - LLVM_CONFIG=~/llvm/build/bin/llvm-config
+before_install:
+  - cd ~
+  - git clone https://github.com/rust-lang/llvm.git
+  - cd llvm
+  - git checkout de5c31045dc0f6da1f65d02ee640ccf99ba90e7c
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make -j 2
 script:
+  - cd $TRAVIS_BUILD_DIR/plugin
+  - cargo build --verbose
+  - cd $TRAVIS_BUILD_DIR
   - cargo build --verbose
