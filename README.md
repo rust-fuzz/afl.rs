@@ -119,7 +119,6 @@ arising from `unsafe` code. Pull requests are welcome!
 [LLVM pass]: https://github.com/frewsxcv/afl.rs/blob/master/plugin/src/afl-llvm-pass.o.cc
 [i7-4870HQ]: http://ark.intel.com/products/83504/Intel-Core-i7-4870HQ-Processor-6M-Cache-up-to-3_70-GHz
 [example]: https://github.com/frewsxcv/afl.rs/blob/master/examples/hello.rs
-[unsafe]: https://doc.rust-lang.org/book/unsafe-code.html
 [Cargo]: http://doc.crates.io/
 [unresolved issue]: https://github.com/frewsxcv/afl.rs/issues/11
 [fuzz testing]: https://en.wikipedia.org/wiki/Fuzz_testing
