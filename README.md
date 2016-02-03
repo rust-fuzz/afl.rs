@@ -2,7 +2,7 @@
 
 Fuzzing [Rust][] code with [american fuzzy lop (AFL)][american-fuzzy-lop]
 
-<img src="http://i.imgur.com/RUZRyTO.gif" width="563" height="368" alt="Screen recording of afl">
+<img src="https://i.imgur.com/RUZRyTO.gif" width="563" height="368" alt="Screen recording of afl">
 
 Screen recording of AFL running on Rust code. This specific instance was performed on one core of an [i7-4870HQ][] at 2.5 GHz. The code under
 test is [`examples/hello.rs`][example] in this repository.
@@ -110,7 +110,7 @@ have tried afl.rs yet! Over time we will update this section with the most
 interesting bugs, whether they're logic errors or memory-safety problems
 arising from `unsafe` code. Pull requests are welcome!
 
-[conditional compilation]: http://doc.rust-lang.org/reference.html#conditional-compilation
+[conditional compilation]: https://doc.rust-lang.org/reference.html#conditional-compilation
 [american-fuzzy-lop]: http://lcamtuf.coredump.cx/afl/
 [Cargo feature]: http://doc.crates.io/manifest.html#the-[features]-section
 [example-defer]: https://github.com/frewsxcv/afl.rs/blob/master/examples/deferred-init.rs
@@ -119,7 +119,7 @@ arising from `unsafe` code. Pull requests are welcome!
 [LLVM pass]: https://github.com/frewsxcv/afl.rs/blob/master/plugin/src/afl-llvm-pass.o.cc
 [i7-4870HQ]: http://ark.intel.com/products/83504/Intel-Core-i7-4870HQ-Processor-6M-Cache-up-to-3_70-GHz
 [example]: https://github.com/frewsxcv/afl.rs/blob/master/examples/hello.rs
-[unsafe]: http://doc.rust-lang.org/book/unsafe-code.html
+[unsafe]: https://doc.rust-lang.org/book/unsafe-code.html
 [Cargo]: http://doc.crates.io/
 [unresolved issue]: https://github.com/frewsxcv/afl.rs/issues/11
 [fuzz testing]: https://en.wikipedia.org/wiki/Fuzz_testing
