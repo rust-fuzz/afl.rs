@@ -4,8 +4,7 @@ Fuzzing [Rust][] code with [american fuzzy lop (AFL)][american-fuzzy-lop]
 
 <img src="https://i.imgur.com/RUZRyTO.gif" width="563" height="368" alt="Screen recording of afl">
 
-Screen recording of AFL running on Rust code. This specific instance was performed on one core of an [i7-4870HQ][] at 2.5 GHz. The code under
-test is [`examples/hello.rs`][example] in this repository.
+Screen recording of AFL running on Rust code. The code under test is [`examples/hello.rs`][example] in this repository.
 
 ## What is it?
 
@@ -117,7 +116,6 @@ arising from `unsafe` code. Pull requests are welcome!
 [build script]: https://github.com/frewsxcv/afl.rs/blob/master/plugin/build.bash
 [from source]: https://github.com/rust-lang/rust#building-from-source
 [LLVM pass]: https://github.com/frewsxcv/afl.rs/blob/master/plugin/src/afl-llvm-pass.o.cc
-[i7-4870HQ]: http://ark.intel.com/products/83504/Intel-Core-i7-4870HQ-Processor-6M-Cache-up-to-3_70-GHz
 [example]: https://github.com/frewsxcv/afl.rs/blob/master/examples/hello.rs
 [Cargo]: http://doc.crates.io/
 [unresolved issue]: https://github.com/frewsxcv/afl.rs/issues/11
