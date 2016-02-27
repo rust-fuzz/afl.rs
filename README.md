@@ -90,7 +90,6 @@ set at compile time in `config.h`. For the most part they only affect
 * flac: [#3](https://github.com/sourrust/flac/issues/3)
 * httparse: [#9](https://github.com/seanmonstar/httparse/issues/9)
 * image: [#414](https://github.com/PistonDevelopers/image/issues/414), [#473](https://github.com/PistonDevelopers/image/issues/473), [#474](https://github.com/PistonDevelopers/image/issues/474), [#477](https://github.com/PistonDevelopers/image/issues/477)
-* image-gif: [#17](https://github.com/PistonDevelopers/image-gif/issues/17)
 * mp4parse-rust: [#2](https://github.com/mozilla/mp4parse-rust/issues/2), [#4](https://github.com/mozilla/mp4parse-rust/issues/4), [#5](https://github.com/mozilla/mp4parse-rust/issues/5), [#6](https://github.com/mozilla/mp4parse-rust/issues/6)
 * rustc: [#24275](https://github.com/rust-lang/rust/issues/24275), [#24276](https://github.com/rust-lang/rust/issues/24276)
 * rust-url: [#108](https://github.com/servo/rust-url/pull/108)
