@@ -4,6 +4,9 @@ sudo: required
 rust: nightly
 env:
   - LLVM_CONFIG=~/llvm/build/bin/llvm-config
+cache:
+  directories:
+    - $HOME/llvm
 before_install:
   - cd ~
   - git clone https://github.com/rust-lang/llvm.git
