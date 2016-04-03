@@ -63,7 +63,7 @@ C++ code will be compiled by default with `g++`, though one can specify a differ
 
 ## Tweakables
 
-To look for logic errors in safe Rust code, use the `no-landing-pads` rustc
+To look for logic errors in safe Rust code, use the `no-landing-pads` rustc flag
 upon compilation of the AFL entrypoint.  This causes the fuzzer to treat any
 Rust panic as a crash. Examples of usage:
 
