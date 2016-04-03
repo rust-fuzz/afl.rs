@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // See `LICENSE` in this repository.
 
-// Fuzz me with AFL_RS_CRASH_ON_PANIC=1.
+// Fuzz me with '-Z no-landing-pads' (see README for more info).
 
 #![feature(plugin)]
 
