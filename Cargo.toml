@@ -10,6 +10,9 @@ build = "build.rs"
 repository = "https://github.com/frewsxcv/afl.rs"
 homepage = "https://github.com/frewsxcv/afl.rs"
 
+[dependencies]
+afl-sys = { path = "afl-sys", version = "0.1" }
+
 [build-dependencies]
 gcc = "0.3"
 
