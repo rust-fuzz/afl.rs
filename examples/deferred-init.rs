@@ -12,7 +12,6 @@
 
 extern crate afl;
 
-use std::io::{self, Read};
 use std::thread;
 use std::time::Duration;
 
@@ -24,22 +23,16 @@ fn main() {
         afl::init();
     }
 
-    println!("the blink of an eye.");
-
-    let mut input = String::new();
-    io::stdin().read_to_string(&mut input).unwrap();
-
-    if input.starts_with("x") {
-        println!("going...");
-        if input.starts_with("xy") {
+    afl::handle_string(|input| {
+        println!("the blink of an eye.");
+        if input.starts_with("x") {
             println!("going...");
-            if input.starts_with("xyz") {
-                println!("gone!");
-                unsafe {
-                    let x: *mut usize = 0 as *mut usize;
-                    *x = 0xBEEF;
+            if input.starts_with("xy") {
+                println!("going...");
+                if input.starts_with("xyz") {
+                    panic!("gone!");
                 }
             }
         }
-    }
+    });
 }

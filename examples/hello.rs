@@ -10,23 +10,16 @@
 
 extern crate afl;
 
-use std::io::{self, Read};
-
 fn main() {
-    let mut input = String::new();
-    io::stdin().read_to_string(&mut input).unwrap();
-
-    if input.starts_with("x") {
-        println!("going...");
-        if input.starts_with("xy") {
+    afl::handle_string(|input| {
+        if input.starts_with("x") {
             println!("going...");
-            if input.starts_with("xyz") {
-                println!("gone!");
-                unsafe {
-                    let x: *mut usize = 0 as *mut usize;
-                    *x = 0xBEEF;
+            if input.starts_with("xy") {
+                println!("going...");
+                if input.starts_with("xyz") {
+                    panic!("gone!");
                 }
             }
         }
-    }
+    })
 }
