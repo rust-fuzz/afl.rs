@@ -1,21 +1,17 @@
 language: rust
-dist: trusty
-sudo: required
 rust: nightly
 env:
-  - LLVM_CONFIG=~/llvm/build/bin/llvm-config
-cache:
-  directories:
-    - $HOME/llvm
-before_install:
-  - cd ~
-  - git clone https://github.com/rust-lang/llvm.git
-  - cd llvm
-  - git checkout de5c31045dc0f6da1f65d02ee640ccf99ba90e7c
-  - mkdir build
-  - cd build
-  - cmake ..
-  - make -j 2
+  - LLVM_CONFIG=$(which llvm-config-3.8) CXX=$(which g++-4.9)
+addons:
+  apt:
+    sources:
+      - llvm-toolchain-precise
+      - llvm-toolchain-precise-3.8
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.9
+      - llvm-3.8
+      - llvm-3.8-dev
 script:
   - cd $TRAVIS_BUILD_DIR/plugin
   - cargo build --verbose
