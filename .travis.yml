@@ -13,7 +13,7 @@ addons:
       - llvm-3.8
       - llvm-3.8-dev
 script:
-  - cd $TRAVIS_BUILD_DIR/plugin
+  - cd $TRAVIS_BUILD_DIR/afl-plugin
   - cargo build --verbose
   - cd $TRAVIS_BUILD_DIR
   - cargo build --verbose
