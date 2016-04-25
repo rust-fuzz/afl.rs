@@ -17,5 +17,5 @@ gcc = "0.3"
 byteorder = "0.3"
 
 [dev-dependencies.afl-plugin]
-path = "plugin/"
+path = "afl-plugin/"
 version = "0.1.0"

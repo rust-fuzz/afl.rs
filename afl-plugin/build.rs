@@ -55,7 +55,7 @@ fn main() {
     let mut config = gcc::Config::new();
     config.cpp(true);
     config.opt_level(2);
-    config.file("src/afl-llvm-pass.so.cc");
+    config.file("afl-llvm-pass.so.cc");
     config.flag("-fPIC");
     config.flag("-Wall");
     config.flag("-Werror");
