@@ -5,9 +5,23 @@ rust: nightly-2016-07-30
 sudo: required
 services:
   - docker
+env:
+  - LLVM_CONFIG=$(which llvm-config-3.8) CXX=$(which g++-4.9)
+  - LLVM_CONFIG=$(which llvm-config-3.8) CXX=$(which clang++)
 os:
   - linux
   - osx
+addons:
+  apt:
+    sources:
+      - llvm-toolchain-precise
+      - llvm-toolchain-precise-3.8
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.9
+      - clang-3.8
+      - llvm-3.8
+      - llvm-3.8-dev
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sh ./ci/install-osx.sh; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker build -t afl.rs -f ci/Dockerfile .; fi
