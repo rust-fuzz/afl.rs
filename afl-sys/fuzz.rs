@@ -1,6 +1,7 @@
 /// Wrapper around the afl-fuzz binary
 
 use libc;
+use std::env;
 use std::ffi::CString;
 use std::path::PathBuf;
 
@@ -10,6 +11,7 @@ extern "C" {
                      argv: *const *const libc::c_char) -> libc::c_int;
 }
 
+// TODO: use builder pattern
 pub struct AflFuzzConfig {
     pub in_dir: PathBuf,
     pub out_dir: PathBuf,
@@ -37,6 +39,25 @@ impl AflFuzzConfig {
             .collect()
     }
 }
+
+pub fn afl_fuzz_env() -> Result<(), libc::c_int> {
+    let args = env::args();
+
+    // convert the CStrings to raw pointers
+    let c_args = args.map(|arg| CString::new(arg).unwrap())
+                     .map(|arg| arg.as_ptr())
+                     .collect::<Vec<_>>();
+
+    let ret = unsafe {
+        afl_fuzz_main(c_args.len() as libc::c_int, c_args.as_ptr())
+    };
+
+    match ret {
+        0 => Ok(()),
+        n => Err(n),
+    }
+}
+
 
 pub fn afl_fuzz(config: AflFuzzConfig) -> Result<(), ()> {
     let mut args = vec![];
