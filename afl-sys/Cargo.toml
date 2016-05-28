@@ -1,8 +1,12 @@
 [package]
 name = "afl-sys"
-version = "0.1.0"
+version = "0.1.2"
 authors = ["Corey Farwell <coreyf@rwell.org>"]
 build = "build.rs"
+repository = "https://github.com/frewsxcv/afl.rs"
+homepage = "https://github.com/frewsxcv/afl.rs"
+license = "Apache-2.0"
+description = "Wrapper around AFL source"
 
 [lib]
 path = "lib.rs"
