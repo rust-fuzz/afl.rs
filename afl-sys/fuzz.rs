@@ -43,6 +43,9 @@ impl AflFuzzConfig {
 pub fn afl_fuzz_env() -> Result<(), libc::c_int> {
     let args = env::args();
 
+    // don't include anything before "afl-fuzz"
+    let args = args.skip_while(|a| a != "afl-fuzz");
+
     // convert the CStrings to raw pointers
     let c_args = args.map(|arg| CString::new(arg).unwrap())
                      .map(|arg| arg.as_ptr())
