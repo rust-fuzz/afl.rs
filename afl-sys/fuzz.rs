@@ -12,6 +12,8 @@ extern "C" {
 }
 
 fn call_afl_fuzz_main(args: Vec<CString>) -> Result<(), libc::c_int> {
+    assert!(!args.is_empty());
+
     // `main` functions in C expect an array of pointers to the arguments
     let args_ptrs = args.iter()
                         .map(|arg| arg.as_ptr())
