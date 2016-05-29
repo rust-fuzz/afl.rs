@@ -11,6 +11,23 @@ extern "C" {
                      argv: *const *const libc::c_char) -> libc::c_int;
 }
 
+fn call_afl_fuzz_main(args: Vec<CString>) -> Result<(), libc::c_int> {
+    // `main` functions in C expect an array of pointers to the arguments
+    let args_ptrs = args.iter()
+                        .map(|arg| arg.as_ptr())
+                        .collect::<Vec<_>>();
+
+    let ret = unsafe {
+        afl_fuzz_main(args_ptrs.len() as libc::c_int,
+                      args_ptrs.as_ptr())
+    };
+
+    match ret {
+        0 => Ok(()),
+        n => Err(n),
+    }
+}
+
 // TODO: use builder pattern
 pub struct AflFuzzConfig {
     pub in_dir: PathBuf,
@@ -44,25 +61,15 @@ pub fn afl_fuzz_env() -> Result<(), libc::c_int> {
     let args = env::args();
 
     // don't include anything before "afl-fuzz"
-    let args = args.skip_while(|a| a != "afl-fuzz");
+    let args = args.skip_while(|a| a != "afl-fuzz")
+                   .map(|arg| CString::new(arg).unwrap())
+                   .collect::<Vec<_>>();
 
-    // convert the CStrings to raw pointers
-    let c_args = args.map(|arg| CString::new(arg).unwrap())
-                     .map(|arg| arg.as_ptr())
-                     .collect::<Vec<_>>();
-
-    let ret = unsafe {
-        afl_fuzz_main(c_args.len() as libc::c_int, c_args.as_ptr())
-    };
-
-    match ret {
-        0 => Ok(()),
-        n => Err(n),
-    }
+    call_afl_fuzz_main(args)
 }
 
 
-pub fn afl_fuzz(config: AflFuzzConfig) -> Result<(), ()> {
+pub fn afl_fuzz(config: AflFuzzConfig) -> Result<(), libc::c_int> {
     let mut args = vec![];
 
     // Fake the first argument
@@ -71,19 +78,7 @@ pub fn afl_fuzz(config: AflFuzzConfig) -> Result<(), ()> {
 
     args.extend(config.into_args());
 
-    // convert the CStrings to raw pointers
-    let c_args = args.iter()
-                     .map(|arg| arg.as_ptr())
-                     .collect::<Vec<_>>();
-
-    let ret = unsafe {
-        afl_fuzz_main(c_args.len() as i32, c_args.as_ptr())
-    };
-
-    match ret {
-        0 => Ok(()),
-        _ => Err(()),
-    }
+    call_afl_fuzz_main(args)
 }
 
 /// FIXME: figure out a way to make it not run indefinitely
