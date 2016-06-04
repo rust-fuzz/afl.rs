@@ -1,34 +1,18 @@
 language: rust
 rust: nightly
-sudo: false
-env:
-  - LLVM_CONFIG=$(which llvm-config-3.8) CXX=$(which g++-4.9)
+sudo: required
+services:
+  - docker
 os:
   - linux
   - osx
-addons:
-  apt:
-    sources:
-      - llvm-toolchain-precise
-      - llvm-toolchain-precise-3.8
-      - ubuntu-toolchain-r-test
-    packages:
-      - g++-4.9
-      - llvm-3.8
-      - llvm-3.8-dev
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew unlink gcc; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install homebrew/versions/llvm38 homebrew/versions/gcc49; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CXX=$(which clang++-3.8); fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export LLVM_CONFIG=$(which llvm-config-3.8); fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker build -t afl.rs -f ci/Dockerfile .; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then RUN="docker run -t afl.rs"; fi
 script:
-  - cd $TRAVIS_BUILD_DIR/afl-plugin
-  - cargo build --verbose
-  - cd $TRAVIS_BUILD_DIR
-  - cargo build --verbose
-  - cargo build --example hello
-  - cargo build --example deferred-init
-  - cargo build --example integer-overflow
-  - cargo build --example panic
-  - cd afl-sys; cargo build
+  - $RUN ./ci/run.sh
