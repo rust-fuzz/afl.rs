@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // See `LICENSE` in this repository.
 
-#![feature(plugin, raw)]
+#![feature(plugin)]
 
 #![plugin(afl_plugin)]
 
@@ -15,7 +15,7 @@
 extern crate afl;
 extern crate byteorder;
 
-use std::{mem, io, raw};
+use std::{mem, io, slice};
 use std::io::Read;
 use byteorder::{ReadBytesExt, LittleEndian, Error};
 
@@ -39,10 +39,10 @@ fn main() {
         let mut buf: Vec<u8> = Vec::with_capacity(total_size);
 
         let dest: &mut [u8] = unsafe {
-            mem::transmute(raw::Slice {
-                data: buf.as_ptr(),
-                len: (element_count as usize) * (bytes_per_element as usize),
-            })
+            mem::transmute(slice::from_raw_parts_mut(
+                buf.as_mut_ptr(),
+                (element_count as usize) * (bytes_per_element as usize),
+            ))
         };
 
         match stdin.by_ref().read(dest) {
