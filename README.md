@@ -88,10 +88,10 @@ set at compile time in `config.h`. For the most part they only affect
 
 ## Upcoming changes
 
-* [✨ Logo  ✨](https://github.com/frewsxcv/afl.rs/issues/66)
-* [Simpler API](https://github.com/frewsxcv/afl.rs/issues/31)
-* [Don't require users to compile Rust](https://github.com/frewsxcv/afl.rs/issues/41)
-* Don't require users to have AFL installed (utilize afl-sys crate)
+- [ ] [✨ Logo  ✨](https://github.com/frewsxcv/afl.rs/issues/66)
+- [ ] [Simpler API](https://github.com/frewsxcv/afl.rs/issues/31)
+- [ ] [Don't require users to compile Rust](https://github.com/frewsxcv/afl.rs/issues/41)
+- [ ] Don't require users to have AFL installed (utilize afl-sys crate)
 
 ## Trophy case
 
