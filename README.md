@@ -18,6 +18,8 @@ Screen recording of AFL running on Rust code. The code under test is [`examples/
 
 Because of these relatively strict requirements, there is a Vagrantfile provided that assists in bootstraping an afl.rs compatible environment. View the README in the [`vagrant/`](vagrant) directory for more information.
 
+**NOTE: It is known that requiring one to compile Rust *greatly* increases the barrier to use afl.rs. It will soon be the case this requirement will be lifted and the setup instructions will be greatly simplified. Stay tuned!**
+
 ## Using it
 
 First, add this project as a [Cargo][] dependency:
@@ -44,6 +46,30 @@ extern crate afl;
 ```
 
 This will produce a binary that you can pass to `afl-fuzz` in the usual manner.
+
+C++ code will be compiled by default with `g++`, though one can specify a different C++ compiler by setting the `CXX` environment variable to point to a different compiler binary.
+
+### Treat panics as crashes
+
+To look for logic errors in safe Rust code, use the `no-landing-pads` rustc flag
+upon compilation of the AFL entrypoint.  This causes the fuzzer to treat any
+Rust panic as a crash. Examples of usage:
+
+* `rustc -Z no-landing-pads`
+* `cargo rustc -- -Z no-landing-pads`
+
+### Deferred init
+
+If your program has a slow set-up phase that does not depend on the input data,
+you can set `AFL_DEFER_FORKSRV=1` for a substantial speed-up, provided that you
+insert a call to `afl::init()` after the set-up and before any
+dependence on input. There are various other caveats, described in the section
+"Bonus feature: deferred instrumentation" in `llvm_mode/README.llvm`
+distributed with afl. See also [`examples/deferred-init.rs`][example-defer] in
+this repository.
+
+### Conditional compilation
+
 afl instrumentation adds some run-time overhead, so it's a good candidate for
 [conditional compilation][], perhaps through a [Cargo feature][]:
 
@@ -59,24 +85,8 @@ afl = ["afl-plugin", "afl"]
 #![cfg_attr(feature = "afl", plugin(afl_plugin))]
 ```
 
-C++ code will be compiled by default with `g++`, though one can specify a different C++ compiler by setting the `CXX` environment variable to point to a different compiler binary.
 
-## Tweakables
-
-To look for logic errors in safe Rust code, use the `no-landing-pads` rustc flag
-upon compilation of the AFL entrypoint.  This causes the fuzzer to treat any
-Rust panic as a crash. Examples of usage:
-
-* `rustc -Z no-landing-pads`
-* `cargo rustc -- -Z no-landing-pads`
-
-If your program has a slow set-up phase that does not depend on the input data,
-you can set `AFL_DEFER_FORKSRV=1` for a substantial speed-up, provided that you
-insert a call to `afl::init()` after the set-up and before any
-dependence on input. There are various other caveats, described in the section
-"Bonus feature: deferred instrumentation" in `llvm_mode/README.llvm`
-distributed with afl. See also [`examples/deferred-init.rs`][example-defer] in
-this repository.
+### AFL configuration
 
 See the afl documentation for other configuration variables. Some of these are
 set at compile time in `config.h`. For the most part they only affect
@@ -86,10 +96,10 @@ set at compile time in `config.h`. For the most part they only affect
 
 ## Upcoming changes
 
-* [✨ Logo  ✨](https://github.com/frewsxcv/afl.rs/issues/66)
-* [Simpler API](https://github.com/frewsxcv/afl.rs/issues/31)
-* [Don't require users to compile Rust](https://github.com/frewsxcv/afl.rs/issues/41)
-* Don't require users to have AFL installed (utilize afl-sys crate)
+- [ ] [✨ Logo  ✨](https://github.com/frewsxcv/afl.rs/issues/66)
+- [ ] [Simpler API](https://github.com/frewsxcv/afl.rs/issues/31)
+- [ ] [Don't require users to compile Rust](https://github.com/frewsxcv/afl.rs/issues/41)
+- [ ] Don't require users to have AFL installed (utilize afl-sys crate)
 
 ## Trophy case
 
