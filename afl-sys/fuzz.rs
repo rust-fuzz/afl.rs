@@ -52,7 +52,7 @@ impl AflFuzzConfig {
         // target
         args.push(self.target.to_str().unwrap());
 
-        // Convert args from `str`s to to `CString`s
+        // Convert args from `str`s to `CString`s
         args.into_iter()
             .map(|s| CString::new(s).unwrap())
             .collect()
