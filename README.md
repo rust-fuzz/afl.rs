@@ -18,6 +18,8 @@ Screen recording of AFL running on Rust code. The code under test is [`examples/
 
 Because of these relatively strict requirements, there is a Vagrantfile provided that assists in bootstraping an afl.rs compatible environment. View the README in the [`vagrant/`](vagrant) directory for more information.
 
+**NOTE: It is known that requiring one to compile Rust *greatly* increases the barrier to use afl.rs. It will soon be the case this requirement will be lifted and the setup instructions will be greatly simplified. Stay tuned!**
+
 ## Using it
 
 First, add this project as a [Cargo][] dependency:
