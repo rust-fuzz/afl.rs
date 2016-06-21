@@ -13,15 +13,9 @@ os:
   - osx
 addons:
   apt:
-    sources:
-      - llvm-toolchain-precise
-      - llvm-toolchain-precise-3.8
-      - ubuntu-toolchain-r-test
     packages:
       - g++-4.9
       - clang-3.8
-      - llvm-3.8
-      - llvm-3.8-dev
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sh ./ci/install-osx.sh; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker build -t afl.rs -f ci/Dockerfile .; fi
