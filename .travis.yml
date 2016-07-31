@@ -7,11 +7,7 @@ os:
   - linux
   - osx
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew unlink gcc; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install homebrew/versions/llvm38 homebrew/versions/gcc49; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CXX=$(which clang++-3.8); fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export LLVM_CONFIG=$(which llvm-config-3.8); fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sh ./ci/install-osx.sh; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker build -t afl.rs -f ci/Dockerfile .; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then RUN="docker run -t afl.rs"; fi
 script:
