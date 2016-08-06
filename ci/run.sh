@@ -13,7 +13,4 @@ cargo build --example panic
 cd afl-sys
 cargo build
 cd ..
-cargo install --path .
-TIMEOUT="$(which timeout gtimeout)" || true
-$TIMEOUT 10s cargo afl-fuzz -i . -o out target/debug/examples/hello || true
-if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then [ "$(ls -A out/queue)" ]; fi
+cargo test
