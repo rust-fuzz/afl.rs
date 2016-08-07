@@ -1,5 +1,7 @@
 language: rust
-rust: nightly
+# Nightly versions after this use a newer version of LLVM
+# https://github.com/rust-lang/rust/pull/34743
+rust: nightly-2016-07-30
 sudo: required
 services:
   - docker
