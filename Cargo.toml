@@ -18,6 +18,8 @@ gcc = "0.3"
 
 [dev-dependencies]
 byteorder = "0.3"
+tempdir = "0.3"
+libc = "0.2"
 
 [dev-dependencies.afl-plugin]
 path = "afl-plugin/"

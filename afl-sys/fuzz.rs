@@ -63,10 +63,12 @@ pub fn afl_fuzz_env() -> Result<(), libc::c_int> {
     let args = env::args();
 
     // don't include anything before 'afl-fuzz' or 'cargo-afl-fuzz'
-    let args = args.skip_while(|a| a != "afl-fuzz" && a != "cargo-afl-fuzz")
-                   .map(|arg| CString::new(arg).unwrap())
-                   .collect::<Vec<_>>();
+    let mut args = args.skip_while(|a| !a.ends_with("afl-fuzz"))
+                       .map(|arg| CString::new(arg).unwrap())
+                       .collect::<Vec<_>>();
     assert!(!args.is_empty(), "Error generating afl-fuzz arguments");
+
+    args[0] = CString::new("afl-fuzz").unwrap();
 
     call_afl_fuzz_main(args)
 }
