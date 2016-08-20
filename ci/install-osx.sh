@@ -2,7 +2,7 @@
 
 brew update
 brew unlink gcc
-brew install homebrew/versions/llvm38 homebrew/versions/gcc49 coreutils
+brew install homebrew/versions/llvm38
 export CXX=$(which clang++-3.8)
 export LLVM_CONFIG=$(which llvm-config-3.8)
 SL=/System/Library
