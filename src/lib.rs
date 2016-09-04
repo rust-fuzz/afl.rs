@@ -36,8 +36,6 @@ mod test {
     extern crate libc;
     extern crate tempdir;
 
-    // TODO: enable this test for Linux
-    #[cfg(target_os = "macos")]
     #[test]
     fn test_cargo_afl_fuzz() {
         let temp_dir = tempdir::TempDir::new("aflrs").expect("Could not create temporary directory");
