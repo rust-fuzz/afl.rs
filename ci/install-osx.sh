@@ -1,9 +1,17 @@
 #!/bin/sh -e
 
 brew update
-brew unlink gcc
 brew install homebrew/versions/llvm38
-export CXX=$(which clang++-3.8)
+
+if [[ "$CXX" == "clang++" ]]; then
+  brew unlink gcc
+  export CXX=$(which clang++-3.8)
+elif [[ "$CXX" == "g++" ]]; then
+  export CXX=$(which g++)
+else
+  exit 1
+fi
+
 export LLVM_CONFIG=$(which llvm-config-3.8)
 SL=/System/Library
 PL=com.apple.ReportCrash
