@@ -9,6 +9,7 @@ fn main() {
         .define("VERSION", Some("\"2.27b\""))
         .define("main", Some("afl_fuzz_main"))  // Rename 'main' function
         .flag("-funroll-loops")
+        .flag("-w")
         .include("afl-2.27b")
         .opt_level(3)
         .compile("libafl.a");
