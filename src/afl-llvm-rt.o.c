@@ -78,7 +78,7 @@ static void __afl_map_shm(void) {
 
     /* Whooooops. */
 
-    if (__afl_area_ptr == (void *)-1) exit(1);
+    if (__afl_area_ptr == (void *)-1) _exit(1);
 
     /* Write something into the bitmap so that even with low AFL_INST_RATIO,
        our parent doesn't give up on us. */
@@ -111,7 +111,7 @@ static void __afl_start_forkserver(void) {
 
     /* Wait for parent by reading from the pipe. Abort if read fails. */
 
-    if (read(FORKSRV_FD, &was_killed, 4) != 4) exit(1);
+    if (read(FORKSRV_FD, &was_killed, 4) != 4) _exit(1);
 
     /* If we stopped the child in persistent mode, but there was a race
        condition and afl-fuzz already issued SIGKILL, write off the old
@@ -119,7 +119,7 @@ static void __afl_start_forkserver(void) {
 
     if (child_stopped && was_killed) {
       child_stopped = 0;
-      if (waitpid(child_pid, &status, 0) < 0) exit(1);
+      if (waitpid(child_pid, &status, 0) < 0) _exit(1);
     }
 
     if (!child_stopped) {
@@ -127,7 +127,7 @@ static void __afl_start_forkserver(void) {
       /* Once woken up, create a clone of our process. */
 
       child_pid = fork();
-      if (child_pid < 0) exit(1);
+      if (child_pid < 0) _exit(1);
 
       /* In child process: close fds, resume execution. */
 
@@ -151,10 +151,10 @@ static void __afl_start_forkserver(void) {
 
     /* In parent process: write PID to pipe, then wait for child. */
 
-    if (write(FORKSRV_FD + 1, &child_pid, 4) != 4) exit(1);
+    if (write(FORKSRV_FD + 1, &child_pid, 4) != 4) _exit(1);
 
     if (waitpid(child_pid, &status, is_persistent ? WUNTRACED : 0) < 0)
-      exit(1);
+      _exit(1);
 
     /* In persistent mode, the child stops itself with SIGSTOP to indicate
        a successful run. In this case, we want to wake it up without forking
@@ -164,7 +164,7 @@ static void __afl_start_forkserver(void) {
 
     /* Relay wait status to pipe, then loop back. */
 
-    if (write(FORKSRV_FD + 1, &status, 4) != 4) exit(1);
+    if (write(FORKSRV_FD + 1, &status, 4) != 4) _exit(1);
 
   }
 
