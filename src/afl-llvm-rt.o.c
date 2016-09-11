@@ -55,7 +55,7 @@ u16 __afl_prev_loc;
 
 static void __afl_map_shm(void) {
 
-  char *id_str = getenv(SHM_ENV_VAR);
+  u8 *id_str = getenv(SHM_ENV_VAR);
 
   /* If we're running under AFL, attach to the appropriate region, replacing the
      early-stage __afl_area_initial region that is needed to allow some really
@@ -128,6 +128,7 @@ static void __afl_start_forkserver(void) {
   }
 
 }
+
 
 /* This one can be called from user code when AFL_DEFER_FORKSRV is set. */
 
