@@ -41,6 +41,7 @@ mod test {
         let temp_dir_path = temp_dir.path();
         let mut child = Command::new("target/debug/cargo-afl-fuzz")
             .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
             .arg("-i")
             .arg(".")
             .arg("-o")
