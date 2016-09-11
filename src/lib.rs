@@ -29,7 +29,6 @@ pub unsafe fn init() {
 #[cfg(test)]
 mod test {
     use std::process::{Command, Stdio};
-    use std::fs;
     use std::thread;
     use std::time;
 
@@ -51,7 +50,6 @@ mod test {
             .expect("Could not run cargo-afl-fuzz");
         thread::sleep(time::Duration::from_secs(7));
         child.kill().unwrap();
-        let mut entries = fs::read_dir(temp_dir_path.join("queue")).expect("Could not read AFL out directory");
-        assert!(entries.next().is_some());
+        assert!(temp_dir_path.join("fuzzer_stats").is_file());
     }
 }
