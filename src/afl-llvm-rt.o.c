@@ -55,6 +55,11 @@ u8* __afl_area_ptr = __afl_area_initial;
 u16 __afl_prev_loc;
 
 
+/* Running in persistent mode? */
+
+static u8 is_persistent;
+
+
 /* SHM setup. */
 
 static void __afl_map_shm(void) {
@@ -93,7 +98,6 @@ static void __afl_start_forkserver(void) {
   s32 child_pid;
 
   u8  child_stopped = 0;
-  u8  use_persistent = !!getenv("AFL_PERSISTENT");
 
   /* Phone home and tell the parent that we're OK. If parent isn't there,
      assume we're not running in forkserver mode and just execute program. */
@@ -149,7 +153,7 @@ static void __afl_start_forkserver(void) {
 
     if (write(FORKSRV_FD + 1, &child_pid, 4) != 4) exit(1);
 
-    if (waitpid(child_pid, &status, use_persistent ? WUNTRACED : 0) < 0)
+    if (waitpid(child_pid, &status, is_persistent ? WUNTRACED : 0) < 0)
       exit(1);
 
     /* In persistent mode, the child stops itself with SIGSTOP to indicate
@@ -167,7 +171,33 @@ static void __afl_start_forkserver(void) {
 }
 
 
-/* This one can be called from user code when AFL_DEFER_FORKSRV is set. */
+/* A simplified persistent mode handler, used as explained in README.llvm. */
+
+int __afl_persistent_loop(unsigned int max_cnt) {
+
+  static u8  first_pass = 1;
+  static u32 cycle_cnt;
+
+  if (first_pass) {
+
+    cycle_cnt  = max_cnt;
+    first_pass = 0;
+    return 1;
+
+  }
+
+  if (is_persistent && --cycle_cnt) {
+
+    raise(SIGSTOP);
+    return 1;
+
+  } else return 0;
+
+}
+
+
+/* This one can be called from user code when deferred forkserver mode
+    is enabled. */
 
 void __afl_manual_init(void) {
 
@@ -188,7 +218,10 @@ void __afl_manual_init(void) {
 
 __attribute__((constructor(0))) void __afl_auto_init(void) {
 
-  if (getenv("AFL_DEFER_FORKSRV")) return;
+  is_persistent = !!getenv(PERSIST_ENV_VAR);
+
+  if (getenv(DEFER_ENV_VAR)) return;
+
   __afl_manual_init();
 
 }
