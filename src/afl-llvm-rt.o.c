@@ -23,12 +23,15 @@
 #include "config.h"
 
 #include <stdlib.h>
-#include <sys/mman.h>
-#include <sys/shm.h>
-#include <sys/wait.h>
+#include <signal.h>
 #include <unistd.h>
 #include <assert.h>
 #include <stdint.h>
+
+#include <sys/mman.h>
+#include <sys/shm.h>
+#include <sys/wait.h>
+#include <sys/types.h>
 
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -99,13 +102,23 @@ static void __afl_start_forkserver(void) {
 
   while (1) {
 
+    u32 was_killed;
     int status;
 
     /* Wait for parent by reading from the pipe. Abort if read fails. */
 
-    if (read(FORKSRV_FD, tmp, 4) != 4) exit(1);
+    if (read(FORKSRV_FD, &was_killed, 4) != 4) exit(1);
 
-    if (!child_stopped || waitpid(child_pid, &status, WNOHANG)) {
+    /* If we stopped the child in persistent mode, but there was a race
+       condition and afl-fuzz already issued SIGKILL, write off the old
+       process. */
+
+    if (child_stopped && was_killed) {
+      child_stopped = 0;
+      if (waitpid(child_pid, &status, 0) < 0) exit(1);
+    }
+
+    if (!child_stopped) {
 
       /* Once woken up, create a clone of our process. */
 
@@ -125,9 +138,7 @@ static void __afl_start_forkserver(void) {
     } else {
 
       /* Special handling for persistent mode: if the child is alive but
-         currently stopped, simply restart it with SIGCONT. Note that the
-         WNOHANG call earlier on is here to catch race conditions where
-         SIGKILL from afl-fuzz arrived right after child's SIGSTOP. */
+         currently stopped, simply restart it with SIGCONT. */
 
       kill(child_pid, SIGCONT);
       child_stopped = 0;
