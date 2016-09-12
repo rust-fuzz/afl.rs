@@ -8,7 +8,7 @@
 
    LLVM integration design comes from Laszlo Szekeres.
 
-   Copyright 2015 Google Inc. All rights reserved.
+   Copyright 2015, 2016 Google Inc. All rights reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 
 #include "config.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
@@ -46,13 +47,19 @@ typedef int32_t s32;
 #  define MAP_ANONYMOUS MAP_ANON
 #endif
 
+#ifndef MIN
+#  define MIN(_a,_b) ((_a) > (_b) ? (_b) : (_a))
+#  define MAX(_a,_b) ((_a) > (_b) ? (_a) : (_b))
+#endif /* !MIN */
+
 /* Globals needed by the injected instrumentation. The __afl_area_initial region
    is used for instrumentation output before __afl_map_shm() has a chance to run.
    It will end up as .comm, so it shouldn't be too wasteful. */
 
 u8  __afl_area_initial[MAP_SIZE];
 u8* __afl_area_ptr = __afl_area_initial;
-u16 __afl_prev_loc;
+
+__thread u32 __afl_prev_loc;
 
 
 /* Running in persistent mode? */
@@ -223,5 +230,80 @@ __attribute__((constructor(0))) void __afl_auto_init(void) {
   if (getenv(DEFER_ENV_VAR)) return;
 
   __afl_manual_init();
+
+}
+
+
+/*********************************************
+ * Support for -fsanitize-coverage=trace-pc. *
+ *********************************************/
+
+static u32 inst_ratio_scaled = MIN(4096, MAP_SIZE);
+
+
+/* The first function is called on every basic block. We use the return address
+   instead of a randomly-generated token (because LLVM is not giving us one).
+   Since ASLR may make addresses vary across runs, we use only the last 12
+   bits, which should be stable within a given binary.
+
+   Since MAP_SIZE is usually larger than 12 bits, we "pad" it by combining
+   left-shifted __afl_prev_loc. This gives us a theoretical maximum of 24
+   bits (but basic blocks might be aligned, which reduces this number
+   somewhat). */
+
+void __sanitizer_cov_trace_pc(void) {
+
+  u32 cur = ((u32)__builtin_return_address(0)) & MIN(4095, MAP_SIZE - 1);
+
+  if (cur > inst_ratio_scaled) return;
+
+  __afl_area_ptr[cur ^ __afl_prev_loc]++;
+
+#if MAP_SIZE_POW2 > 12
+  __afl_prev_loc = cur << (MAP_SIZE_POW2 - 12);
+#else
+  __afl_prev_loc = cur >> 1;
+#endif /* ^MAP_SIZE_POW2 > 12 */
+
+}
+
+
+/* Same deal, but for indirect calls. */
+
+void __sanitizer_cov_trace_pc_indir(void* dummy) {
+
+  u32 cur = ((u32)__builtin_return_address(0)) & MIN(4095, MAP_SIZE - 1);
+
+  if (cur > inst_ratio_scaled) return;
+
+  __afl_area_ptr[cur ^ __afl_prev_loc]++;
+
+#if MAP_SIZE_POW2 > 12
+  __afl_prev_loc = cur << (MAP_SIZE_POW2 - 12);
+#else
+  __afl_prev_loc = cur >> 1;
+#endif /* ^MAP_SIZE_POW2 > 12 */
+
+}
+
+
+/* Init callback. Unfortunately, LLVM does not support compile-time
+   instrumentation density scaling, at least not just yet - so the runtime
+   inst_ratio stuff slows us down :-( */
+
+void __sanitizer_cov_module_init(void) {
+
+  u8* x = getenv("AFL_INST_RATIO");
+
+  if (!x) return;
+
+  inst_ratio_scaled = atoi(x);
+
+  if (!inst_ratio_scaled || inst_ratio_scaled > 100) {
+    fprintf(stderr, "[-] ERROR: Invalid AFL_INST_RATIO (must be 1-100).\n");
+    abort();
+  }
+
+  inst_ratio_scaled = inst_ratio_scaled * MIN(4096, MAP_SIZE) / 100;
 
 }
