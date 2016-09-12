@@ -221,11 +221,16 @@ void __afl_manual_init(void) {
 }
 
 
+static void __afl_trace_pc_init(void);
+
+
 /* Proper initialization routine. */
 
 __attribute__((constructor(0))) void __afl_auto_init(void) {
 
   is_persistent = !!getenv(PERSIST_ENV_VAR);
+
+  __afl_trace_pc_init();
 
   if (getenv(DEFER_ENV_VAR)) return;
 
@@ -267,29 +272,11 @@ void __sanitizer_cov_trace_pc(void) {
 }
 
 
-/* Same deal, but for indirect calls. */
-
-void __sanitizer_cov_trace_pc_indir(void* dummy) {
-
-  u32 cur = ((u32)__builtin_return_address(0)) & MIN(4095, MAP_SIZE - 1);
-
-  if (cur > inst_ratio_scaled) return;
-
-  __afl_area_ptr[cur ^ __afl_prev_loc]++;
-
-#if MAP_SIZE_POW2 > 12
-  __afl_prev_loc = cur << (MAP_SIZE_POW2 - 12);
-#else
-  __afl_prev_loc = cur >> 1;
-#endif /* ^MAP_SIZE_POW2 > 12 */
-
-}
-
-
 /* Init callback. Unfortunately, LLVM does not support compile-time
-   instrumentation density scaling, at least not just yet. */
+   instrumentation density scaling, at least not just yet. This means
+   taking some performance hit by checking inst_ratio_scaled at runtime. */
 
-void __sanitizer_cov_module_init(void) {
+static void __afl_trace_pc_init(void) {
 
   u8* x = getenv("AFL_INST_RATIO");
 
@@ -305,3 +292,9 @@ void __sanitizer_cov_module_init(void) {
   inst_ratio_scaled = inst_ratio_scaled * MIN(4096, MAP_SIZE) / 100;
 
 }
+
+
+/* Work around a short-lived bug in LLVM with -fsanitize-coverage=trace-pc. */
+
+void __sanitizer_cov_module_init(void) __attribute__((weak));
+void __sanitizer_cov_module_init(void) { }
