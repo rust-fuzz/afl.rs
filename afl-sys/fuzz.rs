@@ -4,6 +4,7 @@ use libc;
 use std::env;
 use std::ffi::CString;
 use std::path::PathBuf;
+use std::ptr;
 
 extern "C" {
     // `main` function with afl-fuzz.c
@@ -13,15 +14,16 @@ extern "C" {
 
 fn call_afl_fuzz_main(args: Vec<CString>) -> Result<(), libc::c_int> {
     assert!(!args.is_empty());
-
     // `main` functions in C expect an array of pointers to the arguments
-    let args_ptrs = args.iter()
+    let mut args_ptrs = args.iter()
                         .map(|arg| arg.as_ptr())
                         .collect::<Vec<_>>();
-
+    let argc = args_ptrs.len() as libc::c_int;
+    // argv is a null-terminated array
+    // http://stackoverflow.com/a/11020198
+    args_ptrs.push(ptr::null());
     let ret = unsafe {
-        afl_fuzz_main(args_ptrs.len() as libc::c_int,
-                      args_ptrs.as_ptr())
+        afl_fuzz_main(argc, args_ptrs.as_ptr())
     };
 
     match ret {
