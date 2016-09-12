@@ -10,3 +10,6 @@
 #define MAP_SIZE            (1 << MAP_SIZE_POW2)
 
 #define FORKSRV_FD          198
+
+#define DEFER_ENV_VAR       "__AFL_DEFER_FORKSRV"
+#define PERSIST_ENV_VAR     "__AFL_PERSISTENT"
