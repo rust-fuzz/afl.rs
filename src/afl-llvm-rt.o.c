@@ -234,22 +234,21 @@ __attribute__((constructor(0))) void __afl_auto_init(void) {
 }
 
 
-/*********************************************
- * Support for -fsanitize-coverage=trace-pc. *
- *********************************************/
+/* The following stuff deals with support for -fsanitize-coverage=bb,trace-pc.
+   It remains non-operational in the traditional, plugin-backed LLVM mode.
+   For more info about 'trace-pc', see README.llvm.
 
-static u32 inst_ratio_scaled = MIN(4096, MAP_SIZE);
-
-
-/* The first function is called on every basic block. We use the return address
-   instead of a randomly-generated token (because LLVM is not giving us one).
-   Since ASLR may make addresses vary across runs, we use only the last 12
-   bits, which should be stable within a given binary.
+   The first function (__sanitizer_cov_trace_pc) is called back on every
+   basic block. Since LLVM is not giving us any stable IDs for the blocks,
+   we use 12 least significant bits of the return address (which should be
+   stable even with ASLR; more significant bits may vary across runs).
 
    Since MAP_SIZE is usually larger than 12 bits, we "pad" it by combining
    left-shifted __afl_prev_loc. This gives us a theoretical maximum of 24
-   bits (but basic blocks might be aligned, which reduces this number
-   somewhat). */
+   bits, although instruction alignment likely reduces this somewhat. */
+
+
+static u32 inst_ratio_scaled = MIN(4096, MAP_SIZE);
 
 void __sanitizer_cov_trace_pc(void) {
 
@@ -288,8 +287,7 @@ void __sanitizer_cov_trace_pc_indir(void* dummy) {
 
 
 /* Init callback. Unfortunately, LLVM does not support compile-time
-   instrumentation density scaling, at least not just yet - so the runtime
-   inst_ratio stuff slows us down :-( */
+   instrumentation density scaling, at least not just yet. */
 
 void __sanitizer_cov_module_init(void) {
 
