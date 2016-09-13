@@ -1,7 +1,5 @@
 #!/bin/sh -e
 
-export LLVM_CONFIG=$(which llvm-config-3.8)
-
 cd afl-plugin
 cargo build --verbose
 cd ..
