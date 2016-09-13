@@ -12,7 +12,6 @@ else
   exit 1
 fi
 
-export LLVM_CONFIG=$(which llvm-config-3.8)
 SL=/System/Library
 PL=com.apple.ReportCrash
 launchctl unload -w ${SL}/LaunchAgents/${PL}.plist
