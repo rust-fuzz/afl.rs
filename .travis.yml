@@ -15,6 +15,6 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sh ./ci/install-osx.sh; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then echo core | sudo tee /proc/sys/kernel/core_pattern; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker build -t afl.rs -f ci/Dockerfile .; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then RUN="docker run -t afl.rs -e CXX=$CXX"; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then RUN="docker run -e \"CXX=$CXX\" -t afl.rs"; fi
 script:
   - $RUN ./ci/run.sh
