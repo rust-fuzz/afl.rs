@@ -16,5 +16,3 @@ RUN curl -sSf https://static.rust-lang.org/rustup.sh | sh -s -- --channel=nightl
 WORKDIR /opt/afl.rs
 
 ADD . .
-
-ENV CXX /usr/bin/g++-4.9
