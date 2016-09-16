@@ -14,10 +14,11 @@ extern crate afl;
 
 use std::io::{self, Read};
 use std::thread;
+use std::time::Duration;
 
 fn main() {
     println!("An eternity in...");
-    thread::sleep_ms(500);
+    thread::sleep(Duration::from_secs(1));
 
     unsafe {
         afl::init();
