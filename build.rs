@@ -13,7 +13,7 @@ use std::env;
 fn main() {
     gcc::Config::new()
         .file("src/afl-llvm-rt.o.c")
-        .flag("-O2")
+        .flag("-O3")
         .flag("-w")
         .flag("-fPIC")
         .compile("libafl-llvm-rt.a");
