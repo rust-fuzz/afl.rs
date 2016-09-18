@@ -5,21 +5,22 @@ strcmp() / memcmp() token capture library
   (See ../docs/README for the general instruction manual.)
 
 This Linux-only companion library allows you to instrument strcmp(), memcmp(),
-and related functions to automatically extract syntax tokens that happen to be
-scanned for using these functions. The resulting list may be then passed as a
-dictionary to afl-fuzz (the -x option) to improve coverage on subsequent 
+and related functions to automatically extract syntax tokens passed to any of
+these libcalls. The resulting list of tokens may be then given as a starting
+dictionary to afl-fuzz (the -x option) to improve coverage on subsequent
 fuzzing runs.
 
 This may help improving coverage in some targets, and do precisely nothing in
-others. In some cases, it may even make things worse if the library picks up
-syntax tokens that are not used to process the input data, but that showed up
-as a result of parsing a config file or other unrelated stuff; a dictionary
-with junk tokens will simply waste a ton of CPU time. In other words, use this
-with care.
+others. In some cases, it may even make things worse: if libtokencap picks up
+syntax tokens that are not used to process the input data, but that are a part
+of - say - parsing a config file... well, you're going to end up wasting a lot
+of CPU time on trying them out in the input stream. In other words, use this
+feature with care. Manually screening the resulting dictionary is almost
+always a necessity.
 
-The library prints tokens, without any deduping, by appending them to a file
-specified via AFL_TOKEN_FILE. If the variable is not set, the tool uses stderr
-(which is probably not what you want).
+As for the actual operation: the library stores tokens, without any deduping,
+by appending them to a file specified via AFL_TOKEN_FILE. If the variable is not
+set, the tool uses stderr (which is probably not what you want).
 
 Similarly to afl-tmin, the library is not "proprietary" and can be used with
 other fuzzers or testing tools without the need for any code tweaks. It does not
@@ -36,7 +37,7 @@ when using afl-gcc. This setting specifically adds the following flags:
 The next step is simply loading this library via LD_PRELOAD. The optimal usage
 pattern is to allow afl-fuzz to fuzz normally for a while and build up a corpus,
 and then fire off the target binary, with libtokencap.so loaded, on every file
-found by AFL in that earlier run. Here's the basic idea:
+found by AFL in that earlier run. This demonstrates the basic principle:
 
   export AFL_TOKEN_FILE=$PWD/temp_output.txt
 
@@ -54,4 +55,6 @@ the whole thing isn't dynamically linked, and LD_PRELOAD is having no effect.
 PS. The library is Linux-only because there is probably no particularly portable
 and non-invasive way to distinguish between read-only and read-write memory
 mappings. The __tokencap_load_mappings() function is the only thing that would
-need to be changed for other OSes.
+need to be changed for other OSes. Porting to platforms with /proc/<pid>/maps
+(e.g., FreeBSD) should be trivial.
+

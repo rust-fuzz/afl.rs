@@ -13,8 +13,83 @@ Want to stay in the loop on major new features? Join our mailing list by
 sending a mail to <afl-users+subscribe@googlegroups.com>.
 
 Not sure if you should upgrade? The lowest currently recommended version
-is 2.21b. If you're stuck on an earlier release, it's strongly advisable
+is 2.31b. If you're stuck on an earlier release, it's strongly advisable
 to get on with the times.
+
+--------------
+Version 2.34b:
+--------------
+
+  - Added a note about afl-tmin to technical_details.txt.
+
+  - Added support for AFL_NO_UI, as suggested by Leo Barnes.
+
+--------------
+Version 2.33b:
+--------------
+
+  - Added code to strip -Wl,-z,defs and -Wl,--no-undefined for afl-clang-fast,
+    since they interfere with -shared. Spotted and diagnosed by Toby Hutton.
+
+  - Added some fuzzing tips for Android.
+
+--------------
+Version 2.32b:
+--------------
+
+  - Added a check for AFL_HARDEN combined with AFL_USE_*SAN. Suggested by
+    Hanno Boeck.
+
+  - Made several other cosmetic adjustments to cycle timing in the wake of the
+    big tweak made in 2.31b.
+
+--------------
+Version 2.31b:
+--------------
+
+  - Changed havoc cycle counts for a marked performance boost, especially
+    with -S / -d. See the discussion of FidgetyAFL in:
+
+    https://groups.google.com/forum/#!topic/afl-users/fOPeb62FZUg
+
+    While this does not implement the approach proposed by the authors of
+    the CCS paper, the solution is a result of digging into that research;
+    more improvements may follow as I do more experiments and get more
+    definitive data.
+
+--------------
+Version 2.30b:
+--------------
+
+  - Made minor improvements to persistent mode to avoid the remote
+    possibility of "no instrumentation detected" issues with very low
+    instrumentation densities.
+
+  - Fixed a minor glitch with a leftover process in persistent mode.
+    Reported by Jakub Wilk and Daniel Stender.
+
+  - Made persistent mode bitmaps a bit more consistent and adjusted the way
+    this is shown in the UI, especially in persistent mode.
+
+--------------
+Version 2.29b:
+--------------
+
+  - Made a minor #include fix to llvm_mode. Suggested by Jonathan Metzman.
+
+  - Made cosmetic updates to the docs.
+
+--------------
+Version 2.28b:
+--------------
+
+  - Added "life pro tips" to docs/.
+
+  - Moved testcases/_extras/ to dictionaries/ for visibility.
+
+  - Made minor improvements to install scripts.
+
+  - Added an important safety tip.
 
 --------------
 Version 2.27b:

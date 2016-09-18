@@ -67,7 +67,9 @@ $ ./afl-fuzz -i testcase_dir -o sync_dir -M masterC:3/3 [...]
 
 ...where the first value after ':' is the sequential ID of a particular master
 instance (starting at 1), and the second value is the total number of fuzzers to
-distribute the deterministic fuzzing across.
+distribute the deterministic fuzzing across. Note that if you boot up fewer
+fuzzers than indicated by the second number passed to -M, you may end up with
+poor coverage.
 
 You can also monitor the progress of your jobs from the command line with the
 provided afl-whatsup tool. When the instances are no longer finding new paths,

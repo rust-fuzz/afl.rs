@@ -297,10 +297,10 @@ number of inputs that produce seemingly variable behavior in the tested binary.
 
 That last bit is actually fairly interesting: it measures the consistency of
 observed traces. If a program always behaves the same for the same input data,
-it will earn a score of 100%. When the value is over 90%, the fuzzing process
-is still unlikely to be negatively affected. If it gets much lower, you may
-be in trouble, since AFL will have difficulty discerning between meaningful
-and "phantom" effects of tweaking the input file.
+it will earn a score of 100%. When the value is lower but still shown in purple,
+the fuzzing process is unlikely to be negatively affected. If it goes into red,
+you may be in trouble, since AFL will have difficulty discerning between
+meaningful and "phantom" effects of tweaking the input file.
 
 Now, most targets will just get a 100% score, but when you see lower figures,
 there are several things to look at:

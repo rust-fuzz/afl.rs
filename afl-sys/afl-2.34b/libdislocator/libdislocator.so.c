@@ -185,7 +185,7 @@ void* malloc(size_t len) {
 
 
 /* The wrapper for free(). This simply marks the entire region as PROT_NONE.
-   If the region is already freed, the code segfault during the attempt to
+   If the region is already freed, the code will segfault during the attempt to
    read the canary. Not very graceful, but works, right? */
 
 void free(void* ptr) {

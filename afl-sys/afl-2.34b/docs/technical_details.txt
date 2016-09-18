@@ -85,8 +85,8 @@ of dword- or qword-wide instructions and a simple loop.
 When a mutated input produces an execution trace containing new tuples, the
 corresponding input file is preserved and routed for additional processing
 later on (see section #3). Inputs that do not trigger new local-scale state
-transitions in the execution trace are discarded, even if their overall
-instrumentation output pattern is unique.
+transitions in the execution trace (i.e., produce no new tuples) are discarded,
+even if their overall control flow sequence is unique.
 
 This approach allows for a very fine-grained and long-term exploration of
 program state while not having to perform any computationally intensive and
@@ -101,7 +101,7 @@ new tuples (CA, AE):
   #2: A -> B -> C -> A -> E
 
 At the same time, with #2 processed, the following pattern will not be seen
-as unique, despite having a markedly different execution path:
+as unique, despite having a markedly different overall execution path:
 
   #3: A -> B -> C -> A -> B -> C -> A -> B -> C -> D -> E
 
@@ -142,9 +142,9 @@ Mutated test cases that produced new state transitions within the program are
 added to the input queue and used as a starting point for future rounds of
 fuzzing. They supplement, but do not automatically replace, existing finds.
 
-This approach allows the tool to progressively explore various disjoint and
-possibly mutually incompatible features of the underlying data format, as
-shown in this image:
+In contrast to more greedy genetic algorithms, this approach allows the tool
+to progressively explore various disjoint and possibly mutually incompatible
+features of the underlying data format, as shown in this image:
 
   http://lcamtuf.coredump.cx/afl/afl_gzip.png
 
@@ -201,10 +201,10 @@ the sessions were seeded with a valid unified diff:
       Edge coverage | 1,259   | 1,734   | 1.72     | 0
           AFL model | 1,452   | 2,040   | 3.16     | 1
 
-Some of the earlier work on evolutionary fuzzing suggested maintaining just a
-single test case and selecting for mutations that improve coverage. At least
-in the tests described above, this "greedy" method appeared to offer no
-substantial benefits over blind fuzzing.
+At noted earlier on, some of the prior work on genetic fuzzing relied on
+maintaining a single test case and evolving it to maximize coverage. At least
+in the tests described above, this "greedy" approach appears to confer no
+substantial benefits over blind fuzzing strategies.
 
 4) Culling the corpus
 ---------------------
@@ -263,9 +263,9 @@ files make the target binary slower, and because they reduce the likelihood
 that a mutation would touch important format control structures, rather than
 redundant data blocks. This is discussed in more detail in perf_tips.txt.
 
-The possibility of a bad starting corpus provided by the user aside, some
-types of mutations can have the effect of iteratively increasing the size of
-the generated files, so it is important to counter this trend.
+The possibility that the user will provide a low-quality starting corpus aside,
+some types of mutations can have the effect of iteratively increasing the size
+of the generated files, so it is important to counter this trend.
 
 Luckily, the instrumentation feedback provides a simple way to automatically
 trim down input files while ensuring that the changes made to the files have no
@@ -275,11 +275,42 @@ The built-in trimmer in afl-fuzz attempts to sequentially remove blocks of data
 with variable length and stepover; any deletion that doesn't affect the checksum
 of the trace map is committed to disk. The trimmer is not designed to be
 particularly thorough; instead, it tries to strike a balance between precision
-and the number of execve() calls spent on the process. The average per-file
-gains are around 5-20%.
+and the number of execve() calls spent on the process, selecting the block size
+and stepover to match. The average per-file gains are around 5-20%.
 
 The standalone afl-tmin tool uses a more exhaustive, iterative algorithm, and
-also attempts to perform alphabet normalization on the trimmed files.
+also attempts to perform alphabet normalization on the trimmed files. The
+operation of afl-tmin is as follows.
+
+First, the tool automatically selects the operating mode. If the initial input
+crashes the target binary, afl-tmin will run in non-instrumented mode, simply
+keeping any tweaks that produce a simpler file but still crash the target. If
+the target is non-crashing, the tool uses an instrumented mode and keeps only
+the tweaks that produce exactly the same execution path.
+
+The actual minimization algorithm is:
+
+  1) Attempt to zero large blocks of data with large stepovers. Empirically,
+     this is shown to reduce the number of execs by preempting finer-grained
+     efforts later on.
+
+  2) Perform a block deletion pass with decreasing block sizes and stepovers,
+     binary-search-style. 
+
+  3) Perform alphabet normalization by counting unique characters and trying
+     to bulk-replace each with a zero value.
+
+  4) As a last result, perform byte-by-byte normalization on non-zero bytes.
+
+Instead of zeroing with a 0x00 byte, afl-tmin uses the ASCII digit '0'. This
+is done because such a modification is much less likely to interfere with
+text parsing, so it is more likely to result in successful minimization of
+text files.
+
+The algorithm used here is less involved than some other test case
+minimization approaches proposed in academic work, but requires far fewer
+executions and tends to produce comparable results in most real-world
+applications.
 
 6) Fuzzing strategies
 ---------------------
@@ -302,11 +333,16 @@ strategies include:
 
   - Sequential insertion of known interesting integers (0, 1, INT_MAX, etc),
 
-The non-deterministic steps include stacked bit flips, insertions, deletions,
-arithmetics, and splicing of different test cases.
+The purpose of opening with deterministic steps is related to their tendency to
+produce compact test cases and small diffs between the non-crashing and crashing
+inputs.
 
-Their relative yields and execve() costs have been investigated and are
-discussed in the aforementioned blog post.
+With deterministic fuzzing out of the way, the non-deterministic steps include
+stacked bit flips, insertions, deletions, arithmetics, and splicing of different
+test cases.
+
+The relative yields and execve() costs of all these strategies have been
+investigated and are discussed in the aforementioned blog post.
 
 For the reasons discussed in historical_notes.txt (chiefly, performance,
 simplicity, and reliability), AFL generally does not try to reason about the
@@ -315,13 +351,14 @@ are nominally blind, and are guided only by the evolutionary design of the
 input queue.
 
 That said, there is one (trivial) exception to this rule: when a new queue
-entry goes through the initial set of deterministic fuzzing steps, and some
-regions in the file are observed to have no effect on the checksum of the
+entry goes through the initial set of deterministic fuzzing steps, and tweaks to
+some regions in the file are observed to have no effect on the checksum of the
 execution path, they may be excluded from the remaining phases of
-deterministic fuzzing - and proceed straight to random tweaks. Especially for
-verbose, human-readable data formats, this can reduce the number of execs by
-10-40% or so without an appreciable drop in coverage. In extreme cases, such
-as normally block-aligned tar archives, the gains can be as high as 90%.
+deterministic fuzzing - and the fuzzer may proceed straight to random tweaks.
+Especially for verbose, human-readable data formats, this can reduce the number
+of execs by 10-40% or so without an appreciable drop in coverage. In extreme
+cases, such as normally block-aligned tar archives, the gains can be as high as
+90%.
 
 Because the underlying "effector maps" are local every queue entry and remain
 in force only during deterministic stages that do not alter the size or the
@@ -352,6 +389,14 @@ The dictionaries have been shown to enable the fuzzer to rapidly reconstruct
 the grammar of highly verbose and complex languages such as JavaScript, SQL,
 or XML; several examples of generated SQL statements are given in the blog
 post mentioned above.
+
+Interestingly, the AFL instrumentation also allows the fuzzer to automatically
+isolate syntax tokens already present in an input file. It can do so by looking
+for run of bytes that, when flipped, produce a consistent change to the
+program's execution path; this is suggestive of an underlying atomic comparison
+to a predefined value baked into the code. The fuzzer relies on this signal
+to build compact "auto dictionaries" that are then used in conjunction with
+other fuzzing strategies.
 
 8) De-duping crashes
 --------------------
@@ -416,22 +461,25 @@ With fast targets, the fork server can offer considerable performance gains,
 usually between 1.5x and 2x. It is also possible to:
 
   - Use the fork server in manual ("deferred") mode, skipping over larger,
-    user-selected chunks of initialization code. With some targets, this can
+    user-selected chunks of initialization code. It requires very modest
+    code changes to the targeted program, and With some targets, can
     produce 10x+ performance gains.
 
   - Enable "persistent" mode, where a single process is used to try out
     multiple inputs, greatly limiting the overhead of repetitive fork()
-    calls. As with the previous mode, this requires custom modifications,
+    calls. This generally requires some code changes to the targeted program,
     but can improve the performance of fast targets by a factor of 5 or more
-    - approximating the benefits of in-process fuzzing jobs.
+    - approximating the benefits of in-process fuzzing jobs while still
+    maintaining very robust isolation between the fuzzer process and the
+    targeted binary.
 
 11) Parallelization
 -------------------
 
 The parallelization mechanism relies on periodically examining the queues
 produced by independently-running instances on other CPU cores or on remote
-machines, and then selectively pulling in the test cases that produce behaviors
-not yet seen by the fuzzer at hand.
+machines, and then selectively pulling in the test cases that, when tried
+out locally, produce behaviors not yet seen by the fuzzer at hand.
 
 This allows for extreme flexibility in fuzzer setup, including running synced
 instances against different parsers of a common data format, often with

@@ -52,6 +52,9 @@ tools make fairly broad use of environmental variables:
     Setting AFL_INST_RATIO to 0 is a valid choice. This will instrument only
     the transitions between function entry points, but not individual branches.
 
+  - AFL_NO_BUILTIN causes the compiler to generate code suitable for use with
+    libtokencap.so (but perhaps running a bit slower than without the flag).
+
   - TMPDIR is used by afl-as for temporary files; if this variable is not set,
     the tool defaults to /tmp.
 
@@ -142,6 +145,10 @@ checks or alter some of the more exotic semantics of the tool:
     without disrupting the afl-fuzz process itself. This is useful, among other
     things, for bootstrapping libdislocator.so.
 
+  - Setting AFL_NO_UI inhibits the UI altogether, and just periodically prints
+    some basic stats. This behavior is also automatically triggered when the
+    output from afl-fuzz is redirected to a file or to a pipe.
+
   - If you are Jakub, you may need AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES.
     Others need not apply.
 
@@ -200,7 +207,13 @@ The library honors three environmental variables:
   - AFL_LD_VERBOSE causes the library to output some diagnostic messages
     that may be useful for pinpointing the cause of any observed issues.
 
-8) Third-party variables set by afl-fuzz & other tools
+8) Settings for libtokencap.so
+------------------------------
+
+This library accepts AFL_TOKEN_FILE to indicate the location to which the
+discovered tokens should be written.
+
+9) Third-party variables set by afl-fuzz & other tools
 ------------------------------------------------------
 
 Several variables are not directly interpreted by afl-fuzz, but are set to
