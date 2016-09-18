@@ -190,8 +190,9 @@ include compilers and video decoders.
 Tips for optimizing fuzzing performance are discussed in perf_tips.txt.
 
 Note that afl-fuzz starts by performing an array of deterministic fuzzing
-steps, which can take several days. If you want quick & dirty results right
-away, akin to zzuf or honggfuzz, add the -d option to the command line.
+steps, which can take several days, but tend to produce neat test cases. If you
+want quick & dirty results right away - akin to zzuf and other traditional
+fuzzers - add the -d option to the command line.
 
 7) Interpreting output
 ----------------------
@@ -277,8 +278,10 @@ magic headers, or other special tokens associated with the targeted data type
   http://lcamtuf.blogspot.com/2015/01/afl-fuzz-making-up-grammar-with.html
 
 To use this feature, you first need to create a dictionary in one of the two
-formats discussed in testcases/README.testcases; and then point the fuzzer to
-it via the -x option in the command line.
+formats discussed in dictionaries/README.dictionaries; and then point the fuzzer
+to it via the -x option in the command line.
+
+(Several common dictionaries are already provided in that subdirectory, too.)
 
 There is no way to provide more structured descriptions of the underlying
 syntax, but the fuzzer will likely figure out some of this based on the
@@ -429,6 +432,9 @@ Here are some of the most important caveats for AFL:
   - AFL doesn't output human-readable coverage data. If you want to monitor
     coverage, use afl-cov from Michael Rash: https://github.com/mrash/afl-cov
 
+  - Occasionally, sentient machines rise against their creators. If this
+    happens to you, please consult http://lcamtuf.coredump.cx/prep/.
+
 Beyond this, see INSTALL for platform-specific tips.
 
 14) Special thanks
@@ -470,11 +476,13 @@ bug reports, or patches from:
   Austin Seipp                          Daniel Komaromy
   Daniel Binderman                      Jonathan Metzman
   Vegard Nossum                         Jan Kneschke
-  Kurt Roeckx
+  Kurt Roeckx                           Marcel Bohme
+  Van-Thuan Pham                        Abhik Roychoudhury
+  Joshua J. Drake                       Toby Hutton
 
 Thank you!
 
-14) Contact
+15) Contact
 -----------
 
 Questions? Concerns? Bug reports? The author can be usually reached at

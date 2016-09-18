@@ -131,6 +131,7 @@ install: all
 	ln -sf afl-as $${DESTDIR}$(HELPER_PATH)/as
 	install -m 644 docs/README docs/ChangeLog docs/*.txt $${DESTDIR}$(DOC_PATH)
 	cp -r testcases/ $${DESTDIR}$(MISC_PATH)
+	cp -r dictionaries/ $${DESTDIR}$(MISC_PATH)
 
 publish: clean
 	test "`basename $$PWD`" = "afl" || exit 1

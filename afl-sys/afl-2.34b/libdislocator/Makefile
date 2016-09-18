@@ -1,6 +1,6 @@
 #
-# american fuzzy lop - libtokencap
-# --------------------------------
+# american fuzzy lop - libdislocator
+# ----------------------------------
 #
 # Written by Michal Zalewski <lcamtuf@google.com>
 #
@@ -21,17 +21,18 @@ VERSION     = $(shell grep '^\#define VERSION ' ../config.h | cut -d '"' -f2)
 CFLAGS      ?= -O3 -funroll-loops
 CFLAGS      += -Wall -D_FORTIFY_SOURCE=2 -g -Wno-pointer-sign
 
-all: libtokencap.so
+all: libdislocator.so
 
-libtokencap.so: libtokencap.so.c ../config.h
+libdislocator.so: libdislocator.so.c ../config.h
 	$(CC) $(CFLAGS) -shared -fPIC $< -o $@ $(LDFLAGS)
 
 .NOTPARALLEL: clean
 
 clean:
 	rm -f *.o *.so *~ a.out core core.[1-9][0-9]*
-	rm -f libtokencap.so
+	rm -f libdislocator.so
 
 install: all
-	install -m 755 libtokencap.so $${DESTDIR}$(HELPER_PATH)
+	install -m 755 libdislocator.so $${DESTDIR}$(HELPER_PATH)
+	install -m 644 README.dislocator $${DESTDIR}$(HELPER_PATH)
 

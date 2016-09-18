@@ -13,8 +13,9 @@ use std::env;
 fn main() {
     gcc::Config::new()
         .file("src/afl-llvm-rt.o.c")
-        .flag("-O2").flag("-fPIC")
-        .flag("-Wall") // can't use -Werror due to constructor(0)
+        .opt_level(3)
+        .flag("-w")
+        .flag("-fPIC")
         .compile("libafl-llvm-rt.a");
 
     println!("cargo:rustc-link-search=native={}",

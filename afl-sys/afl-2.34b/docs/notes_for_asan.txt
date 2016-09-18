@@ -31,11 +31,6 @@ Note that ASAN is incompatible with -static, so be mindful of that.
 
 (You can also use AFL_USE_MSAN=1 to enable MSAN instead.)
 
-Note that both ASAN and MSAN are incompatible with -D_FORTIFY_SOURCE (enabled
-by default in some distros) and with AFL_HARDEN. Attempting to combine these
-settings can lead to false negatives in ASAN and false positives in MSAN. This
-is not AFL-specific.
-
 There is also the option of generating a corpus using a non-ASAN binary, and
 then feeding it to an ASAN-instrumented one to check for bugs. This is faster,
 and can give you somewhat comparable results. You can also try using

@@ -1,5 +1,7 @@
 #!/bin/sh -e
 
+export AFL_NO_UI=1
+
 cd afl-plugin
 cargo build --verbose
 cd ..

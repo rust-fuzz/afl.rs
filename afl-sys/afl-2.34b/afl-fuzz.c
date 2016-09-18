@@ -116,7 +116,8 @@ EXP_ST u8  skip_deterministic,        /* Skip deterministic stages?       */
            bitmap_changed = 1,        /* Time to update bitmap?           */
            qemu_mode,                 /* Running in QEMU mode?            */
            skip_requested,            /* Skip request, via SIGUSR1        */
-           run_over10m;               /* Run time over 10 minutes?        */
+           run_over10m,               /* Run time over 10 minutes?        */
+           persistent_mode;           /* Running in persistent mode?      */
 
 static s32 out_fd,                    /* Persistent fd for out_file       */
            dev_urandom_fd = -1,       /* Persistent fd for /dev/urandom   */
@@ -396,7 +397,7 @@ static void bind_to_free_cpu(void) {
   u8 cpu_used[4096] = { 0 };
   u32 i;
 
-  if (!cpu_core_count) return;
+  if (cpu_core_count < 2) return;
 
   if (getenv("AFL_NO_AFFINITY")) {
 
@@ -2401,7 +2402,8 @@ static u8 run_target(char** argv) {
 
   }
 
-  child_pid = 0;
+  if (!WIFSTOPPED(status)) child_pid = 0;
+
   it.it_value.tv_sec = 0;
   it.it_value.tv_usec = 0;
 
@@ -3904,7 +3906,7 @@ static void show_stats(void) {
 
   /* Honor AFL_EXIT_WHEN_DONE and AFL_BENCH_UNTIL_CRASH. */
 
-  if (!dumb_mode && cycles_wo_finds > 20 && !pending_not_fuzzed &&
+  if (!dumb_mode && cycles_wo_finds > 100 && !pending_not_fuzzed &&
       getenv("AFL_EXIT_WHEN_DONE")) stop_soon = 2;
 
   if (total_crashes && getenv("AFL_BENCH_UNTIL_CRASH")) stop_soon = 2;
@@ -3978,10 +3980,10 @@ static void show_stats(void) {
     if (queue_cycle == 1) strcpy(tmp, cMGN); else
 
     /* Subsequent cycles, but we're still making finds. */
-    if (cycles_wo_finds < 3) strcpy(tmp, cYEL); else
+    if (cycles_wo_finds < 25) strcpy(tmp, cYEL); else
 
     /* No finds for a long time and no test cases to try. */
-    if (cycles_wo_finds > 20 && !pending_not_fuzzed) strcpy(tmp, cLGN);
+    if (cycles_wo_finds > 100 && !pending_not_fuzzed) strcpy(tmp, cLGN);
 
     /* Default: cautiously OK to stop? */
     else strcpy(tmp, cLBL);
@@ -4199,8 +4201,9 @@ static void show_stats(void) {
   if (t_bytes) sprintf(tmp, "%0.02f%%", stab_ratio);
     else strcpy(tmp, "n/a");
 
-  SAYF(" stability : %s%-10s " bSTG bV "\n", stab_ratio < 90 ? cLRD :
-          (queued_variable ? cMGN : cRST), tmp);
+  SAYF(" stability : %s%-10s " bSTG bV "\n", (stab_ratio < 85 && var_byte_count > 40) 
+       ? cLRD : ((queued_variable && (!persistent_mode || var_byte_count > 20))
+       ? cMGN : cRST), tmp);
 
   if (!bytes_trim_out) {
 
@@ -4666,9 +4669,9 @@ static u32 calculate_score(struct queue_entry* q) {
 
     case 0 ... 3:   break;
     case 4 ... 7:   perf_score *= 2; break;
-    case 8 ... 13:  perf_score *= 4; break;
-    case 14 ... 25: perf_score *= 6; break;
-    default:        perf_score *= 8;
+    case 8 ... 13:  perf_score *= 3; break;
+    case 14 ... 25: perf_score *= 4; break;
+    default:        perf_score *= 5;
 
   }
 
@@ -4878,7 +4881,7 @@ static u8 fuzz_one(char** argv) {
   u64 havoc_queued,  orig_hit_cnt, new_hit_cnt;
   u32 splice_cycle = 0, perf_score = 100, orig_perf, prev_cksum, eff_cnt = 1;
 
-  u8  ret_val = 1;
+  u8  ret_val = 1, doing_det = 0;
 
   u8  a_collect[MAX_AUTO_EXTRA];
   u32 a_len = 0;
@@ -4921,8 +4924,11 @@ static u8 fuzz_one(char** argv) {
 
 #endif /* ^IGNORE_FINDS */
 
-  if (not_on_tty)
-    ACTF("Fuzzing test case #%u (%u total)...", current_entry, queued_paths);
+  if (not_on_tty) {
+    ACTF("Fuzzing test case #%u (%u total, %llu uniq crashes found)...",
+         current_entry, queued_paths, unique_crashes);
+    fflush(stdout);
+  }
 
   /* Map the test case into memory. */
 
@@ -5016,6 +5022,8 @@ static u8 fuzz_one(char** argv) {
 
   if (master_max && (queue_cur->exec_cksum % master_max) != master_id - 1)
     goto havoc_stage;
+
+  doing_det = 1;
 
   /*********************************************
    * SIMPLE BITFLIP (+dictionary construction) *
@@ -5122,8 +5130,6 @@ static u8 fuzz_one(char** argv) {
 
   stage_finds[STAGE_FLIP1]  += new_hit_cnt - orig_hit_cnt;
   stage_cycles[STAGE_FLIP1] += stage_max;
-
-  if (queue_cur->passed_det) goto havoc_stage;
 
   /* Two walking bits. */
 
@@ -5987,7 +5993,8 @@ havoc_stage:
 
     stage_name  = "havoc";
     stage_short = "havoc";
-    stage_max   = HAVOC_CYCLES * perf_score / havoc_div / 100;
+    stage_max   = (doing_det ? HAVOC_CYCLES_INIT : HAVOC_CYCLES) *
+                  perf_score / havoc_div / 100;
 
   } else {
 
@@ -6858,6 +6865,7 @@ EXP_ST void check_binary(u8* fname) {
 
     OKF(cPIN "Persistent mode binary detected.");
     setenv(PERSIST_ENV_VAR, "1", 1);
+    persistent_mode = 1;
 
   } else if (getenv("AFL_PERSISTENT")) {
 
@@ -6916,6 +6924,12 @@ static void fix_up_banner(u8* name) {
 static void check_if_tty(void) {
 
   struct winsize ws;
+
+  if (getenv("AFL_NO_UI")) {
+    OKF("Disabling the UI because AFL_NO_UI is set.");
+    not_on_tty = 1;
+    return;
+  }
 
   if (ioctl(1, TIOCGWINSZ, &ws)) {
 
@@ -7961,7 +7975,7 @@ int main(int argc, char** argv) {
 stop_fuzzing:
 
   SAYF(CURSOR_SHOW cLRD "\n\n+++ Testing aborted %s +++\n" cRST,
-       stop_soon == 2 ? "programatically" : "by user");
+       stop_soon == 2 ? "programmatically" : "by user");
 
   /* Running for more than 30 minutes but still doing first cycle? */
 

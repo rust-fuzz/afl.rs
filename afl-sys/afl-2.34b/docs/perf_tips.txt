@@ -186,5 +186,6 @@ using huge input files, or when you simply want to get quick and dirty results
 early on, you can always resort to the -d mode.
 
 The mode causes afl-fuzz to skip all the deterministic fuzzing steps, which
-makes output a lot less neat and makes the testing a bit less in-depth, but
-it will give you an experience more familiar from other fuzzing tools.
+makes output a lot less neat and can ultimately make the testing a bit less
+in-depth, but it will give you an experience more familiar from other fuzzing
+tools.

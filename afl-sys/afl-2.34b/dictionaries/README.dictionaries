@@ -1,37 +1,10 @@
-===============================
-AFL test cases and dictionaries
-===============================
+================
+AFL dictionaries
+================
 
   (See ../docs/README for the general instruction manual.)
 
-1) Starting test cases
-----------------------
-
-The archives/, images/, multimedia/, and others/ subdirectories contain small,
-standalone files that can be used to seed afl-fuzz when testing parsers for a
-variety of common data formats.
-
-There is probably not much to be said about these files, except that they were
-optimized for size and stripped of any non-essential fluff. Some directories
-contain several examples that exercise various features of the underlying format.
-For example, there is a PNG file with and without a color profile.
-
-Additional test cases are always welcome; the current "most wanted" list
-includes:
-
-  - JBIG,
-  - Ogg Vorbis,
-  - Ogg Theora,
-  - MP3,
-  - AAC,
-  - WebM,
-  - Small JPEG with a color profile,
-  - Small fonts.
-
-2) Dictionaries
----------------
-
-The _extras/ subdirectory contains a set of dictionaries that can be used in
+This subdirectory contains a set of dictionaries that can be used in
 conjunction with the -x option to allow the fuzzer to effortlessly explore the
 grammar of some of the more verbose data formats or languages. The basic
 principle behind the operation of fuzzer dictionaries is outlined in section 9
@@ -67,5 +40,4 @@ by appending @<num> to the dictionary file name, like so:
 
   -x path/to/dictionary.dct@2
 
-Good examples of dictionaries can be found in _extras/xml.dict and
-_extras/png.dict.
+Good examples of dictionaries can be found in xml.dict and png.dict.
