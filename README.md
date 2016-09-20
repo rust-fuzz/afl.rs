@@ -10,95 +10,10 @@ Screen recording of AFL running on Rust code. The code under test is [`examples/
 
 [Fuzz testing][] is a software testing technique used to find security and stability issues by providing pseudo-random data as input to the software. [American fuzzy lop][american-fuzzy-lop] is a popular, effective, and modern fuzz testing tool. This library, afl.rs, allows one to run AFL on code written in [the Rust programming language][rust].
 
-## Requirements
-
-* Nightly build of Rust from any time after January 24, 2016 ([this issue](https://github.com/rust-lang/rust/pull/31176) prevented compatibility with previous builds of Rust)
-* C++ compiler that supports C++11
-* afl.rs needs to compile against a version of LLVM that matches `rustc`'s. The easy solution (if you can wait on a slow build) is to [build `rustc` from source][from source] and put it in your `PATH`. Then afl.rs's [build script][] will find `llvm-config` automatically. Otherwise, the environment variable `LLVM_CONFIG` should hold the path to `llvm-config` when you build afl.rs.
-
-Because of these relatively strict requirements, there is a Vagrantfile provided that assists in bootstraping an afl.rs compatible environment. View the README in the [`vagrant/`](vagrant) directory for more information.
-
-**NOTE: It is known that requiring one to compile Rust *greatly* increases the barrier to use afl.rs. It will soon be the case this requirement will be lifted and the setup instructions will be greatly simplified. Stay tuned!**
-
-## Using it
-
-First, add this project as a [Cargo][] dependency:
-
-```toml
-[dependencies]
-afl = "0.1"
-afl-plugin = "0.1"
-```
-
-Then you can add afl instrumentation to one or more crates:
-
-```rust
-#![feature(plugin)]
-#![plugin(afl_plugin)]
-```
-
-You will also need a test executable that exercises the instrumented functions,
-in a deterministic way based on input from stdin. This executable should link
-the `afl` run-time library:
-
-```rust
-extern crate afl;
-```
-
-This will produce a binary that you can pass to `afl-fuzz` in the usual manner.
-
-C++ code will be compiled by default with `g++`, though one can specify a different C++ compiler by setting the `CXX` environment variable to point to a different compiler binary.
-
-### Treat panics as crashes
-
-To look for logic errors in safe Rust code, use the `no-landing-pads` rustc flag
-upon compilation of the AFL entrypoint.  This causes the fuzzer to treat any
-Rust panic as a crash. Examples of usage:
-
-* `rustc -Z no-landing-pads`
-* `cargo rustc -- -Z no-landing-pads`
-
-### Deferred init
-
-If your program has a slow set-up phase that does not depend on the input data,
-you can set `AFL_DEFER_FORKSRV=1` for a substantial speed-up, provided that you
-insert a call to `afl::init()` after the set-up and before any
-dependence on input. There are various other caveats, described in the section
-"Bonus feature: deferred instrumentation" in `llvm_mode/README.llvm`
-distributed with afl. See also [`examples/deferred-init.rs`][example-defer] in
-this repository.
-
-### Conditional compilation
-
-afl instrumentation adds some run-time overhead, so it's a good candidate for
-[conditional compilation][], perhaps through a [Cargo feature][]:
-
-```toml
-# You may need to add `optional = true` to the above dependencies.
-[features]
-afl = ["afl-plugin", "afl"]
-```
-
-```rust
-// Active only with `cargo [...] --feature afl`
-#![cfg_attr(feature = "afl", feature(plugin))]
-#![cfg_attr(feature = "afl", plugin(afl_plugin))]
-```
-
-
-### AFL configuration
-
-See the afl documentation for other configuration variables. Some of these are
-set at compile time in `config.h`. For the most part they only affect
-`afl-fuzz` itself, and will work fine with this library. However, if you change
-`SHM_ENV_VAR`, `MAP_SIZE`, or `FORKSRV_FD`, you should update this library's
-`src/config.h` to match.
-
 ## Upcoming changes
 
 - [ ] [✨ Logo  ✨](https://github.com/frewsxcv/afl.rs/issues/66)
 - [ ] [Simpler API](https://github.com/frewsxcv/afl.rs/issues/31)
-- [ ] [Don't require users to compile Rust](https://github.com/frewsxcv/afl.rs/issues/41)
 - [ ] Don't require users to have AFL installed (utilize afl-sys crate)
 
 ## Trophy case
@@ -138,3 +53,4 @@ arising from `unsafe` code. Pull requests are welcome!
 [unresolved issue]: https://github.com/frewsxcv/afl.rs/issues/11
 [fuzz testing]: https://en.wikipedia.org/wiki/Fuzz_testing
 [Rust]: https://www.rust-lang.org
+[rustup]: https://rustup.rs/
