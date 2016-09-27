@@ -31,6 +31,7 @@ It's still a work in progress, but has enough information to get you started.
 * httparse: [#9](https://github.com/seanmonstar/httparse/issues/9)
 * image: [#414](https://github.com/PistonDevelopers/image/issues/414), [#473](https://github.com/PistonDevelopers/image/issues/473), [#474](https://github.com/PistonDevelopers/image/issues/474), [#477](https://github.com/PistonDevelopers/image/issues/477)
 * jpeg-decoder: [#38](https://github.com/kaksmet/jpeg-decoder/issues/38), [#50](https://github.com/kaksmet/jpeg-decoder/issues/50)
+* mp3-metadata: [#9](https://github.com/GuillaumeGomez/mp3-metadata/pull/9)
 * mp4parse-rust: [#2](https://github.com/mozilla/mp4parse-rust/issues/2), [#4](https://github.com/mozilla/mp4parse-rust/issues/4), [#5](https://github.com/mozilla/mp4parse-rust/issues/5), [#6](https://github.com/mozilla/mp4parse-rust/issues/6)
 * rustc: [#24275](https://github.com/rust-lang/rust/issues/24275), [#24276](https://github.com/rust-lang/rust/issues/24276)
 * rust-url: [#108](https://github.com/servo/rust-url/pull/108)
