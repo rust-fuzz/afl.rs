@@ -54,8 +54,6 @@ arising from `unsafe` code. Pull requests are welcome!
 [american-fuzzy-lop]: http://lcamtuf.coredump.cx/afl/
 [Cargo feature]: http://doc.crates.io/manifest.html#the-[features]-section
 [example-defer]: https://github.com/frewsxcv/afl.rs/blob/master/examples/deferred-init.rs
-[build script]: https://github.com/frewsxcv/afl.rs/blob/master/plugin/build.bash
-[from source]: https://github.com/rust-lang/rust#building-from-source
 [LLVM pass]: https://github.com/frewsxcv/afl.rs/blob/master/plugin/src/afl-llvm-pass.o.cc
 [example]: https://github.com/frewsxcv/afl.rs/blob/master/examples/hello.rs
 [Cargo]: http://doc.crates.io/
