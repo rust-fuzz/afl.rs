@@ -159,14 +159,14 @@ mod test {
     fn test_cargo_afl_fuzz() {
         let temp_dir = tempdir::TempDir::new("aflrs").expect("Could not create temporary directory");
         let temp_dir_path = temp_dir.path();
-        let mut child = Command::new("target/debug/cargo-afl-fuzz")
+        let mut child = Command::new("../target/debug/cargo-afl-fuzz")
             .stdout(Stdio::inherit())
             .stderr(Stdio::inherit())
             .arg("-i")
             .arg(".")
             .arg("-o")
             .arg(temp_dir_path)
-            .arg("target/debug/examples/hello")
+            .arg("../target/debug/examples/hello")
             .spawn()
             .expect("Could not run cargo-afl-fuzz");
         thread::sleep(time::Duration::from_secs(7));

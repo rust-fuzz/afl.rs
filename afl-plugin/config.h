@@ -1,1 +1,1 @@
-../src/config.h
+../afl/src/config.h
