@@ -1,5 +1,9 @@
 # Changes
 
+## 0.1.5
+
+* Don't enforce LLVM version 3.8
+
 ## 0.1.4
 
 * Merged in upstream changes for LLVM files: afl-llvm-pass.so.cc, afl-llvm-rt.o.c
