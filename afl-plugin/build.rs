@@ -26,16 +26,6 @@ fn llvm_config_path() -> OsString {
                 `llvm-config` is in your $PATH. Consult the README for more \
                 information.");
     };
-    // Ensure we're working with version 3.8.x
-    let output = Command::new(&llvm_config_path)
-                         .arg("--version")
-                         .output()
-                         .expect("Could not execute llvm-config");
-    if !output.stdout.starts_with(b"3.8") {
-        panic!("Found llvm-config, but is not a compatible version. afl.rs \
-                requires version LLVM 3.8. Either set $LLVM_CONFIG or ensure \
-                `llvm-config` version 3.8 is in your $PATH.")
-    }
     File::open(&llvm_config_path).unwrap_or_else(|error| {
         panic!("Cannot access {:?} to determine your LLVM configuration: {}",
                llvm_config_path,
