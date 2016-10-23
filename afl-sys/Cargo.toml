@@ -1,6 +1,6 @@
 [package]
 name = "afl-sys"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["Corey Farwell <coreyf@rwell.org>"]
 build = "build.rs"
 repository = "https://github.com/frewsxcv/afl.rs"
