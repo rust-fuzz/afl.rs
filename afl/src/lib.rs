@@ -148,6 +148,7 @@ pub fn handle_read<F>(closure: F)
 
 #[cfg(test)]
 mod test {
+    use std::path::PathBuf;
     use std::process::{Command, Stdio};
     use std::thread;
     use std::time;
@@ -155,18 +156,28 @@ mod test {
     extern crate libc;
     extern crate tempdir;
 
+    fn target_path() -> PathBuf {
+        if PathBuf::from("../target/debug/cargo-afl-fuzz").exists() {
+            PathBuf::from("../target/debug/")
+        } else if PathBuf::from("target/debug/cargo-afl-fuzz").exists() {
+            PathBuf::from("target/debug/")
+        } else {
+            panic!("Could not find cargo-afl-fuzz!");
+        }
+    }
+
     #[test]
     fn test_cargo_afl_fuzz() {
         let temp_dir = tempdir::TempDir::new("aflrs").expect("Could not create temporary directory");
         let temp_dir_path = temp_dir.path();
-        let mut child = Command::new("../target/debug/cargo-afl-fuzz")
+        let mut child = Command::new(target_path().join("cargo-afl-fuzz"))
             .stdout(Stdio::inherit())
             .stderr(Stdio::inherit())
             .arg("-i")
             .arg(".")
             .arg("-o")
             .arg(temp_dir_path)
-            .arg("../target/debug/examples/hello")
+            .arg(target_path().join("examples").join("hello"))
             .spawn()
             .expect("Could not run cargo-afl-fuzz");
         thread::sleep(time::Duration::from_secs(7));
