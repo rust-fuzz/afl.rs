@@ -1,45 +1,26 @@
 # Setup
 
-## Rust (nightly-2016-07-30)
+At the time of writing, the recommended approach when using afl.rs is to use a prebuilt Docker image. For more information about why this necessary, read the section following this one.
 
-For the time being, afl.rs requires a specific version of nightly Rust. To facilitate this requirement, using [rustup.rs](https://rustup.rs/) is recommended. Install it, then run:
+To install Docker, see the instructions in the following link:
 
-```
-rustup default nightly-2016-07-30
-```
+[docker.com/getdocker](https://docker.com/getdocker)
 
-## C++ compiler
-
-afl.rs will compile some C++ in order to install the necessary instrumentation. A C++ compiler that supports C++11 is required.
-
-### OS X
-
-OS X ships with g++, nothing needs to be done for OS X users.
-
-### Linux
+Once you have installed Docker, retrieve the afl.rs image:
 
 ```
-sudo apt-get update
-sudo apt-get install g++ g++-multilib g++-4.9 g++-4.9-multilib libstdc++-4.8-dev
+docker pull corey/afl.rs
 ```
 
-## LLVM 3.8
+## Why is Docker necessary?
 
-afl.rs will need to compile against LLVM 3.8 in order to setup instrumentation properly.
+*Note: This is optional reading. Don't worry if you're confused by anything in this section.*
 
-### OS X
+AFL is a form of coverage-guided fuzzing (i.e. AFL requires insight into what code branches have been hit). In order to accomplish this, afl.rs includes a plugin for LLVM called an *[LLVM pass]*. This is accomplished via [a C++ file][afl.rs llvm pass] that afl.rs compiles and links against LLVM. Since Rust does *not* expose its LLVM internals, the user of afl.rs will have to either: compile the pass using tools that are ABI compatible with the Rust binary they're using or compile Rust from source. Neither of these options are trivial for the user. This guide used to recommend the former strategy, but [this caused issues][issues]. To get around this, this guide now recommends a Dockerfile which has rustc and afl.rs that are ABI-compatible.
 
-```
-brew update
-brew install homebrew/versions/llvm38
-```
-
-### Linux
-
-```
-sudo apt-get update
-sudo apt-get install llvm-3.8
-```
+[LLVM pass]: http://llvm.org/docs/WritingAnLLVMPass.html
+[afl.rs llvm pass]: https://github.com/frewsxcv/afl.rs/blob/master/afl-plugin/afl-llvm-pass.so.cc
+[issues]: https://github.com/frewsxcv/afl.rs/issues/57
 
 ## AFL
 

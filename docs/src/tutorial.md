@@ -42,13 +42,11 @@ extern crate afl;
 extern crate url;
 
 fn main() {
-    afl::handle_str(|s| {
+    afl::handle_string(|s| {
         let _ = url::Url::parse(s);
     })
 }
 ```
-
-Run `cargo build` to compile it. It will create an executable at `target/debug/url`.
 
 ## Input
 
@@ -61,8 +59,22 @@ mkdir in
 echo "https://rust-lang.org" > in/basic
 ```
 
+## Build
+
+You'll need to enter the Docker environment to get the binary to compile correctly:
+
+```
+docker run -v $(pwd):/source -it corey/afl.rs sh
+```
+
+Run `cargo build` to compile it. It will create an executable at `target/debug/url`.
+
 ## Fuzz
 
 ```
 afl-fuzz -i in -o out target/debug/url
 ```
+
+## Exiting
+
+You can exit `afl-fuzz` by pressing `ctrl-c` and you can exit the Docker environment by running the `exit` command.
