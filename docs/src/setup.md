@@ -21,23 +21,3 @@ AFL is a form of coverage-guided fuzzing (i.e. AFL requires insight into what co
 [LLVM pass]: http://llvm.org/docs/WritingAnLLVMPass.html
 [afl.rs llvm pass]: https://github.com/frewsxcv/afl.rs/blob/master/afl-plugin/afl-llvm-pass.so.cc
 [issues]: https://github.com/frewsxcv/afl.rs/issues/57
-
-## AFL
-
-### OS X
-
-```
-brew update
-brew install afl-fuzz
-```
-
-### Linux
-
-Many operating system package repositories offer AFL:
-
-```
-sudo apt-get update
-sudo apt-get install afl
-```
-
-If your operating system does not offer AFL, download and compile it [from the tarball provided on the AFL website](http://lcamtuf.coredump.cx/afl/).
