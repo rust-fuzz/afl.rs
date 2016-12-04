@@ -43,7 +43,7 @@ extern crate url;
 
 fn main() {
     afl::handle_string(|s| {
-        let _ = url::Url::parse(s);
+        let _ = url::Url::parse(&s);
     })
 }
 ```
