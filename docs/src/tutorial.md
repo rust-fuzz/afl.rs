@@ -31,7 +31,7 @@ Open up `src/lib.rs` and add these two lines before all other non-documentation/
 #![plugin(afl_plugin)]
 ```
 
-These will instrument.
+The first line indicates to the compiler that we are opting-in to an unstable Rust feature: [compiler plugins](https://doc.rust-lang.org/book/compiler-plugins.html). The second line specifies which compiler plugin we want to use. This particular compiler plugin will add the AFL instrumentation to the rust-url crate.
 
 ## Driver
 
