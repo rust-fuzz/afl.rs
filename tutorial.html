@@ -1,0 +1,165 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <base href="">
+
+        <link rel="stylesheet" href="book.css">
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <link rel="shortcut icon" href="favicon.png">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+
+        <!-- MathJax -->
+        <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Fetch JQuery from CDN but have a local fallback -->
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script>
+            if (typeof jQuery == 'undefined') {
+                document.write(unescape("%3Cscript src='jquery.js'%3E%3C/script%3E"));
+            }
+        </script>
+    </head>
+    <body class="light">
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme = localStorage.getItem('theme');
+            if (theme == null) { theme = 'light'; }
+            $('body').removeClass().addClass(theme);
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var sidebar = localStorage.getItem('sidebar');
+            if (sidebar === "hidden") { $("html").addClass("sidebar-hidden") }
+            else if (sidebar === "visible") { $("html").addClass("sidebar-visible") }
+        </script>
+
+        <div id="sidebar" class="sidebar">
+            <ul class="chapter"><li><a href="./introduction.html"><strong>1.</strong> Introduction</a></li><li><a href="./setup.html"><strong>2.</strong> Setup</a></li><li><a href="./tutorial.html" class="active"><strong>3.</strong> Tutorial</a></li><li><a href="./guide.html"><strong>4.</strong> Guide</a></li></ul>
+        </div>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar" class="menu-bar">
+                    <div class="left-buttons">
+                        <i id="sidebar-toggle" class="fa fa-bars"></i>
+                        <i id="theme-toggle" class="fa fa-paint-brush"></i>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <i id="print-button" class="fa fa-print" title="Print this book"></i>
+                    </div>
+                </div>
+
+                <div id="content" class="content">
+                    <h1>Tutorial</h1>
+<p>For this tutorial, we are going to fuzz the URL parser <a href="https://github.com/servo/rust-url">rust-url</a>.</p>
+<h2>Clone</h2>
+<p>Clone the repository and navigate inside:</p>
+<pre><code>git clone https://github.com/servo/rust-url
+cd rust-url
+</code></pre>
+<h2>Dependencies</h2>
+<p>Modify <code>Cargo.toml</code> and add the following lines to the <code>[dependencies]</code> section:</p>
+<pre><code class="language-toml">afl = &quot;0.1&quot;
+afl-plugin = &quot;0.1&quot;
+</code></pre>
+<p>The <code>afl-plugin</code> crate includes a compiler plugin that will be used to instrument the rust-url crate. The <code>afl</code> crate will be used to setup the necessary runtime afl expects during afl-fuzz. Also, it has a few other utilities.</p>
+<h2>Instrumentation</h2>
+<p>Open up <code>src/lib.rs</code> and add these two lines before all other non-documentation/non-comment lines:</p>
+<pre><code>#![feature(plugin)]
+#![plugin(afl_plugin)]
+</code></pre>
+<p>The first line indicates to the compiler that we are opting-in to an unstable Rust feature: <a href="https://doc.rust-lang.org/book/compiler-plugins.html">compiler plugins</a>. The second line specifies which compiler plugin we want to use. This particular compiler plugin will add the AFL instrumentation to the rust-url crate.</p>
+<h2>Driver</h2>
+<p>AFL requires an executable that will read from stdin. Create a new file <code>src/main.rs</code> and add the following contents:</p>
+<pre><code class="language-rust">#![feature(plugin)]
+#![plugin(afl_plugin)]
+
+extern crate afl;
+extern crate url;
+
+fn main() {
+    afl::handle_string(|s| {
+        let _ = url::Url::parse(&amp;s);
+    })
+}
+</code></pre>
+<h2>Input</h2>
+<p>AFL needs an input directory with test cases.</p>
+<p>Make a new directory <code>in</code> and add a test:</p>
+<pre><code>mkdir in
+echo &quot;https://rust-lang.org&quot; &gt; in/basic
+</code></pre>
+<h2>Build</h2>
+<p>You'll need to enter the Docker environment to get the binary to compile correctly:</p>
+<pre><code>docker run -v $(pwd):/source -it corey/afl.rs sh
+</code></pre>
+<p>Run <code>cargo build</code> to compile it. It will create an executable at <code>target/debug/url</code>.</p>
+<h2>Fuzz</h2>
+<pre><code>afl-fuzz -i in -o out target/debug/url
+</code></pre>
+<h2>Exiting</h2>
+<p>You can exit <code>afl-fuzz</code> by pressing <code>ctrl-c</code> and you can exit the Docker environment by running the <code>exit</code> command.</p>
+
+                </div>
+
+                <!-- Mobile navigation buttons -->
+                
+                    <a href="./setup.html" class="mobile-nav-chapters previous">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="./guide.html" class="mobile-nav-chapters next">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+
+            </div>
+
+            
+                <a href="./setup.html" class="nav-chapters previous" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+            
+
+            
+                <a href="./guide.html" class="nav-chapters next" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            
+
+        </div>
+
+
+        <!-- Local fallback for Font Awesome -->
+        <script>
+            if ($(".fa").css("font-family") !== "FontAwesome") {
+                $('<link rel="stylesheet" type="text/css" href="_FontAwesome/css/font-awesome.css">').prependTo('head');
+            }
+        </script>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        
+
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+    </body>
+</html>
