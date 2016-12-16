@@ -38,6 +38,9 @@ The first line indicates to the compiler that we are opting-in to an unstable Ru
 AFL requires an executable that will read from stdin. Create a new file `src/main.rs` and add the following contents:
 
 ```rust
+#![feature(plugin)]
+#![plugin(afl_plugin)]
+
 extern crate afl;
 extern crate url;
 
