@@ -16,12 +16,9 @@ Documentation for afl.rs can be found here:
 
 [The afl.rs Book](https://frewsxcv.github.io/afl.rs/)
 
-It's still a work in progress, but has enough information to get you started.
-
 ## Upcoming changes
 
 - [ ] [✨ Logo  ✨](https://github.com/frewsxcv/afl.rs/issues/66)
-- [ ] [Simpler API](https://github.com/frewsxcv/afl.rs/issues/31)
 - [ ] Don't require users to have AFL installed (utilize afl-sys crate)
 
 ## Trophy case
