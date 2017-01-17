@@ -4,17 +4,17 @@
   afl.rs
 </h1>
 
-# afl.rs
-
-Fuzzing [Rust][] code with [american fuzzy lop (AFL)][american-fuzzy-lop]
-
-<img src="https://i.imgur.com/RUZRyTO.gif" width="563" height="368" alt="Screen recording of afl">
-
-Screen recording of AFL running on Rust code. The code under test is [`examples/hello.rs`][example] in this repository.
+<h4 align="center">Fuzzing [Rust][] code with [american fuzzy lop (AFL)][american-fuzzy-lop]</h4>
 
 ## What is it?
 
 [Fuzz testing][] is a software testing technique used to find security and stability issues by providing pseudo-random data as input to the software. [American fuzzy lop][american-fuzzy-lop] is a popular, effective, and modern fuzz testing tool. This library, afl.rs, allows one to run AFL on code written in [the Rust programming language][rust].
+
+## What does it look like?
+
+<img src="https://i.imgur.com/RUZRyTO.gif" width="563" height="368" alt="Screen recording of afl">
+
+Screen recording of AFL running on Rust code. The code under test is [`examples/hello.rs`][example] in this repository.
 
 ## Book
 
