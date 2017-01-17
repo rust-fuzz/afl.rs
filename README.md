@@ -4,7 +4,7 @@
   afl.rs
 </h1>
 
-<h4 align="center">Fuzzing [Rust][] code with [american fuzzy lop (AFL)][american-fuzzy-lop]</h4>
+<h4 align="center">Fuzzing <a href="https://www.rust-lang.org">Rust</a> code with <a href="http://lcamtuf.coredump.cx/afl/">american fuzzy lop (AFL)</a></h4>
 
 ## What is it?
 
@@ -49,7 +49,6 @@ interesting bugs, whether they're logic errors or memory-safety problems
 arising from `unsafe` code. Pull requests are welcome!
 
 [conditional compilation]: https://doc.rust-lang.org/reference.html#conditional-compilation
-[american-fuzzy-lop]: http://lcamtuf.coredump.cx/afl/
 [Cargo feature]: http://doc.crates.io/manifest.html#the-[features]-section
 [example-defer]: https://github.com/frewsxcv/afl.rs/blob/master/examples/deferred-init.rs
 [LLVM pass]: https://github.com/frewsxcv/afl.rs/blob/master/plugin/src/afl-llvm-pass.o.cc
@@ -57,5 +56,4 @@ arising from `unsafe` code. Pull requests are welcome!
 [Cargo]: http://doc.crates.io/
 [unresolved issue]: https://github.com/frewsxcv/afl.rs/issues/11
 [fuzz testing]: https://en.wikipedia.org/wiki/Fuzz_testing
-[Rust]: https://www.rust-lang.org
 [rustup]: https://rustup.rs/
