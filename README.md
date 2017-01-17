@@ -1,25 +1,26 @@
-# afl.rs
+<h1 align="center">
+  <a href="https://github.com/frewsxcv/afl.rs/issues/66"><img src="etc/logo.gif" alt="afl.rs logo"></a>
+  <br>
+  afl.rs
+</h1>
 
-Fuzzing [Rust][] code with [american fuzzy lop (AFL)][american-fuzzy-lop]
-
-<img src="https://i.imgur.com/RUZRyTO.gif" width="563" height="368" alt="Screen recording of afl">
-
-Screen recording of AFL running on Rust code. The code under test is [`examples/hello.rs`][example] in this repository.
+<h4 align="center">Fuzzing <a href="https://www.rust-lang.org">Rust</a> code with <a href="http://lcamtuf.coredump.cx/afl/">american fuzzy lop (AFL)</a></h4>
 
 ## What is it?
 
 [Fuzz testing][] is a software testing technique used to find security and stability issues by providing pseudo-random data as input to the software. [American fuzzy lop][american-fuzzy-lop] is a popular, effective, and modern fuzz testing tool. This library, afl.rs, allows one to run AFL on code written in [the Rust programming language][rust].
+
+## What does it look like?
+
+<img src="etc/screencap.gif" width="563" height="368" alt="Screen recording of afl">
+
+Screen recording of AFL running on Rust code. The code under test is [`examples/hello.rs`][example] in this repository.
 
 ## Book
 
 Documentation for afl.rs can be found here:
 
 [The afl.rs Book](https://frewsxcv.github.io/afl.rs/)
-
-## Upcoming changes
-
-- [ ] [✨ Logo  ✨](https://github.com/frewsxcv/afl.rs/issues/66)
-- [ ] Don't require users to have AFL installed (utilize afl-sys crate)
 
 ## Trophy case
 
@@ -48,7 +49,6 @@ interesting bugs, whether they're logic errors or memory-safety problems
 arising from `unsafe` code. Pull requests are welcome!
 
 [conditional compilation]: https://doc.rust-lang.org/reference.html#conditional-compilation
-[american-fuzzy-lop]: http://lcamtuf.coredump.cx/afl/
 [Cargo feature]: http://doc.crates.io/manifest.html#the-[features]-section
 [example-defer]: https://github.com/frewsxcv/afl.rs/blob/master/examples/deferred-init.rs
 [LLVM pass]: https://github.com/frewsxcv/afl.rs/blob/master/plugin/src/afl-llvm-pass.o.cc
@@ -56,5 +56,4 @@ arising from `unsafe` code. Pull requests are welcome!
 [Cargo]: http://doc.crates.io/
 [unresolved issue]: https://github.com/frewsxcv/afl.rs/issues/11
 [fuzz testing]: https://en.wikipedia.org/wiki/Fuzz_testing
-[Rust]: https://www.rust-lang.org
 [rustup]: https://rustup.rs/
