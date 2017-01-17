@@ -57,3 +57,4 @@ arising from `unsafe` code. Pull requests are welcome!
 [unresolved issue]: https://github.com/frewsxcv/afl.rs/issues/11
 [fuzz testing]: https://en.wikipedia.org/wiki/Fuzz_testing
 [rustup]: https://rustup.rs/
+[american-fuzzy-lop]: http://lcamtuf.coredump.cx/afl/
