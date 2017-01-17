@@ -1,3 +1,9 @@
+<h1 align="center">
+  <a href="https://github.com/frewsxcv/afl.rs/issues/66"><img src="https://raw.githubusercontent.com/Nemo157/afl-rs-logo/master/generated/wip2.gif" alt="afl.rs logo" width="256" height="256"/></a>
+  <br>
+  afl.rs
+</h1>
+
 # afl.rs
 
 Fuzzing [Rust][] code with [american fuzzy lop (AFL)][american-fuzzy-lop]
