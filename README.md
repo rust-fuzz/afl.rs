@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://github.com/frewsxcv/afl.rs/issues/66"><img src="https://raw.githubusercontent.com/Nemo157/afl-rs-logo/master/generated/wip2.gif" alt="afl.rs logo"></a>
+  <a href="https://github.com/frewsxcv/afl.rs/issues/66"><img src="etc/logo.gif" alt="afl.rs logo"></a>
   <br>
   afl.rs
 </h1>
@@ -12,7 +12,7 @@
 
 ## What does it look like?
 
-<img src="https://i.imgur.com/RUZRyTO.gif" width="563" height="368" alt="Screen recording of afl">
+<img src="etc/screencap.gif" width="563" height="368" alt="Screen recording of afl">
 
 Screen recording of AFL running on Rust code. The code under test is [`examples/hello.rs`][example] in this repository.
 
