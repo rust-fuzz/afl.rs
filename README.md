@@ -22,11 +22,6 @@ Documentation for afl.rs can be found here:
 
 [The afl.rs Book](https://frewsxcv.github.io/afl.rs/)
 
-## Upcoming changes
-
-- [ ] [✨ Logo  ✨](https://github.com/frewsxcv/afl.rs/issues/66)
-- [ ] Don't require users to have AFL installed (utilize afl-sys crate)
-
 ## Trophy case
 
 * brotli-rs: [#2](https://github.com/ende76/brotli-rs/issues/2), [#3](https://github.com/ende76/brotli-rs/issues/3), [#4](https://github.com/ende76/brotli-rs/issues/4), [#5](https://github.com/ende76/brotli-rs/issues/5), [#6](https://github.com/ende76/brotli-rs/issues/6), [#7](https://github.com/ende76/brotli-rs/issues/7), [#8](https://github.com/ende76/brotli-rs/issues/8), [#9](https://github.com/ende76/brotli-rs/issues/9), [#10](https://github.com/ende76/brotli-rs/issues/10), [#11](https://github.com/ende76/brotli-rs/issues/11), [#12](https://github.com/ende76/brotli-rs/issues/12)
