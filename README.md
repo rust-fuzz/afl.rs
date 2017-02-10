@@ -58,3 +58,4 @@ arising from `unsafe` code. Pull requests are welcome!
 [fuzz testing]: https://en.wikipedia.org/wiki/Fuzz_testing
 [rustup]: https://rustup.rs/
 [american-fuzzy-lop]: http://lcamtuf.coredump.cx/afl/
+[rust]: https://www.rust-lang.org
