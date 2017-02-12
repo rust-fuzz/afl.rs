@@ -7,7 +7,6 @@ repository = "https://github.com/frewsxcv/afl.rs"
 homepage = "https://github.com/frewsxcv/afl.rs"
 license = "Apache-2.0"
 description = "Wrapper around AFL source"
-workspace = "../"
 
 [lib]
 path = "lib.rs"
