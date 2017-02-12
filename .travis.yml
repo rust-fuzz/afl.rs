@@ -12,6 +12,9 @@ matrix:
   exclude:
     - os: linux
       env: CXX=clang++
+    # TODO: uncomment `os: osx, env: CXX=clang++`, it should work
+    - os: osx
+      env: CXX=clang++
 os:
   - linux
   - osx

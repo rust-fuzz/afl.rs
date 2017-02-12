@@ -90,6 +90,7 @@ pub fn afl_fuzz(config: AflFuzzConfig) -> Result<(), libc::c_int> {
 
 /// FIXME: figure out a way to make it not run indefinitely
 #[test]
+#[ignore]
 fn testsomething() {
     let config = AflFuzzConfig {
         in_dir: ".".into(),

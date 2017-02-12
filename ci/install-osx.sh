@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 brew update
-brew install homebrew/versions/llvm38
+brew install llvm@3.8
 
 if [[ "$CXX" == "clang++" ]]; then
   brew unlink gcc
