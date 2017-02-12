@@ -1,2 +1,0 @@
-[workspace]
-members = ["afl", "afl-sys", "afl-plugin"]
