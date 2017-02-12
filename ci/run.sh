@@ -12,3 +12,5 @@ cargo build --example hello
 cargo build --example deferred-init
 cargo build --example integer-overflow
 cargo test
+cd crate-tests/jpeg-decoder/
+cargo build

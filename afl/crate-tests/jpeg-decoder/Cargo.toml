@@ -1,0 +1,21 @@
+[package]
+name = "jpeg-decoder"
+version = "0.1.5"
+authors = ["Ulf Nilsson <kaksmet@gmail.com>"]
+description = "JPEG decoder"
+repository = "https://github.com/kaksmet/jpeg-decoder"
+readme = "README.md"
+keywords = ["JPEG", "decoder", "image"]
+license = "MIT / Apache-2.0"
+
+exclude = ["tests/*"]
+
+[dependencies]
+byteorder = "0.5"
+rayon = "0.4"
+afl = "0.1.5"
+afl-plugin = "0.1.5"
+
+[dev-dependencies]
+walkdir = "0.1"
+png = "0.5"
