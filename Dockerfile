@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
   llvm-3.8 \
   make
 
-RUN curl -sSf https://static.rust-lang.org/rustup.sh | sh -s -- --channel=nightly --date=2016-07-30 --disable-sudo
+RUN curl -sSf https://static.rust-lang.org/rustup.sh | sh -s -- --channel=nightly --disable-sudo
 
 RUN curl http://lcamtuf.coredump.cx/afl/releases/afl-2.34b.tgz > afl-2.34b.tgz && \
   tar xf afl-2.34b.tgz && \
