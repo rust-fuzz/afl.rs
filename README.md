@@ -20,7 +20,7 @@ Screen recording of AFL running on Rust code. The code under test is [`examples/
 
 Documentation for afl.rs can be found here:
 
-[The afl.rs Book](https://frewsxcv.github.io/afl.rs/)
+[The afl.rs Book](https://rust-fuzz.github.io/afl.rs/)
 
 ## Trophy case
 
