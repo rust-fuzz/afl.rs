@@ -14,7 +14,7 @@
 
 <img src="etc/screencap.gif" width="563" height="368" alt="Screen recording of afl">
 
-Screen recording of AFL running on Rust code. The code under test is [`examples/hello.rs`][example] in this repository.
+Screen recording of AFL running on Rust code. The code under test is [`afl/examples/hello.rs`][example] in this repository.
 
 ## Book
 
@@ -53,7 +53,7 @@ arising from `unsafe` code. Pull requests are welcome!
 [Cargo feature]: http://doc.crates.io/manifest.html#the-[features]-section
 [example-defer]: https://github.com/frewsxcv/afl.rs/blob/master/examples/deferred-init.rs
 [LLVM pass]: https://github.com/frewsxcv/afl.rs/blob/master/plugin/src/afl-llvm-pass.o.cc
-[example]: https://github.com/frewsxcv/afl.rs/blob/master/examples/hello.rs
+[example]: https://github.com/frewsxcv/afl.rs/blob/master/afl/examples/hello.rs
 [Cargo]: http://doc.crates.io/
 [unresolved issue]: https://github.com/frewsxcv/afl.rs/issues/11
 [fuzz testing]: https://en.wikipedia.org/wiki/Fuzz_testing
