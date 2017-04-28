@@ -18,9 +18,7 @@ Screen recording of AFL running on Rust code. The code under test is [`afl/examp
 
 ## Book
 
-Documentation for afl.rs can be found here:
-
-[The afl.rs Book](https://rust-fuzz.github.io/afl.rs/)
+Documentation for afl.rs can be found in the [Rust Fuzz Book](https://rust-fuzz.github.io/book/afl.html).
 
 ## Trophy case
 
