@@ -40,9 +40,10 @@ where
     let afl_llvm_rt_path = Path::new(env!("OUT_DIR")).join("afl").join("link");
 
     let rustflags = &format!(
-        "-Cllvm-args=-sanitizer-coverage-level=3 \
-         -Cllvm-args=-sanitizer-coverage-trace-pc-guard \
-         -Cpasses=sancov \
+        "-C llvm-args=-sanitizer-coverage-level=3 \
+         -C llvm-args=-sanitizer-coverage-trace-pc-guard \
+         -C passes=sancov \
+         -C panic=abort \
          -l afl-llvm-rt \
          -L {}",
         afl_llvm_rt_path.display()

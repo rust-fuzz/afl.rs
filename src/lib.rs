@@ -1,3 +1,4 @@
+/*
 // Copyright 2015 Keegan McAllister.
 // Copyright 2016 Corey Farwell.
 //
@@ -159,3 +160,5 @@ mod test {
         assert!(temp_dir_path.join("fuzzer_stats").is_file());
     }
 }
+
+*/
