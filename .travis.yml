@@ -1,27 +1,5 @@
 language: rust
-# Nightly versions after this use a newer version of LLVM
-# https://github.com/rust-lang/rust/pull/34743
-rust: nightly-2016-07-30
-sudo: required
-services:
-  - docker
-env:
-  - CXX=clang++
-  - CXX=g++
-matrix:
-  exclude:
-    - os: linux
-      env: CXX=clang++
-    # TODO: uncomment `os: osx, env: CXX=clang++`, it should work
-    - os: osx
-      env: CXX=clang++
-os:
-  - linux
-  - osx
-before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sh ./ci/install-osx.sh; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then echo core | sudo tee /proc/sys/kernel/core_pattern; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker build -t afl.rs -f ci/Dockerfile .; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then RUN="docker run -t afl.rs"; fi
-script:
-  - $RUN ./ci/run.sh
+rust:
+  - stable
+  - beta
+  - nightly
