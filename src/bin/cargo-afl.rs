@@ -1,7 +1,12 @@
+extern crate rustc_version;
+extern crate xdg;
+
 use std::env;
 use std::ffi::OsStr;
-use std::path::Path;
 use std::process::{self, Command};
+
+#[path = "../dirs.rs"]
+mod dirs;
 
 fn main() {
     let mut args = env::args().skip(2).peekable(); // skip `cargo` and `afl`
@@ -23,7 +28,7 @@ where
     I: IntoIterator<Item = S>,
     S: AsRef<OsStr>,
 {
-    let cmd_path = Path::new(env!("OUT_DIR")).join("afl").join("bin").join(cmd);
+    let cmd_path = dirs::afl().join("bin").join(cmd);
     let status = Command::new(cmd_path)
         .args(args.into_iter().skip(1)) // skip afl sub-command
         .status()
@@ -37,7 +42,6 @@ where
     S: AsRef<OsStr>,
 {
     let cargo_path = env!("CARGO");
-    let afl_llvm_rt_path = Path::new(env!("OUT_DIR")).join("afl").join("link");
 
     let rustflags = &format!(
         "-C llvm-args=-sanitizer-coverage-level=3 \
@@ -46,7 +50,7 @@ where
          -C panic=abort \
          -l afl-llvm-rt \
          -L {}",
-        afl_llvm_rt_path.display()
+        dirs::afl_llvm_rt().display()
     );
     let status = Command::new(cargo_path)
         .args(args) // skip `cargo` and `afl`

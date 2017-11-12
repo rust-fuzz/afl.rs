@@ -9,5 +9,11 @@ description = "Fuzzing Rust code with american-fuzzy-lop"
 repository = "https://github.com/rust-fuzz/afl.rs"
 homepage = "https://github.com/rust-fuzz/afl.rs"
 
+[build-dependencies]
+xdg = "2.1"
+rustc_version = "0.2"
+
 [dependencies]
 cc = "1.0"
+rustc_version = "0.2"
+xdg = "2.1"

@@ -1,21 +1,18 @@
-use std::env;
+extern crate rustc_version;
+extern crate xdg;
+
 use std::ffi::OsStr;
-use std::fs;
 use std::path::Path;
 use std::process::Command;
 
 static AFL_SRC_PATH: &str = "afl-2.52b";
 
+#[path = "src/dirs.rs"]
+mod dirs;
+
 fn main() {
-    let out_dir = env::var_os("OUT_DIR").unwrap();
-    let out_dir_path = Path::new(&out_dir).join("afl");
-
-    create_dir(&out_dir_path);
-    create_dir(&out_dir_path.join("bin"));
-    create_dir(&out_dir_path.join("link"));
-
-    build_afl(&out_dir_path);
-    build_afl_llvm_runtime(&out_dir_path);
+    build_afl(&dirs::afl());
+    build_afl_llvm_runtime(&dirs::afl_llvm_rt());
 }
 
 fn build_afl(out_dir: &Path) {
@@ -33,8 +30,8 @@ fn build_afl(out_dir: &Path) {
 }
 
 fn build_afl_llvm_runtime(out_dir: &Path) {
-    let object_file_path = out_dir.join("link").join("libafl-llvm-rt.o");
-    let archive_file_path = out_dir.join("link").join("libafl-llvm-rt.a");
+    let object_file_path = out_dir.join("libafl-llvm-rt.o");
+    let archive_file_path = out_dir.join("libafl-llvm-rt.a");
 
     let status = Command::new("gcc")
         .current_dir(AFL_SRC_PATH)
@@ -56,10 +53,4 @@ fn build_afl_llvm_runtime(out_dir: &Path) {
         .status()
         .unwrap();
     assert!(status.success());
-}
-
-fn create_dir(path: &Path) {
-    if !path.exists() {
-        fs::create_dir(&path).unwrap();
-    }
 }
