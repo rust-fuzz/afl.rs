@@ -1,4 +1,3 @@
-/*
 // Copyright 2015 Keegan McAllister.
 // Copyright 2016 Corey Farwell.
 //
@@ -6,9 +5,7 @@
 // you may not use this file except in compliance with the License.
 // See `LICENSE` in this repository.
 
-use std::intrinsics::abort;
 use std::io::{self, Read};
-use std::panic::{self, UnwindSafe};
 
 /// Utility that reads a `Vec` of bytes from standard input (stdin)
 /// and passes it to `closure`. All panics that occur within
@@ -25,28 +22,20 @@ use std::panic::{self, UnwindSafe};
 /// # }
 ///
 /// fn main() {
-///     afl::handle_bytes(|read| {
+///     afl::read_bytes(|read| {
 ///         Image::parse(read)
 ///     })
 /// }
 /// ```
-pub fn handle_bytes<F>(closure: F)
-    where F: FnOnce(Vec<u8>) + UnwindSafe
+pub fn read_bytes_from_stdio<F>(closure: F)
+    where F: FnOnce(Vec<u8>)
 {
     let mut input = vec![];
     let result = io::stdin().read_to_end(&mut input);
     if result.is_err() {
         return;
     }
-
-    let result = panic::catch_unwind(|| {
-        closure(input);
-    });
-    if result.is_err() {
-        unsafe {
-            abort();
-        }
-    }
+    closure(input);
 }
 
 /// Utility that reads a `String` from standard input (stdin) and
@@ -65,27 +54,20 @@ pub fn handle_bytes<F>(closure: F)
 /// # }
 ///
 /// fn main() {
-///     afl::handle_string(|string| {
+///     afl::read_string(|string| {
 ///         Url::parse(&string)
 ///     })
 /// }
 /// ```
-pub fn handle_string<F>(closure: F)
-    where F: FnOnce(String) + UnwindSafe
+pub fn read_string_from_stdio<F>(closure: F)
+    where F: FnOnce(String)
 {
     let mut input = String::new();
     let result = io::stdin().read_to_string(&mut input);
     if result.is_err() {
         return;
     }
-    let result = panic::catch_unwind(|| {
-        closure(input);
-    });
-    if result.is_err() {
-        unsafe {
-            abort();
-        }
-    }
+    closure(input);
 }
 
 /// Utility that passes `Stdin` to `closure` for use with functions
@@ -103,23 +85,23 @@ pub fn handle_string<F>(closure: F)
 /// # }
 ///
 /// fn main() {
-///     afl::handle_read(|bytes| {
+///     afl::read_bytes(|bytes| {
 ///         Image::parse(&bytes)
 ///     })
 /// }
 /// ```
-pub fn handle_read<F>(closure: F)
-    where F: FnOnce(io::Stdin) + UnwindSafe
-{
-    let result = panic::catch_unwind(|| {
-        closure(io::stdin());
-    });
-    if result.is_err() {
-        unsafe {
-            abort();
-        }
-    }
-}
+// pub fn read_bytes<F>(closure: F)
+//     where F: FnOnce(io::Stdin) + UnwindSafe
+// {
+//     let result = panic::catch_unwind(|| {
+//         closure(io::stdin());
+//     });
+//     if result.is_err() {
+//         unsafe {
+//             abort();
+//         }
+//     }
+// }
 
 #[cfg(test)]
 mod test {
@@ -160,5 +142,3 @@ mod test {
         assert!(temp_dir_path.join("fuzzer_stats").is_file());
     }
 }
-
-*/
