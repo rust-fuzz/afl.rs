@@ -18,17 +18,17 @@ use std::io::{self, Read};
 /// extern crate afl;
 /// # struct Image;
 /// # impl Image {
-/// #     fn parse<R: ::std::io::Read>(_: R) {}
+/// #     fn parse(_: &[u8]) {}
 /// # }
 ///
 /// fn main() {
 ///     afl::read_stdio_bytes(|read| {
-///         Image::parse(read)
+///         Image::parse(&read)
 ///     })
 /// }
 /// ```
 pub fn read_stdio_bytes<F>(closure: F)
-    where F: FnOnce(Vec<u8>)
+    where F: Fn(Vec<u8>)
 {
     let mut input = vec![];
     let result = io::stdin().read_to_end(&mut input);
@@ -53,13 +53,13 @@ pub fn read_stdio_bytes<F>(closure: F)
 /// # }
 ///
 /// fn main() {
-///     afl::read_string(|string| {
+///     afl::read_stdio_string(|string| {
 ///         Url::parse(&string)
 ///     })
 /// }
 /// ```
 pub fn read_stdio_string<F>(closure: F)
-    where F: FnOnce(String)
+    where F: Fn(String)
 {
     let mut input = String::new();
     let result = io::stdin().read_to_string(&mut input);
@@ -70,6 +70,7 @@ pub fn read_stdio_string<F>(closure: F)
 
 #[cfg(test)]
 mod test {
+    /*
     use std::path::PathBuf;
     use std::process::{Command, Stdio};
     use std::thread;
@@ -106,4 +107,5 @@ mod test {
         child.kill().unwrap();
         assert!(temp_dir_path.join("fuzzer_stats").is_file());
     }
+    */
 }
