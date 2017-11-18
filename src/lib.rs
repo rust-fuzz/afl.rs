@@ -22,20 +22,19 @@ use std::io::{self, Read};
 /// # }
 ///
 /// fn main() {
-///     afl::read_bytes(|read| {
+///     afl::read_stdio_bytes(|read| {
 ///         Image::parse(read)
 ///     })
 /// }
 /// ```
-pub fn read_bytes_from_stdio<F>(closure: F)
+pub fn read_stdio_bytes<F>(closure: F)
     where F: FnOnce(Vec<u8>)
 {
     let mut input = vec![];
     let result = io::stdin().read_to_end(&mut input);
-    if result.is_err() {
-        return;
+    if result.is_ok() {
+        closure(input);
     }
-    closure(input);
 }
 
 /// Utility that reads a `String` from standard input (stdin) and
@@ -59,49 +58,15 @@ pub fn read_bytes_from_stdio<F>(closure: F)
 ///     })
 /// }
 /// ```
-pub fn read_string_from_stdio<F>(closure: F)
+pub fn read_stdio_string<F>(closure: F)
     where F: FnOnce(String)
 {
     let mut input = String::new();
     let result = io::stdin().read_to_string(&mut input);
-    if result.is_err() {
-        return;
+    if result.is_ok() {
+        closure(input);
     }
-    closure(input);
 }
-
-/// Utility that passes `Stdin` to `closure` for use with functions
-/// that expect a structure that implements `Read`. All panics that
-/// occur within `closure` will be treated as aborts. This is done
-/// so that AFL considers a panic to be a crash.
-///
-/// # Examples
-///
-/// ```no_run
-/// extern crate afl;
-/// # struct Image;
-/// # impl Image {
-/// #     fn parse(_: &[u8]) {}
-/// # }
-///
-/// fn main() {
-///     afl::read_bytes(|bytes| {
-///         Image::parse(&bytes)
-///     })
-/// }
-/// ```
-// pub fn read_bytes<F>(closure: F)
-//     where F: FnOnce(io::Stdin) + UnwindSafe
-// {
-//     let result = panic::catch_unwind(|| {
-//         closure(io::stdin());
-//     });
-//     if result.is_err() {
-//         unsafe {
-//             abort();
-//         }
-//     }
-// }
 
 #[cfg(test)]
 mod test {
