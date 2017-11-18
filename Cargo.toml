@@ -1,0 +1,19 @@
+[package]
+name = "afl"
+version = "0.2.0"
+readme = "README.md"
+license = "Apache-2.0"
+authors = ["Keegan McAllister <mcallister.keegan@gmail.com>",
+           "Corey Farwell <coreyf@rwell.org>"]
+description = "Fuzzing Rust code with american-fuzzy-lop"
+repository = "https://github.com/rust-fuzz/afl.rs"
+homepage = "https://github.com/rust-fuzz/afl.rs"
+
+[build-dependencies]
+xdg = "2.1"
+rustc_version = "0.2"
+
+[dependencies]
+cc = "1.0"
+rustc_version = "0.2"
+xdg = "2.1"
