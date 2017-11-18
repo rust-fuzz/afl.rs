@@ -6,12 +6,12 @@
 
 #![deny(warnings)]
 
-extern crate gcc;
+extern crate cc;
 
 use std::env;
 
 fn main() {
-    gcc::Config::new()
+    cc::Build::new()
         .file("src/afl-llvm-rt.o.c")
         .opt_level(3)
         .flag("-w")
