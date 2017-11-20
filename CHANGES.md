@@ -1,5 +1,13 @@
 # Changes
 
+## 0.2.1
+
+* [Introduce more helpful CLI using clap-rs](https://github.com/rust-fuzz/afl.rs/commit/c9537eabd412591b91e328f41451c4aba199c684)
+
+## 0.2.0
+
+* [Rewrite of afl.rs; introduction of cargo-afl](https://github.com/rust-fuzz/afl.rs/pull/116)
+
 ## 0.1.5
 
 * Don't enforce LLVM version 3.8
