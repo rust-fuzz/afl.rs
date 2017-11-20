@@ -25,7 +25,7 @@ fn build_afl(out_dir: &Path) {
         .env("DESTDIR", out_dir)
         .env("PREFIX", "")
         .status()
-        .unwrap();
+        .expect("could not run 'make'");
     assert!(status.success());
 }
 
@@ -43,7 +43,7 @@ fn build_afl_llvm_runtime(out_dir: &Path) {
         .arg("-fpermissive")
         .args(&[OsStr::new("-o"), object_file_path.as_os_str()])
         .status()
-        .unwrap();
+        .expect("could not run 'gcc'");
     assert!(status.success());
 
     let status = Command::new("ar")
@@ -51,6 +51,6 @@ fn build_afl_llvm_runtime(out_dir: &Path) {
         .arg(archive_file_path)
         .arg(object_file_path)
         .status()
-        .unwrap();
+        .expect("could not run 'ar'");
     assert!(status.success());
 }
