@@ -28,7 +28,8 @@ use std::io::{self, Read};
 /// }
 /// ```
 pub fn read_stdio_bytes<F>(closure: F)
-    where F: Fn(Vec<u8>)
+where
+    F: Fn(Vec<u8>),
 {
     let mut input = vec![];
     let result = io::stdin().read_to_end(&mut input);
@@ -59,7 +60,8 @@ pub fn read_stdio_bytes<F>(closure: F)
 /// }
 /// ```
 pub fn read_stdio_string<F>(closure: F)
-    where F: Fn(String)
+where
+    F: Fn(String),
 {
     let mut input = String::new();
     let result = io::stdin().read_to_string(&mut input);
