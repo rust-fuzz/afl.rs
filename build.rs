@@ -33,7 +33,7 @@ fn build_afl_llvm_runtime(out_dir: &Path) {
     let object_file_path = out_dir.join("libafl-llvm-rt.o");
     let archive_file_path = out_dir.join("libafl-llvm-rt.a");
 
-    let status = Command::new("gcc")
+    let status = Command::new("cc")
         .current_dir(AFL_SRC_PATH)
         .arg("-c")
         .arg("-O1")
