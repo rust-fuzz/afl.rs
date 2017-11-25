@@ -7,12 +7,12 @@ use std::process::Command;
 
 static AFL_SRC_PATH: &str = "afl-2.52b";
 
-#[path = "src/dirs.rs"]
-mod dirs;
+#[path = "src/common.rs"]
+mod common;
 
 fn main() {
-    build_afl(&dirs::afl());
-    build_afl_llvm_runtime(&dirs::afl_llvm_rt());
+    build_afl(&common::afl_dir());
+    build_afl_llvm_runtime();
 }
 
 fn build_afl(out_dir: &Path) {
@@ -29,10 +29,7 @@ fn build_afl(out_dir: &Path) {
     assert!(status.success());
 }
 
-fn build_afl_llvm_runtime(out_dir: &Path) {
-    let object_file_path = out_dir.join("libafl-llvm-rt.o");
-    let archive_file_path = out_dir.join("libafl-llvm-rt.a");
-
+fn build_afl_llvm_runtime() {
     let status = Command::new("cc")
         .current_dir(AFL_SRC_PATH)
         .arg("-c")
@@ -41,15 +38,15 @@ fn build_afl_llvm_runtime(out_dir: &Path) {
         .arg("-fno-omit-frame-pointer")
         .arg("llvm_mode/afl-llvm-rt.o.c")
         .arg("-fpermissive")
-        .args(&[OsStr::new("-o"), object_file_path.as_os_str()])
+        .args(&[OsStr::new("-o"), common::object_file_path().as_os_str()])
         .status()
         .expect("could not run 'gcc'");
     assert!(status.success());
 
     let status = Command::new("ar")
         .arg("r")
-        .arg(archive_file_path)
-        .arg(object_file_path)
+        .arg(common::archive_file_path())
+        .arg(common::object_file_path())
         .status()
         .expect("could not run 'ar'");
     assert!(status.success());

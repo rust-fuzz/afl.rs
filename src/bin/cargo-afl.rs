@@ -7,10 +7,17 @@ use std::env;
 use std::ffi::OsStr;
 use std::process::{self, Command};
 
-#[path = "../dirs.rs"]
-mod dirs;
+#[path = "../common.rs"]
+mod common;
 
 fn main() {
+    if !common::archive_file_path().exists() {
+        let version = common::rustc_version();
+        eprintln!("AFL LLVM runtime is not built with Rust {}, run `cargo \
+                   install --force afl` to build it.", version);
+        process::exit(1);
+    }
+
     let _ = clap_app().get_matches();
 
     let mut args = env::args().skip(2).peekable(); // skip `cargo` and `afl`
@@ -127,7 +134,7 @@ where
     I: IntoIterator<Item = S>,
     S: AsRef<OsStr>,
 {
-    let cmd_path = dirs::afl().join("bin").join(cmd);
+    let cmd_path = common::afl_dir().join("bin").join(cmd);
     let status = Command::new(cmd_path)
         .args(args.into_iter().skip(1)) // skip afl sub-command
         .status()
@@ -149,7 +156,7 @@ where
          -C panic=abort \
          -l afl-llvm-rt \
          -L {}",
-        dirs::afl_llvm_rt().display()
+        common::afl_llvm_rt_dir().display()
     );
     let status = Command::new(cargo_path)
         .args(args) // skip `cargo` and `afl`

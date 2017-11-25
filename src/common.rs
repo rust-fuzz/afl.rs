@@ -10,7 +10,7 @@ fn xdg_dir() -> xdg::BaseDirectories {
     xdg::BaseDirectories::with_prefix(prefix).unwrap()
 }
 
-fn rustc_version() -> String {
+pub fn rustc_version() -> String {
     let mut ret = String::from("rustc-");
     ret.push_str(&rustc_version::version().unwrap().to_string());
     ret
@@ -26,10 +26,19 @@ fn pkg_version() -> String {
     ret
 }
 
-pub fn afl() -> PathBuf {
+pub fn afl_dir() -> PathBuf {
     xdg_dir().create_data_directory("afl").unwrap()
 }
 
-pub fn afl_llvm_rt() -> PathBuf {
+pub fn afl_llvm_rt_dir() -> PathBuf {
     xdg_dir().create_data_directory("afl-llvm-rt").unwrap()
+}
+
+#[allow(dead_code)]
+pub fn object_file_path() -> PathBuf {
+    afl_llvm_rt_dir().join("libafl-llvm-rt.o")
+}
+
+pub fn archive_file_path() -> PathBuf {
+    afl_llvm_rt_dir().join("libafl-llvm-rt.a")
 }
