@@ -146,7 +146,6 @@ where
         "-C llvm-args=-sanitizer-coverage-level=3 \
          -C llvm-args=-sanitizer-coverage-trace-pc-guard \
          -C passes=sancov \
-         -C panic=abort \
          -l afl-llvm-rt \
          -L {}",
         dirs::afl_llvm_rt().display()

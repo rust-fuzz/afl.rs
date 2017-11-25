@@ -6,6 +6,7 @@
 // See `LICENSE` in this repository.
 
 use std::io::{self, Read};
+use std::{panic, process};
 
 /// Utility that reads a `Vec` of bytes from standard input (stdin)
 /// and passes it to `closure`. All panics that occur within
@@ -29,12 +30,18 @@ use std::io::{self, Read};
 /// ```
 pub fn read_stdio_bytes<F>(closure: F)
 where
-    F: Fn(Vec<u8>),
+    F: Fn(Vec<u8>) + panic::RefUnwindSafe,
 {
     let mut input = vec![];
     let result = io::stdin().read_to_end(&mut input);
-    if result.is_ok() {
+    if result.is_err() {
+        return;
+    }
+    let was_panic = panic::catch_unwind(|| {
         closure(input);
+    });
+    if was_panic.is_err() {
+        process::abort();
     }
 }
 
@@ -61,12 +68,18 @@ where
 /// ```
 pub fn read_stdio_string<F>(closure: F)
 where
-    F: Fn(String),
+    F: Fn(String) + panic::RefUnwindSafe,
 {
     let mut input = String::new();
     let result = io::stdin().read_to_string(&mut input);
-    if result.is_ok() {
+    if result.is_err() {
+        return;
+    }
+    let was_panic = panic::catch_unwind(|| {
         closure(input);
+    });
+    if was_panic.is_err() {
+        process::abort();
     }
 }
 
