@@ -11,8 +11,13 @@ fn xdg_dir() -> xdg::BaseDirectories {
 }
 
 pub fn rustc_version() -> String {
+    let version_meta = rustc_version::version_meta().unwrap();
     let mut ret = String::from("rustc-");
-    ret.push_str(&rustc_version::version().unwrap().to_string());
+    ret.push_str(&version_meta.semver.to_string());
+    if let Some(commit_hash) = version_meta.commit_hash {
+        ret.push('-');
+        ret.push_str(&commit_hash[..7]);
+    }
     ret
 }
 
