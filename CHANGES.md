@@ -1,5 +1,10 @@
 # Changes
 
+## 0.3.0
+
+* [Prefer panic catching strategy over adjusting paic strategy.](https://github.com/rust-fuzz/afl.rs/pull/123)
+* [Incorporate commit hash into directory structure.](https://github.com/rust-fuzz/afl.rs/pull/125)
+
 ## 0.2.3
 
 * [Print error message if archive file (to be linked) can't be found.](https://github.com/rust-fuzz/afl.rs/commit/d65c9cbc7f679aae87b0ad92d7e2496ee4e09e55)
