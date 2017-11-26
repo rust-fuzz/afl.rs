@@ -10,13 +10,15 @@ fn xdg_dir() -> xdg::BaseDirectories {
     xdg::BaseDirectories::with_prefix(prefix).unwrap()
 }
 
+const SHORT_COMMIT_HASH_LEN: usize = 7;
+
 pub fn rustc_version() -> String {
     let version_meta = rustc_version::version_meta().unwrap();
     let mut ret = String::from("rustc-");
     ret.push_str(&version_meta.semver.to_string());
     if let Some(commit_hash) = version_meta.commit_hash {
         ret.push('-');
-        ret.push_str(&commit_hash[..7]);
+        ret.push_str(&commit_hash[..SHORT_COMMIT_HASH_LEN]);
     }
     ret
 }
