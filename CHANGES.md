@@ -1,5 +1,9 @@
 # Changes
 
+## 0.3.1
+
+* [Bump clap-rs to fix `cargo-afl fuzz --help` bug.](https://github.com/rust-fuzz/afl.rs/issues/121)
+
 ## 0.3.0
 
 * [Prefer panic catching strategy over adjusting paic strategy.](https://github.com/rust-fuzz/afl.rs/pull/123)
