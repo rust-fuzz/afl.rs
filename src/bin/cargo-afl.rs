@@ -53,7 +53,7 @@ fn clap_app() -> clap::App<'static, 'static> {
                     .setting(clap::AppSettings::DisableHelpSubcommand)
                     .setting(clap::AppSettings::DisableVersion)
                     .arg(clap::Arg::with_name("h").short("h").hidden(true))
-                    .arg(clap::Arg::with_name("help").long("help").help("known bug! rewrite as '-- --help' to see AFL help"))
+                    .arg(clap::Arg::with_name("help").long("help").hidden(true))
                     .arg(clap::Arg::with_name("afl-analyze args").multiple(true)),
             )
             .subcommand(
@@ -63,7 +63,7 @@ fn clap_app() -> clap::App<'static, 'static> {
                     .setting(clap::AppSettings::DisableHelpSubcommand)
                     .setting(clap::AppSettings::DisableVersion)
                     .arg(clap::Arg::with_name("h").short("h").hidden(true))
-                    .arg(clap::Arg::with_name("help").long("help").help("known bug! rewrite as '-- --help' to see AFL help"))
+                    .arg(clap::Arg::with_name("help").long("help").hidden(true))
                     .arg(clap::Arg::with_name("afl-cmin args").multiple(true)),
             )
             .subcommand(
@@ -73,7 +73,7 @@ fn clap_app() -> clap::App<'static, 'static> {
                     .setting(clap::AppSettings::DisableHelpSubcommand)
                     .setting(clap::AppSettings::DisableVersion)
                     .arg(clap::Arg::with_name("h").short("h").hidden(true))
-                    .arg(clap::Arg::with_name("help").long("help").help("known bug! rewrite as '-- --help' to see AFL help"))
+                    .arg(clap::Arg::with_name("help").long("help").hidden(true))
                     .arg(clap::Arg::with_name("afl-fuzz args").multiple(true)),
             )
             .subcommand(
@@ -83,7 +83,7 @@ fn clap_app() -> clap::App<'static, 'static> {
                     .setting(clap::AppSettings::DisableHelpSubcommand)
                     .setting(clap::AppSettings::DisableVersion)
                     .arg(clap::Arg::with_name("h").short("h").hidden(true))
-                    .arg(clap::Arg::with_name("help").long("help").help("known bug! rewrite as '-- --help' to see AFL help"))
+                    .arg(clap::Arg::with_name("help").long("help").hidden(true))
                     .arg(clap::Arg::with_name("afl-gotcpu args").multiple(true)),
             )
             .subcommand(
@@ -93,7 +93,7 @@ fn clap_app() -> clap::App<'static, 'static> {
                     .setting(clap::AppSettings::DisableHelpSubcommand)
                     .setting(clap::AppSettings::DisableVersion)
                     .arg(clap::Arg::with_name("h").short("h").hidden(true))
-                    .arg(clap::Arg::with_name("help").long("help").help("known bug! rewrite as '-- --help' to see AFL help"))
+                    .arg(clap::Arg::with_name("help").long("help").hidden(true))
                     .arg(clap::Arg::with_name("afl-plot args").multiple(true)),
             )
             .subcommand(
@@ -103,7 +103,7 @@ fn clap_app() -> clap::App<'static, 'static> {
                     .setting(clap::AppSettings::DisableHelpSubcommand)
                     .setting(clap::AppSettings::DisableVersion)
                     .arg(clap::Arg::with_name("h").short("h").hidden(true))
-                    .arg(clap::Arg::with_name("help").long("help").help("known bug! rewrite as '-- --help' to see AFL help"))
+                    .arg(clap::Arg::with_name("help").long("help").hidden(true))
                     .arg(clap::Arg::with_name("afl-showmap args").multiple(true)),
             )
             .subcommand(
@@ -113,7 +113,7 @@ fn clap_app() -> clap::App<'static, 'static> {
                     .setting(clap::AppSettings::DisableHelpSubcommand)
                     .setting(clap::AppSettings::DisableVersion)
                     .arg(clap::Arg::with_name("h").short("h").hidden(true))
-                    .arg(clap::Arg::with_name("help").long("help").help("known bug! rewrite as '-- --help' to see AFL help"))
+                    .arg(clap::Arg::with_name("help").long("help").hidden(true))
                     .arg(clap::Arg::with_name("afl-tmin args").multiple(true)),
             )
             .subcommand(
@@ -123,7 +123,7 @@ fn clap_app() -> clap::App<'static, 'static> {
                     .setting(clap::AppSettings::DisableHelpSubcommand)
                     .setting(clap::AppSettings::DisableVersion)
                     .arg(clap::Arg::with_name("h").short("h").hidden(true))
-                    .arg(clap::Arg::with_name("help").long("help").help("known bug! rewrite as '-- --help' to see AFL help"))
+                    .arg(clap::Arg::with_name("help").long("help").hidden(true))
                     .arg(clap::Arg::with_name("afl-whatsup args").multiple(true)),
             ),
     )
