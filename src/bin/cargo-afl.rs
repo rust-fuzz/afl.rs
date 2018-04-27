@@ -149,7 +149,7 @@ where
 {
     let cargo_path = env!("CARGO");
 
-    let rustflags = &format!(
+    let mut rustflags = format!(
         "--cfg fuzzing \
          -C debug-assertions \
          -C overflow_checks \
@@ -161,12 +161,16 @@ where
          -C target-cpu=native \
          -C debuginfo=0 \
          -l afl-llvm-rt \
-         -L {}",
+         -L {} ",
         common::afl_llvm_rt_dir().display()
     );
+
+    // add user provided flags
+    rustflags.push_str(&env::var("RUSTFLAGS").unwrap_or_default());
+
     let status = Command::new(cargo_path)
         .args(args) // skip `cargo` and `afl`
-        .env("RUSTFLAGS", rustflags)
+        .env("RUSTFLAGS", &rustflags)
         .status()
         .unwrap();
     process::exit(status.code().unwrap_or(1));
