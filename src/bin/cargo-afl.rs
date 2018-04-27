@@ -150,9 +150,16 @@ where
     let cargo_path = env!("CARGO");
 
     let rustflags = &format!(
-        "-C llvm-args=-sanitizer-coverage-level=3 \
-         -C llvm-args=-sanitizer-coverage-trace-pc-guard \
+        "--cfg fuzzing \
+         -C debug-assertions \
+         -C overflow_checks \
          -C passes=sancov \
+         -C llvm-args=-sanitizer-coverage-level=3 \
+         -C llvm-args=-sanitizer-coverage-trace-pc-guard \
+         -C llvm-args=-sanitizer-coverage-prune-blocks=0 \
+         -C opt-level=3 \
+         -C target-cpu=native \
+         -C debuginfo=0 \
          -l afl-llvm-rt \
          -L {}",
         common::afl_llvm_rt_dir().display()
