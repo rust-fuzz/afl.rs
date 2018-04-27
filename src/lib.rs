@@ -89,6 +89,26 @@ extern "C" {
     fn __afl_manual_init();
 }
 
+/// Fuzz a closure by passing it a `&[u8]`
+///
+/// This slice contains a "random" quantity of "random" data.
+///
+/// ```rust,should_panic
+/// # extern crate afl;
+/// # use afl::fuzz;
+/// # fn main() {
+/// fuzz(|data|{
+///     if data.len() != 6 {return}
+///     if data[0] != b'q' {return}
+///     if data[1] != b'w' {return}
+///     if data[2] != b'e' {return}
+///     if data[3] != b'r' {return}
+///     if data[4] != b't' {return}
+///     if data[5] != b'y' {return}
+///     panic!("BOOM")
+/// });
+/// # }
+/// ```
 pub fn fuzz<F>(closure: F) where F: Fn(&[u8]) + std::panic::RefUnwindSafe {
     // this marker strings needs to be in the produced executable for
     // afl-fuzz to detect `persistent mode` and `defered mode`
