@@ -93,7 +93,7 @@ extern "C" {
 ///
 /// This slice contains a "random" quantity of "random" data.
 ///
-/// ```rust,should_panic
+/// ```rust,ignore
 /// # extern crate afl;
 /// # use afl::fuzz;
 /// # fn main() {
@@ -154,6 +154,54 @@ pub fn fuzz<F>(closure: F) where F: Fn(&[u8]) + std::panic::RefUnwindSafe {
         }
         input.clear();
     }
+}
+
+/// Fuzz a closure-like block of code by passing it an object of arbitrary type.
+///
+/// You can choose the type of the argument using the syntax as in the example below.
+/// Please check out the `arbitrary` crate to see which types are available.
+///
+/// For performance reasons, it is recommended that you use the native type `&[u8]` when possible.
+///
+/// ```rust,ignore
+/// # #[macro_use] extern crate afl;
+/// # fn main() {
+/// fuzz!(|data: &[u8]| {
+///     if data.len() != 6 {return}
+///     if data[0] != b'q' {return}
+///     if data[1] != b'w' {return}
+///     if data[2] != b'e' {return}
+///     if data[3] != b'r' {return}
+///     if data[4] != b't' {return}
+///     if data[5] != b'y' {return}
+///     panic!("BOOM")
+/// });
+/// # }
+/// ```
+#[macro_export]
+macro_rules! fuzz {
+    (|$buf:ident| $body:block) => {
+        afl::fuzz(|$buf| $body);
+    };
+    (|$buf:ident: &[u8]| $body:block) => {
+        afl::fuzz(|$buf| $body);
+    };
+    (|$buf:ident: $dty: ty| $body:block) => {
+        afl::fuzz(|$buf| {
+            let $buf: $dty = {
+                use arbitrary::{Arbitrary, RingBuffer};
+                if let Ok(d) = RingBuffer::new($buf, $buf.len()).and_then(|mut b|{
+                        Arbitrary::arbitrary(&mut b).map_err(|_| "")
+                    }) {
+                    d
+                } else {
+                    return
+                }
+            };
+
+            $body
+        });
+    };
 }
 
 #[cfg(test)]
