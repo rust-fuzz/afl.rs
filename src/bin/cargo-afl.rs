@@ -149,6 +149,13 @@ where
 {
     let cargo_path = env!("CARGO");
 
+    // add some flags to sanitizers to make them work with Rust code
+    let asan_options = env::var("ASAN_OPTIONS").unwrap_or_default();
+    let asan_options = format!("detect_odr_violation=0:{}", asan_options);
+
+    let tsan_options = env::var("TSAN_OPTIONS").unwrap_or_default();
+    let tsan_options = format!("report_signal_unsafe=0:{}", tsan_options);
+
     let mut rustflags = format!(
         "--cfg fuzzing \
          -C debug-assertions \
@@ -171,6 +178,8 @@ where
     let status = Command::new(cargo_path)
         .args(args) // skip `cargo` and `afl`
         .env("RUSTFLAGS", &rustflags)
+        .env("ASAN_OPTIONS", asan_options)
+        .env("TSAN_OPTIONS", tsan_options)
         .status()
         .unwrap();
     process::exit(status.code().unwrap_or(1));
