@@ -83,20 +83,24 @@ where
     }
 }
 
-// this function is provided by the afl-llvm-rt static library
+// those functions are provided by the afl-llvm-rt static library
 extern "C" {
     fn __afl_persistent_loop(counter: usize) -> isize;
+    fn __afl_manual_init();
 }
 
 pub fn fuzz<F>(closure: F) where F: Fn(&[u8]) + std::panic::RefUnwindSafe {
     // this marker strings needs to be in the produced executable for
-    // afl-fuzz to detect `persistent mode`
+    // afl-fuzz to detect `persistent mode` and `defered mode`
     static PERSIST_MARKER: &'static str = "##SIG_AFL_PERSISTENT##\0";
+    static DEFERED_MARKER: &'static str = "##SIG_AFL_DEFER_FORKSRV##\0";
 
     // we now need a fake instruction to prevent the compiler from optimizing out
-    // this marker string
+    // those marker strings
     unsafe{std::ptr::read_volatile(&PERSIST_MARKER)}; // hack used in https://github.com/bluss/bencher for black_box()
+    unsafe{std::ptr::read_volatile(&DEFERED_MARKER)};
     // unsafe { asm!("" : : "r"(&PERSIST_MARKER)) }; // hack used in nightly's back_box(), requires feature asm
+    // unsafe { asm!("" : : "r"(&DEFERED_MARKER)) };
 
     // sets panic hook to abort
     std::panic::set_hook(Box::new(|_| {
@@ -104,6 +108,9 @@ pub fn fuzz<F>(closure: F) where F: Fn(&[u8]) + std::panic::RefUnwindSafe {
     }));
 
     let mut input = vec![];
+
+    // initialize forkserver there
+    unsafe{__afl_manual_init()};
 
     while unsafe{__afl_persistent_loop(1000)} != 0 {
         // get buffer from AFL through stdin
