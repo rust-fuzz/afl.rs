@@ -28,6 +28,9 @@ use std::{panic, process};
 ///     })
 /// }
 /// ```
+#[deprecated(since = "0.3.3",
+note="This function does not use the `persistent mode` and `defered forkserver mode` and is therefore very slow.
+Please use fuzz() or fuzz!() instead.")]
 pub fn read_stdio_bytes<F>(closure: F)
 where
     F: Fn(Vec<u8>) + panic::RefUnwindSafe,
@@ -66,6 +69,9 @@ where
 ///     })
 /// }
 /// ```
+#[deprecated(since = "0.3.3",
+note="This function does not use the `persistent mode` and `defered forkserver mode` and is therefore very slow.
+Please use fuzz() or fuzz!() instead.")]
 pub fn read_stdio_string<F>(closure: F)
 where
     F: Fn(String) + panic::RefUnwindSafe,
