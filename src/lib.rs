@@ -98,6 +98,11 @@ pub fn fuzz<F>(closure: F) where F: Fn(&[u8]) + std::panic::RefUnwindSafe {
     unsafe{std::ptr::read_volatile(&PERSIST_MARKER)}; // hack used in https://github.com/bluss/bencher for black_box()
     // unsafe { asm!("" : : "r"(&PERSIST_MARKER)) }; // hack used in nightly's back_box(), requires feature asm
 
+    // sets panic hook to abort
+    std::panic::set_hook(Box::new(|_| {
+        std::process::abort();
+    }));
+
     let mut input = vec![];
 
     while unsafe{__afl_persistent_loop(1000)} != 0 {
@@ -107,11 +112,17 @@ pub fn fuzz<F>(closure: F) where F: Fn(&[u8]) + std::panic::RefUnwindSafe {
             return;
         }
 
+        // We still catch unwinding panics just in case the fuzzed code modifies
+        // the panic hook.
+        // If so, the fuzzer will be unable to tell different bugs appart and you will
+        // only be able to find one bug at a time before fixing it to then find a new one.
         let did_panic = std::panic::catch_unwind(|| {
             closure(&input);
         }).is_err();
 
         if did_panic {
+            // hopefully the custom panic hook will be called before and abort the
+            // process before the stack frames are unwinded.
             std::process::abort();
         }
         input.clear();
