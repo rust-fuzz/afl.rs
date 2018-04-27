@@ -83,6 +83,41 @@ where
     }
 }
 
+// this function is provided by the afl-llvm-rt static library
+extern "C" {
+    fn __afl_persistent_loop(counter: usize) -> isize;
+}
+
+pub fn fuzz<F>(closure: F) where F: Fn(&[u8]) + std::panic::RefUnwindSafe {
+    // this marker strings needs to be in the produced executable for
+    // afl-fuzz to detect `persistent mode`
+    static PERSIST_MARKER: &'static str = "##SIG_AFL_PERSISTENT##\0";
+
+    // we now need a fake instruction to prevent the compiler from optimizing out
+    // this marker string
+    unsafe{std::ptr::read_volatile(&PERSIST_MARKER)}; // hack used in https://github.com/bluss/bencher for black_box()
+    // unsafe { asm!("" : : "r"(&PERSIST_MARKER)) }; // hack used in nightly's back_box(), requires feature asm
+
+    let mut input = vec![];
+
+    while unsafe{__afl_persistent_loop(1000)} != 0 {
+        // get buffer from AFL through stdin
+        let result = io::stdin().read_to_end(&mut input);
+        if result.is_err() {
+            return;
+        }
+
+        let did_panic = std::panic::catch_unwind(|| {
+            closure(&input);
+        }).is_err();
+
+        if did_panic {
+            std::process::abort();
+        }
+        input.clear();
+    }
+}
+
 #[cfg(test)]
 mod test {
     /*
