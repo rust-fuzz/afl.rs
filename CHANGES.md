@@ -1,12 +1,20 @@
 # Changes
 
+## 0.4.0
+
+* [Run AFL in persistent mode, use `panic::set_hook()`, add ASAN/TSAN flags, deprecate non-persistent functions, `RUSTFLAGS` no longer get overwritten](https://github.com/rust-fuzz/afl.rs/pull/137)
+
+## 0.3.2
+
+* [Commit cargo.lock since we now distribute a binary](https://github.com/rust-fuzz/afl.rs/commit/fc80199080f36ea0c249e1a4bb827370dcefebc2)
+
 ## 0.3.1
 
 * [Bump clap-rs to fix `cargo-afl fuzz --help` bug.](https://github.com/rust-fuzz/afl.rs/issues/121)
 
 ## 0.3.0
 
-* [Prefer panic catching strategy over adjusting paic strategy.](https://github.com/rust-fuzz/afl.rs/pull/123)
+* [Prefer panic catching strategy over adjusting panic strategy.](https://github.com/rust-fuzz/afl.rs/pull/123)
 * [Incorporate commit hash into directory structure.](https://github.com/rust-fuzz/afl.rs/pull/125)
 
 ## 0.2.3
