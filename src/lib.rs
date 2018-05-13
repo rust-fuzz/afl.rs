@@ -28,6 +28,9 @@ use std::{panic, process};
 ///     })
 /// }
 /// ```
+#[deprecated(since = "0.3.3",
+note="This function does not use the `persistent mode` and `defered forkserver mode` and is therefore very slow.
+Please use fuzz() or fuzz!() instead.")]
 pub fn read_stdio_bytes<F>(closure: F)
 where
     F: Fn(Vec<u8>) + panic::RefUnwindSafe,
@@ -66,6 +69,9 @@ where
 ///     })
 /// }
 /// ```
+#[deprecated(since = "0.3.3",
+note="This function does not use the `persistent mode` and `defered forkserver mode` and is therefore very slow.
+Please use fuzz() or fuzz!() instead.")]
 pub fn read_stdio_string<F>(closure: F)
 where
     F: Fn(String) + panic::RefUnwindSafe,
@@ -81,6 +87,127 @@ where
     if was_panic.is_err() {
         process::abort();
     }
+}
+
+// those functions are provided by the afl-llvm-rt static library
+extern "C" {
+    fn __afl_persistent_loop(counter: usize) -> isize;
+    fn __afl_manual_init();
+}
+
+/// Fuzz a closure by passing it a `&[u8]`
+///
+/// This slice contains a "random" quantity of "random" data.
+///
+/// ```rust,no_run
+/// # extern crate afl;
+/// # use afl::fuzz;
+/// # fn main() {
+/// fuzz(|data|{
+///     if data.len() != 6 {return}
+///     if data[0] != b'q' {return}
+///     if data[1] != b'w' {return}
+///     if data[2] != b'e' {return}
+///     if data[3] != b'r' {return}
+///     if data[4] != b't' {return}
+///     if data[5] != b'y' {return}
+///     panic!("BOOM")
+/// });
+/// # }
+/// ```
+pub fn fuzz<F>(closure: F) where F: Fn(&[u8]) + std::panic::RefUnwindSafe {
+    // this marker strings needs to be in the produced executable for
+    // afl-fuzz to detect `persistent mode` and `defered mode`
+    static PERSIST_MARKER: &'static str = "##SIG_AFL_PERSISTENT##\0";
+    static DEFERED_MARKER: &'static str = "##SIG_AFL_DEFER_FORKSRV##\0";
+
+    // we now need a fake instruction to prevent the compiler from optimizing out
+    // those marker strings
+    unsafe{std::ptr::read_volatile(&PERSIST_MARKER)}; // hack used in https://github.com/bluss/bencher for black_box()
+    unsafe{std::ptr::read_volatile(&DEFERED_MARKER)};
+    // unsafe { asm!("" : : "r"(&PERSIST_MARKER)) }; // hack used in nightly's back_box(), requires feature asm
+    // unsafe { asm!("" : : "r"(&DEFERED_MARKER)) };
+
+    // sets panic hook to abort
+    std::panic::set_hook(Box::new(|_| {
+        std::process::abort();
+    }));
+
+    let mut input = vec![];
+
+    // initialize forkserver there
+    unsafe{__afl_manual_init()};
+
+    while unsafe{__afl_persistent_loop(1000)} != 0 {
+        // get buffer from AFL through stdin
+        let result = io::stdin().read_to_end(&mut input);
+        if result.is_err() {
+            return;
+        }
+
+        // We still catch unwinding panics just in case the fuzzed code modifies
+        // the panic hook.
+        // If so, the fuzzer will be unable to tell different bugs appart and you will
+        // only be able to find one bug at a time before fixing it to then find a new one.
+        let did_panic = std::panic::catch_unwind(|| {
+            closure(&input);
+        }).is_err();
+
+        if did_panic {
+            // hopefully the custom panic hook will be called before and abort the
+            // process before the stack frames are unwinded.
+            std::process::abort();
+        }
+        input.clear();
+    }
+}
+
+/// Fuzz a closure-like block of code by passing it an object of arbitrary type.
+///
+/// You can choose the type of the argument using the syntax as in the example below.
+/// Please check out the `arbitrary` crate to see which types are available.
+///
+/// For performance reasons, it is recommended that you use the native type `&[u8]` when possible.
+///
+/// ```rust,no_run
+/// # #[macro_use] extern crate afl;
+/// # fn main() {
+/// fuzz!(|data: &[u8]| {
+///     if data.len() != 6 {return}
+///     if data[0] != b'q' {return}
+///     if data[1] != b'w' {return}
+///     if data[2] != b'e' {return}
+///     if data[3] != b'r' {return}
+///     if data[4] != b't' {return}
+///     if data[5] != b'y' {return}
+///     panic!("BOOM")
+/// });
+/// # }
+/// ```
+#[macro_export]
+macro_rules! fuzz {
+    (|$buf:ident| $body:block) => {
+        afl::fuzz(|$buf| $body);
+    };
+    (|$buf:ident: &[u8]| $body:block) => {
+        afl::fuzz(|$buf| $body);
+    };
+    (|$buf:ident: $dty: ty| $body:block) => {
+        afl::fuzz(|$buf| {
+            let $buf: $dty = {
+                use arbitrary::{Arbitrary, RingBuffer};
+                if let Ok(d) = RingBuffer::new($buf, $buf.len()).and_then(|mut b|{
+                        Arbitrary::arbitrary(&mut b).map_err(|_| "")
+                    }) {
+                    d
+                } else {
+                    return
+                }
+            };
+
+            $body
+        });
+    };
 }
 
 #[cfg(test)]

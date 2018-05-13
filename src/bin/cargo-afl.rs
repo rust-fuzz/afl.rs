@@ -149,17 +149,37 @@ where
 {
     let cargo_path = env!("CARGO");
 
-    let rustflags = &format!(
-        "-C llvm-args=-sanitizer-coverage-level=3 \
-         -C llvm-args=-sanitizer-coverage-trace-pc-guard \
+    // add some flags to sanitizers to make them work with Rust code
+    let asan_options = env::var("ASAN_OPTIONS").unwrap_or_default();
+    let asan_options = format!("detect_odr_violation=0:{}", asan_options);
+
+    let tsan_options = env::var("TSAN_OPTIONS").unwrap_or_default();
+    let tsan_options = format!("report_signal_unsafe=0:{}", tsan_options);
+
+    let mut rustflags = format!(
+        "--cfg fuzzing \
+         -C debug-assertions \
+         -C overflow_checks \
          -C passes=sancov \
+         -C llvm-args=-sanitizer-coverage-level=3 \
+         -C llvm-args=-sanitizer-coverage-trace-pc-guard \
+         -C llvm-args=-sanitizer-coverage-prune-blocks=0 \
+         -C opt-level=3 \
+         -C target-cpu=native \
+         -C debuginfo=0 \
          -l afl-llvm-rt \
-         -L {}",
+         -L {} ",
         common::afl_llvm_rt_dir().display()
     );
+
+    // add user provided flags
+    rustflags.push_str(&env::var("RUSTFLAGS").unwrap_or_default());
+
     let status = Command::new(cargo_path)
         .args(args) // skip `cargo` and `afl`
-        .env("RUSTFLAGS", rustflags)
+        .env("RUSTFLAGS", &rustflags)
+        .env("ASAN_OPTIONS", asan_options)
+        .env("TSAN_OPTIONS", tsan_options)
         .status()
         .unwrap();
     process::exit(status.code().unwrap_or(1));
