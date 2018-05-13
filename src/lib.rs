@@ -99,7 +99,7 @@ extern "C" {
 ///
 /// This slice contains a "random" quantity of "random" data.
 ///
-/// ```rust,ignore
+/// ```rust,no_run
 /// # extern crate afl;
 /// # use afl::fuzz;
 /// # fn main() {
@@ -169,7 +169,7 @@ pub fn fuzz<F>(closure: F) where F: Fn(&[u8]) + std::panic::RefUnwindSafe {
 ///
 /// For performance reasons, it is recommended that you use the native type `&[u8]` when possible.
 ///
-/// ```rust,ignore
+/// ```rust,no_run
 /// # #[macro_use] extern crate afl;
 /// # fn main() {
 /// fuzz!(|data: &[u8]| {
