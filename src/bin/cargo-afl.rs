@@ -172,12 +172,32 @@ where
         common::afl_llvm_rt_dir().display()
     );
 
+    // RUSTFLAGS are not used by rustdoc, instead RUSTDOCFLAGS are used. Since
+    // doctests will try to link against afl-llvm-rt, set up RUSTDOCFLAGS to
+    // have doctests built the same as other code to avoid issues with doctests.
+    let mut rustdocflags = format!(
+        "--cfg fuzzing \
+         -C debug-assertions \
+         -C overflow_checks \
+         -C passes=sancov \
+         -C llvm-args=-sanitizer-coverage-level=3 \
+         -C llvm-args=-sanitizer-coverage-trace-pc-guard \
+         -C llvm-args=-sanitizer-coverage-prune-blocks=0 \
+         -C opt-level=3 \
+         -C target-cpu=native \
+         -C debuginfo=0 \
+         -L {} ",
+        common::afl_llvm_rt_dir().display()
+    );
+
     // add user provided flags
     rustflags.push_str(&env::var("RUSTFLAGS").unwrap_or_default());
+    rustdocflags.push_str(&env::var("RUSTDOCFLAGS").unwrap_or_default());
 
     let status = Command::new(cargo_path)
         .args(args) // skip `cargo` and `afl`
         .env("RUSTFLAGS", &rustflags)
+        .env("RUSTDOCFLAGS", &rustdocflags)
         .env("ASAN_OPTIONS", asan_options)
         .env("TSAN_OPTIONS", tsan_options)
         .status()
