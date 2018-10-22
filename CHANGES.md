@@ -1,5 +1,9 @@
 # Changes
 
+## 0.4.1
+
+* [Set RUSTDOCFLAGS to avoid issues with linkage for doctests](https://github.com/rust-fuzz/afl.rs/pull/143)
+
 ## 0.4.0
 
 * [Run AFL in persistent mode, use `panic::set_hook()`, add ASAN/TSAN flags, deprecate non-persistent functions, `RUSTFLAGS` no longer get overwritten](https://github.com/rust-fuzz/afl.rs/pull/137)
