@@ -1,5 +1,9 @@
 # Changes
 
+## 0.4.2
+
+* [Work around linking issues from rust-fuzz/afl.rs#141, rust-lang/rust#53945](https://github.com/rust-fuzz/afl.rs/pull/144)
+
 ## 0.4.1
 
 * [Set RUSTDOCFLAGS to avoid issues with linkage for doctests](https://github.com/rust-fuzz/afl.rs/pull/143)
