@@ -190,11 +190,13 @@ where
         common::afl_llvm_rt_dir().display()
     );
 
-    // work around https://github.com/rust-fuzz/afl.rs/issues/141 /
-    // https://github.com/rust-lang/rust/issues/53945, can be removed once
-    // those are fixed.
-    rustflags.push_str("-Clink-arg=-fuse-ld=gold");
-    rustdocflags.push_str("-Clink-arg=-fuse-ld=gold");
+    if cfg!(linux) {
+        // work around https://github.com/rust-fuzz/afl.rs/issues/141 /
+        // https://github.com/rust-lang/rust/issues/53945, can be removed once
+        // those are fixed.
+        rustflags.push_str("-Clink-arg=-fuse-ld=gold");
+        rustdocflags.push_str("-Clink-arg=-fuse-ld=gold");
+    }
 
     // add user provided flags
     rustflags.push_str(&env::var("RUSTFLAGS").unwrap_or_default());
