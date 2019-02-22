@@ -190,7 +190,7 @@ where
         common::afl_llvm_rt_dir().display()
     );
 
-    if cfg!(linux) {
+    if cfg!(target_os = "linux") {
         // work around https://github.com/rust-fuzz/afl.rs/issues/141 /
         // https://github.com/rust-lang/rust/issues/53945, can be removed once
         // those are fixed.
