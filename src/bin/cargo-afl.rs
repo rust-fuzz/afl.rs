@@ -1,7 +1,4 @@
-#[macro_use]
-extern crate clap;
-extern crate rustc_version;
-extern crate xdg;
+use clap::crate_version;
 
 use std::env;
 use std::ffi::OsStr;
@@ -12,7 +9,7 @@ mod common;
 
 fn main() {
     if !common::archive_file_path().exists() {
-        let version = common::rustc_version();
+        let version = common::afl_rustc_version();
         eprintln!("AFL LLVM runtime is not built with Rust {}, run `cargo \
                    install --force afl` to build it.", version);
         process::exit(1);
