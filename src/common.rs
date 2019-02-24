@@ -1,10 +1,9 @@
 use std::path::{Path, PathBuf};
 
 use xdg;
-use rustc_version;
 
 fn xdg_dir() -> xdg::BaseDirectories {
-    let prefix = Path::new("afl.rs").join(rustc_version()).join(
+    let prefix = Path::new("afl.rs").join(afl_rustc_version()).join(
         pkg_version(),
     );
     xdg::BaseDirectories::with_prefix(prefix).unwrap()
@@ -12,7 +11,7 @@ fn xdg_dir() -> xdg::BaseDirectories {
 
 const SHORT_COMMIT_HASH_LEN: usize = 7;
 
-pub fn rustc_version() -> String {
+pub fn afl_rustc_version() -> String {
     let version_meta = rustc_version::version_meta().unwrap();
     let mut ret = String::from("rustc-");
     ret.push_str(&version_meta.semver.to_string());
