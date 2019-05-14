@@ -15,6 +15,7 @@ fn main() {
     build_afl_llvm_runtime();
 }
 
+#[cfg(not(target_arch = "arm"))]
 fn build_afl(out_dir: &Path) {
     let status = Command::new("make")
         .current_dir(AFL_SRC_PATH)
@@ -24,6 +25,23 @@ fn build_afl(out_dir: &Path) {
         .env("AFL_TRACE_PC", "1")
         .env("DESTDIR", out_dir)
         .env("PREFIX", "")
+        .status()
+        .expect("could not run 'make'");
+    assert!(status.success());
+}
+
+#[cfg(target_arch = "arm")]
+fn build_afl(out_dir: &Path) {
+    let status = Command::new("make")
+        .current_dir(AFL_SRC_PATH)
+        .args(&["clean", "all", "install"])
+        // Rely on LLVM’s built-in execution tracing feature instead of AFL’s
+        // LLVM passi instrumentation.
+        .env("AFL_TRACE_PC", "1")
+        .env("DESTDIR", out_dir)
+        .env("PREFIX", "")
+        // sets AFL_NO_X86 to compile for ARM arch
+        .env("AFL_NO_X86", "1")
         .status()
         .expect("could not run 'make'");
     assert!(status.success());
