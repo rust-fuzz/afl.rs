@@ -28,9 +28,11 @@ use std::{panic, process};
 ///     })
 /// }
 /// ```
-#[deprecated(since = "0.3.3",
-note="This function does not use the `persistent mode` and `defered forkserver mode` and is therefore very slow.
-Please use fuzz() or fuzz!() instead.")]
+#[deprecated(
+    since = "0.3.3",
+    note = "This function does not use the `persistent mode` and `defered forkserver mode` and is therefore very slow.
+Please use fuzz() or fuzz!() instead."
+)]
 pub fn read_stdio_bytes<F>(closure: F)
 where
     F: Fn(Vec<u8>) + panic::RefUnwindSafe,
@@ -69,9 +71,11 @@ where
 ///     })
 /// }
 /// ```
-#[deprecated(since = "0.3.3",
-note="This function does not use the `persistent mode` and `defered forkserver mode` and is therefore very slow.
-Please use fuzz() or fuzz!() instead.")]
+#[deprecated(
+    since = "0.3.3",
+    note = "This function does not use the `persistent mode` and `defered forkserver mode` and is therefore very slow.
+Please use fuzz() or fuzz!() instead."
+)]
 pub fn read_stdio_string<F>(closure: F)
 where
     F: Fn(String) + panic::RefUnwindSafe,
@@ -115,7 +119,10 @@ extern "C" {
 /// });
 /// # }
 /// ```
-pub fn fuzz<F>(closure: F) where F: Fn(&[u8]) + std::panic::RefUnwindSafe {
+pub fn fuzz<F>(closure: F)
+where
+    F: Fn(&[u8]) + std::panic::RefUnwindSafe,
+{
     // this marker strings needs to be in the produced executable for
     // afl-fuzz to detect `persistent mode` and `defered mode`
     static PERSIST_MARKER: &'static str = "##SIG_AFL_PERSISTENT##\0";
@@ -123,8 +130,8 @@ pub fn fuzz<F>(closure: F) where F: Fn(&[u8]) + std::panic::RefUnwindSafe {
 
     // we now need a fake instruction to prevent the compiler from optimizing out
     // those marker strings
-    unsafe{std::ptr::read_volatile(&PERSIST_MARKER)}; // hack used in https://github.com/bluss/bencher for black_box()
-    unsafe{std::ptr::read_volatile(&DEFERED_MARKER)};
+    unsafe { std::ptr::read_volatile(&PERSIST_MARKER) }; // hack used in https://github.com/bluss/bencher for black_box()
+    unsafe { std::ptr::read_volatile(&DEFERED_MARKER) };
     // unsafe { asm!("" : : "r"(&PERSIST_MARKER)) }; // hack used in nightly's back_box(), requires feature asm
     // unsafe { asm!("" : : "r"(&DEFERED_MARKER)) };
 
@@ -136,9 +143,9 @@ pub fn fuzz<F>(closure: F) where F: Fn(&[u8]) + std::panic::RefUnwindSafe {
     let mut input = vec![];
 
     // initialize forkserver there
-    unsafe{__afl_manual_init()};
+    unsafe { __afl_manual_init() };
 
-    while unsafe{__afl_persistent_loop(1000)} != 0 {
+    while unsafe { __afl_persistent_loop(1000) } != 0 {
         // get buffer from AFL through stdin
         let result = io::stdin().read_to_end(&mut input);
         if result.is_err() {
@@ -151,7 +158,8 @@ pub fn fuzz<F>(closure: F) where F: Fn(&[u8]) + std::panic::RefUnwindSafe {
         // only be able to find one bug at a time before fixing it to then find a new one.
         let did_panic = std::panic::catch_unwind(|| {
             closure(&input);
-        }).is_err();
+        })
+        .is_err();
 
         if did_panic {
             // hopefully the custom panic hook will be called before and abort the
@@ -196,12 +204,12 @@ macro_rules! fuzz {
         afl::fuzz(|$buf| {
             let $buf: $dty = {
                 use arbitrary::{Arbitrary, RingBuffer};
-                if let Ok(d) = RingBuffer::new($buf, $buf.len()).and_then(|mut b|{
-                        Arbitrary::arbitrary(&mut b).map_err(|_| "")
-                    }) {
+                if let Ok(d) = RingBuffer::new($buf, $buf.len())
+                    .and_then(|mut b| Arbitrary::arbitrary(&mut b).map_err(|_| ""))
+                {
                     d
                 } else {
-                    return
+                    return;
                 }
             };
 

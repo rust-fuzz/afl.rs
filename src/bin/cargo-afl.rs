@@ -10,8 +10,11 @@ mod common;
 fn main() {
     if !common::archive_file_path().exists() {
         let version = common::afl_rustc_version();
-        eprintln!("AFL LLVM runtime is not built with Rust {}, run `cargo \
-                   install --force afl` to build it.", version);
+        eprintln!(
+            "AFL LLVM runtime is not built with Rust {}, run `cargo \
+             install --force afl` to build it.",
+            version
+        );
         process::exit(1);
     }
 
@@ -41,7 +44,7 @@ fn clap_app() -> clap::App<'static, 'static> {
             .usage("cargo afl [SUBCOMMAND or Cargo SUBCOMMAND]")
             .after_help(
                 "In addition to the subcommands above, Cargo subcommands are also \
-                     supported (see `cargo help` for a list of all Cargo subcommands).",
+                 supported (see `cargo help` for a list of all Cargo subcommands).",
             )
             .subcommand(
                 clap::SubCommand::with_name("analyze")

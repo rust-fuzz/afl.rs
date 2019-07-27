@@ -3,9 +3,9 @@ use std::path::{Path, PathBuf};
 use xdg;
 
 fn xdg_dir() -> xdg::BaseDirectories {
-    let prefix = Path::new("afl.rs").join(afl_rustc_version()).join(
-        pkg_version(),
-    );
+    let prefix = Path::new("afl.rs")
+        .join(afl_rustc_version())
+        .join(pkg_version());
     xdg::BaseDirectories::with_prefix(prefix).unwrap()
 }
 

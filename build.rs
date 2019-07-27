@@ -27,7 +27,7 @@ fn build_afl(out_dir: &Path) {
         .env("PREFIX", "");
     // sets AFL_NO_X86 to compile for ARM arch
     if cfg!(target_arch = "arm") {
-        command.env("AFL_NO_X86",  "1");
+        command.env("AFL_NO_X86", "1");
     }
     let status = command.status().expect("could not run 'make'");
     assert!(status.success());
