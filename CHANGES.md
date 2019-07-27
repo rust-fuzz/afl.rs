@@ -1,5 +1,13 @@
 # Changes
 
+## 0.4.4
+
+* [Add build support for AFL on ARM](https://github.com/rust-fuzz/afl.rs/pull/157)
+
+## 0.4.3
+
+* [Only enable -fuse-ld=gold on Linux.](https://github.com/rust-fuzz/afl.rs/pull/147)
+
 ## 0.4.2
 
 * [Work around linking issues from rust-fuzz/afl.rs#141, rust-lang/rust#53945](https://github.com/rust-fuzz/afl.rs/pull/144)
