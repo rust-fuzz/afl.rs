@@ -109,7 +109,7 @@ extern "C" {
 /// # extern crate afl;
 /// # use afl::fuzz;
 /// # fn main() {
-/// fuzz(|data|{
+/// fuzz(true, |data|{
 ///     if data.len() != 6 {return}
 ///     if data[0] != b'q' {return}
 ///     if data[1] != b'w' {return}
@@ -121,7 +121,7 @@ extern "C" {
 /// });
 /// # }
 /// ```
-pub fn fuzz<F>(closure: F)
+pub fn fuzz<F>(hook: bool, closure: F)
 where
     F: Fn(&[u8]) + std::panic::RefUnwindSafe,
 {
@@ -137,10 +137,12 @@ where
     // unsafe { asm!("" : : "r"(&PERSIST_MARKER)) }; // hack used in nightly's back_box(), requires feature asm
     // unsafe { asm!("" : : "r"(&DEFERED_MARKER)) };
 
-    // sets panic hook to abort
-    std::panic::set_hook(Box::new(|_| {
-        std::process::abort();
-    }));
+    if hook {
+      // sets panic hook to abort
+      std::panic::set_hook(Box::new(|_| {
+          std::process::abort();
+      }));
+    }
 
     let mut input = vec![];
 
@@ -197,13 +199,62 @@ where
 #[macro_export]
 macro_rules! fuzz {
     (|$buf:ident| $body:block) => {
-        afl::fuzz(|$buf| $body);
+        afl::fuzz(true, |$buf| $body);
     };
     (|$buf:ident: &[u8]| $body:block) => {
-        afl::fuzz(|$buf| $body);
+        afl::fuzz(true, |$buf| $body);
     };
     (|$buf:ident: $dty: ty| $body:block) => {
-        afl::fuzz(|$buf| {
+        afl::fuzz(true, |$buf| {
+            let $buf: $dty = {
+                use arbitrary::{Arbitrary, RingBuffer};
+                if let Ok(d) = RingBuffer::new($buf, $buf.len()).and_then(|mut b|{
+                        Arbitrary::arbitrary(&mut b).map_err(|_| "")
+                    }) {
+                    d
+                } else {
+                    return
+                }
+            };
+
+            $body
+        });
+    };
+}
+
+/// Fuzz a closure-like block of code by passing it an object of arbitrary type. Panics that are
+/// caught inside the fuzzed code are not turned into crashes.
+///
+/// You can choose the type of the argument using the syntax as in the example below.
+/// Please check out the `arbitrary` crate to see which types are available.
+///
+/// For performance reasons, it is recommended that you use the native type `&[u8]` when possible.
+///
+/// ```rust,no_run
+/// # #[macro_use] extern crate afl;
+/// # fn main() {
+/// fuzz!(|data: &[u8]| {
+///     if data.len() != 6 {return}
+///     if data[0] != b'q' {return}
+///     if data[1] != b'w' {return}
+///     if data[2] != b'e' {return}
+///     if data[3] != b'r' {return}
+///     if data[4] != b't' {return}
+///     if data[5] != b'y' {return}
+///     panic!("BOOM")
+/// });
+/// # }
+/// ```
+#[macro_export]
+macro_rules! fuzz_nohook {
+    (|$buf:ident| $body:block) => {
+        afl::fuzz(false, |$buf| $body);
+    };
+    (|$buf:ident: &[u8]| $body:block) => {
+        afl::fuzz(false, |$buf| $body);
+    };
+    (|$buf:ident: $dty: ty| $body:block) => {
+        afl::fuzz(false, |$buf| {
             let $buf: $dty = {
                 use arbitrary::{Arbitrary, RingBuffer};
                 if let Ok(d) = RingBuffer::new($buf, $buf.len())

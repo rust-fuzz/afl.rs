@@ -1,5 +1,13 @@
 # Changes
 
+## 0.5.1
+
+* [Fix broken OS detection](https://github.com/rust-fuzz/afl.rs/pull/153)
+
+## 0.5.0
+
+* [Add a fuzz! version that doesn't hook panics](https://github.com/rust-fuzz/afl.rs/pull/154)
+
 ## 0.4.4
 
 * [Add build support for AFL on ARM](https://github.com/rust-fuzz/afl.rs/pull/157)
