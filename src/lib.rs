@@ -8,6 +8,9 @@
 use std::io::{self, Read};
 use std::{panic, process};
 
+mod common;
+pub use common::*;
+
 /// Utility that reads a `Vec` of bytes from standard input (stdin)
 /// and passes it to `closure`. All panics that occur within
 /// `closure` will be treated as aborts. This is done so that
