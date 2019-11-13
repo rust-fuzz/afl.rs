@@ -8,7 +8,8 @@
 use std::io::{self, Read};
 use std::{panic, process};
 
-pub mod common;
+mod common;
+pub use common::*;
 
 /// Utility that reads a `Vec` of bytes from standard input (stdin)
 /// and passes it to `closure`. All panics that occur within
