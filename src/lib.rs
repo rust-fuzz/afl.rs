@@ -202,6 +202,8 @@ macro_rules! fuzz {
     ( $($x:tt)* ) => { __fuzz!(true, $($x)*) }
 }
 
+/// Like `fuzz!` above, but panics that are caught inside the fuzzed code are not turned into
+/// crashes.
 #[macro_export]
 macro_rules! fuzz_nohook {
     ( $($x:tt)* ) => { __fuzz!(false, $($x)*) }
