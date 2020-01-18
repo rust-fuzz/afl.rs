@@ -199,63 +199,26 @@ where
 /// ```
 #[macro_export]
 macro_rules! fuzz {
-    (|$buf:ident| $body:block) => {
-        afl::fuzz(true, |$buf| $body);
-    };
-    (|$buf:ident: &[u8]| $body:block) => {
-        afl::fuzz(true, |$buf| $body);
-    };
-    (|$buf:ident: $dty: ty| $body:block) => {
-        afl::fuzz(true, |$buf| {
-            let $buf: $dty = {
-                use arbitrary::{Arbitrary, RingBuffer};
-                if let Ok(d) = RingBuffer::new($buf, $buf.len()).and_then(|mut b|{
-                        Arbitrary::arbitrary(&mut b).map_err(|_| "")
-                    }) {
-                    d
-                } else {
-                    return
-                }
-            };
-
-            $body
-        });
-    };
+    ( $($x:tt)* ) => { __fuzz!(true, $($x)*) }
 }
 
-/// Fuzz a closure-like block of code by passing it an object of arbitrary type. Panics that are
-/// caught inside the fuzzed code are not turned into crashes.
-///
-/// You can choose the type of the argument using the syntax as in the example below.
-/// Please check out the `arbitrary` crate to see which types are available.
-///
-/// For performance reasons, it is recommended that you use the native type `&[u8]` when possible.
-///
-/// ```rust,no_run
-/// # #[macro_use] extern crate afl;
-/// # fn main() {
-/// fuzz!(|data: &[u8]| {
-///     if data.len() != 6 {return}
-///     if data[0] != b'q' {return}
-///     if data[1] != b'w' {return}
-///     if data[2] != b'e' {return}
-///     if data[3] != b'r' {return}
-///     if data[4] != b't' {return}
-///     if data[5] != b'y' {return}
-///     panic!("BOOM")
-/// });
-/// # }
-/// ```
+/// Like `fuzz!` above, but panics that are caught inside the fuzzed code are not turned into
+/// crashes.
 #[macro_export]
 macro_rules! fuzz_nohook {
-    (|$buf:ident| $body:block) => {
-        afl::fuzz(false, |$buf| $body);
+    ( $($x:tt)* ) => { __fuzz!(false, $($x)*) }
+}
+
+#[macro_export]
+macro_rules! __fuzz {
+    ($hook:expr, |$buf:ident| $body:block) => {
+        afl::fuzz($hook, |$buf| $body);
     };
-    (|$buf:ident: &[u8]| $body:block) => {
-        afl::fuzz(false, |$buf| $body);
+    ($hook:expr, |$buf:ident: &[u8]| $body:block) => {
+        afl::fuzz($hook, |$buf| $body);
     };
-    (|$buf:ident: $dty: ty| $body:block) => {
-        afl::fuzz(false, |$buf| {
+    ($hook:expr, |$buf:ident: $dty: ty| $body:block) => {
+        afl::fuzz($hook, |$buf| {
             let $buf: $dty = {
                 use arbitrary::{Arbitrary, RingBuffer};
                 if let Ok(d) = RingBuffer::new($buf, $buf.len())
