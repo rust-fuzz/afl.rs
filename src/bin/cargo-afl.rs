@@ -2,7 +2,11 @@ use clap::crate_version;
 
 use std::env;
 use std::ffi::OsStr;
-use std::process::{self, Command};
+use std::io;
+use std::process::{self, Command, ExitStatus};
+use std::sync::{Arc, Condvar, Mutex};
+use std::thread;
+use std::time::{Duration, Instant};
 
 #[path = "../common.rs"]
 mod common;
@@ -127,6 +131,83 @@ fn clap_app() -> clap::App<'static, 'static> {
                     .arg(clap::Arg::with_name("afl-whatsup args").multiple(true)),
             ),
     )
+}
+
+fn run_timeout_terminate(mut cmd: Command, timeout: Option<u64>) -> Result<ExitStatus, io::Error> {
+    let timeout = match timeout {
+        Some(timeout) => Duration::from_secs(timeout),
+        None => return cmd.status(),
+    };
+    let start_time = Instant::now();
+
+    let mut child = cmd.spawn()?;
+    let pid = child.id();
+
+    let pair = Arc::new((Mutex::new(false), Condvar::new()));
+    let (stop_mutex, condvar) = &*pair;
+    let thread_handle = {
+        let pair = pair.clone();
+        thread::spawn(move || -> Result<(), io::Error> {
+            // This thread will wait until the child process has exited, or the
+            // timeout has elapsed, whichever comes first. If the timeout
+            // elapses, and the process is still running, it will send SIGTERM
+            // to the child process.
+
+            let (stop_mutex, condvar) = &*pair;
+            let mut stop = stop_mutex.lock().unwrap();
+            loop {
+                let elapsed = Instant::now() - start_time;
+                if elapsed >= timeout {
+                    break;
+                }
+
+                let dur = timeout - elapsed;
+                let results = condvar.wait_timeout(stop, dur).unwrap();
+                stop = results.0;
+                if *stop {
+                    // Blocking waitid call on the main thread has returned,
+                    // thus the child process has terminated
+                    return Ok(());
+                }
+                if results.1.timed_out() {
+                    break;
+                }
+            }
+
+            // Since the waitid call on the main thread is using WNOWAIT, the
+            // child process won't be cleaned up (until after this thread
+            // exits and the main thread calls wait) and thus its PID won't be
+            // reused by another, unrelated process.
+            unsafe {
+                let ret = libc::kill(pid as i32, libc::SIGTERM);
+                if ret == -1 {
+                    Err(io::Error::last_os_error())?
+                }
+            }
+
+            Ok(())
+        })
+    };
+
+    unsafe {
+        // Block until the child process terminates, but leave it in a waitable
+        // state still
+        let ret = libc::waitid(libc::P_PID, pid, std::ptr::null_mut(), libc::WEXITED | libc::WNOWAIT);
+        if ret == -1 {
+            Err(io::Error::last_os_error())?
+        }
+    }
+    {
+        let mut stop = stop_mutex.lock().unwrap();
+        *stop = true;
+    }
+    // Tell the timeout thread to stop, wake it, and wait for it to exit
+    condvar.notify_one();
+    thread_handle.join().unwrap()?;
+
+    // Clean up zombie and get exit status (this won't block, because the child
+    // process has terminated and is still waitable)
+    child.wait()
 }
 
 fn run_afl<I, S>(args: I, cmd: &str)
