@@ -30,49 +30,53 @@ fn main() {
             let args = sub_matches
                 .values_of_os("afl-analyze args")
                 .unwrap_or_default();
-            run_afl(args, "afl-analyze");
+            run_afl(args, "afl-analyze", None);
         }
         ("cmin", Some(sub_matches)) => {
             let args = sub_matches
                 .values_of_os("afl-cmin args")
                 .unwrap_or_default();
-            run_afl(args, "afl-cmin");
+            run_afl(args, "afl-cmin", None);
         }
         ("fuzz", Some(sub_matches)) => {
             let args = sub_matches
                 .values_of_os("afl-fuzz args")
                 .unwrap_or_default();
-            run_afl(args, "afl-fuzz");
+            let timeout = sub_matches
+                .value_of("max_total_time")
+                .map(str::parse::<u64>)
+                .map(Result::unwrap);
+            run_afl(args, "afl-fuzz", timeout);
         }
         ("gotcpu", Some(sub_matches)) => {
             let args = sub_matches
                 .values_of_os("afl-gotcpu args")
                 .unwrap_or_default();
-            run_afl(args, "afl-gotcpu");
+            run_afl(args, "afl-gotcpu", None);
         }
         ("plot", Some(sub_matches)) => {
             let args = sub_matches
                 .values_of_os("afl-plot args")
                 .unwrap_or_default();
-            run_afl(args, "afl-plot");
+            run_afl(args, "afl-plot", None);
         }
         ("showmap", Some(sub_matches)) => {
             let args = sub_matches
                 .values_of_os("afl-showmap args")
                 .unwrap_or_default();
-            run_afl(args, "afl-showmap");
+            run_afl(args, "afl-showmap", None);
         }
         ("tmin", Some(sub_matches)) => {
             let args = sub_matches
                 .values_of_os("afl-tmin args")
                 .unwrap_or_default();
-            run_afl(args, "afl-tmin");
+            run_afl(args, "afl-tmin", None);
         }
         ("whatsup", Some(sub_matches)) => {
             let args = sub_matches
                 .values_of_os("afl-whatsup args")
                 .unwrap_or_default();
-            run_afl(args, "afl-whatsup");
+            run_afl(args, "afl-whatsup", None);
         }
         (subcommand, Some(sub_matches)) => {
             let args = sub_matches
@@ -135,6 +139,7 @@ fn clap_app() -> clap::App<'static, 'static> {
                     .setting(DisableVersion)
                     .arg(Arg::with_name("h").short("h").hidden(true))
                     .arg(Arg::with_name("help").long("help").hidden(true))
+                    .arg(Arg::with_name("max_total_time").long("max_total_time").takes_value(true).help("Maximum amount of time to run the fuzzer"))
                     .arg(Arg::with_name("afl-fuzz args").multiple(true)),
             )
             .subcommand(
@@ -267,16 +272,15 @@ fn run_timeout_terminate(mut cmd: Command, timeout: Option<u64>) -> Result<ExitS
     child.wait()
 }
 
-fn run_afl<I, S>(args: I, cmd: &str)
+fn run_afl<I, S>(args: I, cmd: &str, timeout: Option<u64>)
 where
     I: IntoIterator<Item = S>,
     S: AsRef<OsStr>,
 {
     let cmd_path = common::afl_dir().join("bin").join(cmd);
-    let status = Command::new(cmd_path)
-        .args(args)
-        .status()
-        .unwrap();
+    let mut cmd = Command::new(cmd_path);
+    cmd.args(args);
+    let status = run_timeout_terminate(cmd, timeout).unwrap();
     process::exit(status.code().unwrap_or(1));
 }
 
