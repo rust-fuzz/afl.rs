@@ -22,113 +22,170 @@ fn main() {
         process::exit(1);
     }
 
-    let _ = clap_app().get_matches();
+    let app_matches = clap_app().get_matches();
+    let afl_matches = app_matches.subcommand_matches("afl").unwrap();
 
-    let mut args = env::args().skip(2).peekable(); // skip `cargo` and `afl`
-    match args.peek().map(|s| &**s) {
-        Some("analyze") => run_afl(args, "afl-analyze"),
-        Some("cmin") => run_afl(args, "afl-cmin"),
-        Some("fuzz") => run_afl(args, "afl-fuzz"),
-        Some("gotcpu") => run_afl(args, "afl-got-cpu"),
-        Some("plot") => run_afl(args, "afl-plot"),
-        Some("showmap") => run_afl(args, "afl-showmap"),
-        Some("tmin") => run_afl(args, "afl-tmin"),
-        Some("whatsup") => run_afl(args, "afl-whatsup"),
-        _ => run_cargo(args),
+    match afl_matches.subcommand() {
+        ("analyze", Some(sub_matches)) => {
+            let args = sub_matches
+                .values_of_os("afl-analyze args")
+                .unwrap_or_default();
+            run_afl(args, "afl-analyze");
+        }
+        ("cmin", Some(sub_matches)) => {
+            let args = sub_matches
+                .values_of_os("afl-cmin args")
+                .unwrap_or_default();
+            run_afl(args, "afl-cmin");
+        }
+        ("fuzz", Some(sub_matches)) => {
+            let args = sub_matches
+                .values_of_os("afl-fuzz args")
+                .unwrap_or_default();
+            run_afl(args, "afl-fuzz");
+        }
+        ("gotcpu", Some(sub_matches)) => {
+            let args = sub_matches
+                .values_of_os("afl-gotcpu args")
+                .unwrap_or_default();
+            run_afl(args, "afl-gotcpu");
+        }
+        ("plot", Some(sub_matches)) => {
+            let args = sub_matches
+                .values_of_os("afl-plot args")
+                .unwrap_or_default();
+            run_afl(args, "afl-plot");
+        }
+        ("showmap", Some(sub_matches)) => {
+            let args = sub_matches
+                .values_of_os("afl-showmap args")
+                .unwrap_or_default();
+            run_afl(args, "afl-showmap");
+        }
+        ("tmin", Some(sub_matches)) => {
+            let args = sub_matches
+                .values_of_os("afl-tmin args")
+                .unwrap_or_default();
+            run_afl(args, "afl-tmin");
+        }
+        ("whatsup", Some(sub_matches)) => {
+            let args = sub_matches
+                .values_of_os("afl-whatsup args")
+                .unwrap_or_default();
+            run_afl(args, "afl-whatsup");
+        }
+        (subcommand, Some(sub_matches)) => {
+            let args = sub_matches
+                .values_of_os("")
+                .unwrap_or_default();
+            run_cargo(subcommand, args);
+        }
+        (_, None) => unreachable!(),
     }
 }
 
 fn clap_app() -> clap::App<'static, 'static> {
-    clap::App::new("cargo afl").bin_name("cargo").subcommand(
-        clap::SubCommand::with_name("afl")
+    use clap::{App, AppSettings::{
+        AllowExternalSubcommands,
+        AllowLeadingHyphen,
+        ArgRequiredElseHelp,
+        DisableHelpSubcommand,
+        DisableVersion,
+        SubcommandRequiredElseHelp,
+        TrailingVarArg,
+    }, Arg, SubCommand};
+
+    App::new("cargo afl").bin_name("cargo").setting(SubcommandRequiredElseHelp).subcommand(
+        SubCommand::with_name("afl")
             .version(crate_version!())
-            .setting(clap::AppSettings::ArgRequiredElseHelp)
-            .setting(clap::AppSettings::TrailingVarArg)
-            .setting(clap::AppSettings::AllowExternalSubcommands)
+            .setting(ArgRequiredElseHelp)
+            .setting(SubcommandRequiredElseHelp)
+            .setting(TrailingVarArg)
+            .setting(AllowExternalSubcommands)
             .usage("cargo afl [SUBCOMMAND or Cargo SUBCOMMAND]")
             .after_help(
                 "In addition to the subcommands above, Cargo subcommands are also \
                  supported (see `cargo help` for a list of all Cargo subcommands).",
             )
             .subcommand(
-                clap::SubCommand::with_name("analyze")
+                SubCommand::with_name("analyze")
                     .about("Invoke afl-analyze")
-                    .setting(clap::AppSettings::AllowLeadingHyphen)
-                    .setting(clap::AppSettings::DisableHelpSubcommand)
-                    .setting(clap::AppSettings::DisableVersion)
-                    .arg(clap::Arg::with_name("h").short("h").hidden(true))
-                    .arg(clap::Arg::with_name("help").long("help").hidden(true))
-                    .arg(clap::Arg::with_name("afl-analyze args").multiple(true)),
+                    .setting(AllowLeadingHyphen)
+                    .setting(DisableHelpSubcommand)
+                    .setting(DisableVersion)
+                    .arg(Arg::with_name("h").short("h").hidden(true))
+                    .arg(Arg::with_name("help").long("help").hidden(true))
+                    .arg(Arg::with_name("afl-analyze args").multiple(true)),
             )
             .subcommand(
-                clap::SubCommand::with_name("cmin")
+                SubCommand::with_name("cmin")
                     .about("Invoke afl-cmin")
-                    .setting(clap::AppSettings::AllowLeadingHyphen)
-                    .setting(clap::AppSettings::DisableHelpSubcommand)
-                    .setting(clap::AppSettings::DisableVersion)
-                    .arg(clap::Arg::with_name("h").short("h").hidden(true))
-                    .arg(clap::Arg::with_name("help").long("help").hidden(true))
-                    .arg(clap::Arg::with_name("afl-cmin args").multiple(true)),
+                    .setting(AllowLeadingHyphen)
+                    .setting(DisableHelpSubcommand)
+                    .setting(DisableVersion)
+                    .arg(Arg::with_name("h").short("h").hidden(true))
+                    .arg(Arg::with_name("help").long("help").hidden(true))
+                    .arg(Arg::with_name("afl-cmin args").multiple(true)),
             )
             .subcommand(
-                clap::SubCommand::with_name("fuzz")
+                SubCommand::with_name("fuzz")
                     .about("Invoke afl-fuzz")
-                    .setting(clap::AppSettings::AllowLeadingHyphen)
-                    .setting(clap::AppSettings::DisableHelpSubcommand)
-                    .setting(clap::AppSettings::DisableVersion)
-                    .arg(clap::Arg::with_name("h").short("h").hidden(true))
-                    .arg(clap::Arg::with_name("help").long("help").hidden(true))
-                    .arg(clap::Arg::with_name("afl-fuzz args").multiple(true)),
+                    .setting(AllowLeadingHyphen)
+                    .setting(DisableHelpSubcommand)
+                    .setting(DisableVersion)
+                    .arg(Arg::with_name("h").short("h").hidden(true))
+                    .arg(Arg::with_name("help").long("help").hidden(true))
+                    .arg(Arg::with_name("afl-fuzz args").multiple(true)),
             )
             .subcommand(
-                clap::SubCommand::with_name("gotcpu")
+                SubCommand::with_name("gotcpu")
                     .about("Invoke afl-gotcpu")
-                    .setting(clap::AppSettings::AllowLeadingHyphen)
-                    .setting(clap::AppSettings::DisableHelpSubcommand)
-                    .setting(clap::AppSettings::DisableVersion)
-                    .arg(clap::Arg::with_name("h").short("h").hidden(true))
-                    .arg(clap::Arg::with_name("help").long("help").hidden(true))
-                    .arg(clap::Arg::with_name("afl-gotcpu args").multiple(true)),
+                    .setting(AllowLeadingHyphen)
+                    .setting(DisableHelpSubcommand)
+                    .setting(DisableVersion)
+                    .arg(Arg::with_name("h").short("h").hidden(true))
+                    .arg(Arg::with_name("help").long("help").hidden(true))
+                    .arg(Arg::with_name("afl-gotcpu args").multiple(true)),
             )
             .subcommand(
-                clap::SubCommand::with_name("plot")
+                SubCommand::with_name("plot")
                     .about("Invoke afl-plot")
-                    .setting(clap::AppSettings::AllowLeadingHyphen)
-                    .setting(clap::AppSettings::DisableHelpSubcommand)
-                    .setting(clap::AppSettings::DisableVersion)
-                    .arg(clap::Arg::with_name("h").short("h").hidden(true))
-                    .arg(clap::Arg::with_name("help").long("help").hidden(true))
-                    .arg(clap::Arg::with_name("afl-plot args").multiple(true)),
+                    .setting(AllowLeadingHyphen)
+                    .setting(DisableHelpSubcommand)
+                    .setting(DisableVersion)
+                    .arg(Arg::with_name("h").short("h").hidden(true))
+                    .arg(Arg::with_name("help").long("help").hidden(true))
+                    .arg(Arg::with_name("afl-plot args").multiple(true)),
             )
             .subcommand(
-                clap::SubCommand::with_name("showmap")
+                SubCommand::with_name("showmap")
                     .about("Invoke afl-showmap")
-                    .setting(clap::AppSettings::AllowLeadingHyphen)
-                    .setting(clap::AppSettings::DisableHelpSubcommand)
-                    .setting(clap::AppSettings::DisableVersion)
-                    .arg(clap::Arg::with_name("h").short("h").hidden(true))
-                    .arg(clap::Arg::with_name("help").long("help").hidden(true))
-                    .arg(clap::Arg::with_name("afl-showmap args").multiple(true)),
+                    .setting(AllowLeadingHyphen)
+                    .setting(DisableHelpSubcommand)
+                    .setting(DisableVersion)
+                    .arg(Arg::with_name("h").short("h").hidden(true))
+                    .arg(Arg::with_name("help").long("help").hidden(true))
+                    .arg(Arg::with_name("afl-showmap args").multiple(true)),
             )
             .subcommand(
-                clap::SubCommand::with_name("tmin")
+                SubCommand::with_name("tmin")
                     .about("Invoke afl-tmin")
-                    .setting(clap::AppSettings::AllowLeadingHyphen)
-                    .setting(clap::AppSettings::DisableHelpSubcommand)
-                    .setting(clap::AppSettings::DisableVersion)
-                    .arg(clap::Arg::with_name("h").short("h").hidden(true))
-                    .arg(clap::Arg::with_name("help").long("help").hidden(true))
-                    .arg(clap::Arg::with_name("afl-tmin args").multiple(true)),
+                    .setting(AllowLeadingHyphen)
+                    .setting(DisableHelpSubcommand)
+                    .setting(DisableVersion)
+                    .arg(Arg::with_name("h").short("h").hidden(true))
+                    .arg(Arg::with_name("help").long("help").hidden(true))
+                    .arg(Arg::with_name("afl-tmin args").multiple(true)),
             )
             .subcommand(
-                clap::SubCommand::with_name("whatsup")
+                SubCommand::with_name("whatsup")
                     .about("Invoke afl-whatsup")
-                    .setting(clap::AppSettings::AllowLeadingHyphen)
-                    .setting(clap::AppSettings::DisableHelpSubcommand)
-                    .setting(clap::AppSettings::DisableVersion)
-                    .arg(clap::Arg::with_name("h").short("h").hidden(true))
-                    .arg(clap::Arg::with_name("help").long("help").hidden(true))
-                    .arg(clap::Arg::with_name("afl-whatsup args").multiple(true)),
+                    .setting(AllowLeadingHyphen)
+                    .setting(DisableHelpSubcommand)
+                    .setting(DisableVersion)
+                    .arg(Arg::with_name("h").short("h").hidden(true))
+                    .arg(Arg::with_name("help").long("help").hidden(true))
+                    .arg(Arg::with_name("afl-whatsup args").multiple(true)),
             ),
     )
 }
@@ -217,13 +274,13 @@ where
 {
     let cmd_path = common::afl_dir().join("bin").join(cmd);
     let status = Command::new(cmd_path)
-        .args(args.into_iter().skip(1)) // skip afl sub-command
+        .args(args)
         .status()
         .unwrap();
     process::exit(status.code().unwrap_or(1));
 }
 
-fn run_cargo<I, S>(args: I)
+fn run_cargo<I, S>(subcommand: &str, args: I)
 where
     I: IntoIterator<Item = S>,
     S: AsRef<OsStr>,
@@ -284,7 +341,8 @@ where
     rustdocflags.push_str(&env::var("RUSTDOCFLAGS").unwrap_or_default());
 
     let status = Command::new(cargo_path)
-        .args(args) // skip `cargo` and `afl`
+        .arg(subcommand)
+        .args(args)
         .env("RUSTFLAGS", &rustflags)
         .env("RUSTDOCFLAGS", &rustdocflags)
         .env("ASAN_OPTIONS", asan_options)
