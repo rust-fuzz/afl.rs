@@ -122,9 +122,9 @@ extern "C" {
 /// });
 /// # }
 /// ```
-pub fn fuzz<F>(hook: bool, closure: F)
+pub fn fuzz<F>(hook: bool, mut closure: F)
 where
-    F: Fn(&[u8]) + std::panic::RefUnwindSafe,
+    F: FnMut(&[u8]) + std::panic::RefUnwindSafe,
 {
     // this marker strings needs to be in the produced executable for
     // afl-fuzz to detect `persistent mode` and `defered mode`
@@ -139,10 +139,10 @@ where
     // unsafe { asm!("" : : "r"(&DEFERED_MARKER)) };
 
     if hook {
-      // sets panic hook to abort
-      std::panic::set_hook(Box::new(|_| {
-          std::process::abort();
-      }));
+        // sets panic hook to abort
+        std::panic::set_hook(Box::new(|_| {
+            std::process::abort();
+        }));
     }
 
     let mut input = vec![];
@@ -161,9 +161,9 @@ where
         // the panic hook.
         // If so, the fuzzer will be unable to tell different bugs appart and you will
         // only be able to find one bug at a time before fixing it to then find a new one.
-        let did_panic = std::panic::catch_unwind(|| {
+        let did_panic = std::panic::catch_unwind(panic::AssertUnwindSafe(|| {
             closure(&input);
-        })
+        }))
         .is_err();
 
         if did_panic {
