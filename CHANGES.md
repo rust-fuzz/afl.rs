@@ -1,5 +1,14 @@
 # Changes
 
+## 0.6.0
+
+* [Accept `FnMut` instead of `Fn`](https://github.com/rust-fuzz/afl.rs/pull/165)
+* [Eliminate `fuzz`/`fuzz_nohook` redundancy](https://github.com/rust-fuzz/afl.rs/pull/161)
+
+## 0.5.2
+
+* [Expose `common` in the public API](https://github.com/rust-fuzz/afl.rs/pull/159)
+
 ## 0.5.1
 
 * [Fix broken OS detection](https://github.com/rust-fuzz/afl.rs/pull/153)
