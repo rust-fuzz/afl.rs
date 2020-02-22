@@ -23,6 +23,8 @@ fn main() {
     }
 
     let app_matches = clap_app().get_matches();
+    // This unwrap is okay because we set SubcommandRequiredElseHelp at the top level, and afl is
+    // the only subcommand
     let afl_matches = app_matches.subcommand_matches("afl").unwrap();
 
     match afl_matches.subcommand() {
@@ -84,6 +86,7 @@ fn main() {
                 .unwrap_or_default();
             run_cargo(subcommand, args);
         }
+        // unreachable due to SubcommandRequiredElseHelp on "afl" subcommand
         (_, None) => unreachable!(),
     }
 }
@@ -92,19 +95,16 @@ fn clap_app() -> clap::App<'static, 'static> {
     use clap::{App, AppSettings::{
         AllowExternalSubcommands,
         AllowLeadingHyphen,
-        ArgRequiredElseHelp,
         DisableHelpSubcommand,
+        DisableHelpFlags,
         DisableVersion,
         SubcommandRequiredElseHelp,
-        TrailingVarArg,
     }, Arg, SubCommand};
 
     App::new("cargo afl").bin_name("cargo").setting(SubcommandRequiredElseHelp).subcommand(
         SubCommand::with_name("afl")
             .version(crate_version!())
-            .setting(ArgRequiredElseHelp)
             .setting(SubcommandRequiredElseHelp)
-            .setting(TrailingVarArg)
             .setting(AllowExternalSubcommands)
             .usage("cargo afl [SUBCOMMAND or Cargo SUBCOMMAND]")
             .after_help(
@@ -116,9 +116,8 @@ fn clap_app() -> clap::App<'static, 'static> {
                     .about("Invoke afl-analyze")
                     .setting(AllowLeadingHyphen)
                     .setting(DisableHelpSubcommand)
+                    .setting(DisableHelpFlags)
                     .setting(DisableVersion)
-                    .arg(Arg::with_name("h").short("h").hidden(true))
-                    .arg(Arg::with_name("help").long("help").hidden(true))
                     .arg(Arg::with_name("afl-analyze args").multiple(true)),
             )
             .subcommand(
@@ -126,9 +125,8 @@ fn clap_app() -> clap::App<'static, 'static> {
                     .about("Invoke afl-cmin")
                     .setting(AllowLeadingHyphen)
                     .setting(DisableHelpSubcommand)
+                    .setting(DisableHelpFlags)
                     .setting(DisableVersion)
-                    .arg(Arg::with_name("h").short("h").hidden(true))
-                    .arg(Arg::with_name("help").long("help").hidden(true))
                     .arg(Arg::with_name("afl-cmin args").multiple(true)),
             )
             .subcommand(
@@ -136,9 +134,8 @@ fn clap_app() -> clap::App<'static, 'static> {
                     .about("Invoke afl-fuzz")
                     .setting(AllowLeadingHyphen)
                     .setting(DisableHelpSubcommand)
+                    .setting(DisableHelpFlags)
                     .setting(DisableVersion)
-                    .arg(Arg::with_name("h").short("h").hidden(true))
-                    .arg(Arg::with_name("help").long("help").hidden(true))
                     .arg(Arg::with_name("max_total_time").long("max_total_time").takes_value(true).help("Maximum amount of time to run the fuzzer"))
                     .arg(Arg::with_name("afl-fuzz args").multiple(true)),
             )
@@ -147,9 +144,8 @@ fn clap_app() -> clap::App<'static, 'static> {
                     .about("Invoke afl-gotcpu")
                     .setting(AllowLeadingHyphen)
                     .setting(DisableHelpSubcommand)
+                    .setting(DisableHelpFlags)
                     .setting(DisableVersion)
-                    .arg(Arg::with_name("h").short("h").hidden(true))
-                    .arg(Arg::with_name("help").long("help").hidden(true))
                     .arg(Arg::with_name("afl-gotcpu args").multiple(true)),
             )
             .subcommand(
@@ -157,9 +153,8 @@ fn clap_app() -> clap::App<'static, 'static> {
                     .about("Invoke afl-plot")
                     .setting(AllowLeadingHyphen)
                     .setting(DisableHelpSubcommand)
+                    .setting(DisableHelpFlags)
                     .setting(DisableVersion)
-                    .arg(Arg::with_name("h").short("h").hidden(true))
-                    .arg(Arg::with_name("help").long("help").hidden(true))
                     .arg(Arg::with_name("afl-plot args").multiple(true)),
             )
             .subcommand(
@@ -167,9 +162,8 @@ fn clap_app() -> clap::App<'static, 'static> {
                     .about("Invoke afl-showmap")
                     .setting(AllowLeadingHyphen)
                     .setting(DisableHelpSubcommand)
+                    .setting(DisableHelpFlags)
                     .setting(DisableVersion)
-                    .arg(Arg::with_name("h").short("h").hidden(true))
-                    .arg(Arg::with_name("help").long("help").hidden(true))
                     .arg(Arg::with_name("afl-showmap args").multiple(true)),
             )
             .subcommand(
@@ -177,9 +171,8 @@ fn clap_app() -> clap::App<'static, 'static> {
                     .about("Invoke afl-tmin")
                     .setting(AllowLeadingHyphen)
                     .setting(DisableHelpSubcommand)
+                    .setting(DisableHelpFlags)
                     .setting(DisableVersion)
-                    .arg(Arg::with_name("h").short("h").hidden(true))
-                    .arg(Arg::with_name("help").long("help").hidden(true))
                     .arg(Arg::with_name("afl-tmin args").multiple(true)),
             )
             .subcommand(
@@ -187,9 +180,8 @@ fn clap_app() -> clap::App<'static, 'static> {
                     .about("Invoke afl-whatsup")
                     .setting(AllowLeadingHyphen)
                     .setting(DisableHelpSubcommand)
+                    .setting(DisableHelpFlags)
                     .setting(DisableVersion)
-                    .arg(Arg::with_name("h").short("h").hidden(true))
-                    .arg(Arg::with_name("help").long("help").hidden(true))
                     .arg(Arg::with_name("afl-whatsup args").multiple(true)),
             ),
     )

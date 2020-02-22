@@ -16,7 +16,7 @@ rustc_version = "0.2"
 
 [dependencies]
 cc = "1.0"
-clap = "2.29"
+clap = "2.33"
 libc = "0.2.66"
 rustc_version = "0.2"
 xdg = "2.1"
