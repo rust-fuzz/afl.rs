@@ -1,4 +1,4 @@
-use clap::crate_version;
+use clap::{crate_version, value_t};
 
 use std::env;
 use std::ffi::OsStr;
@@ -46,8 +46,9 @@ fn main() {
                 .unwrap_or_default();
             let timeout = sub_matches
                 .value_of("max_total_time")
-                .map(str::parse::<u64>)
-                .map(Result::unwrap);
+                .map(|_| {
+                    value_t!(sub_matches, "max_total_time", u64).unwrap_or_else(|e| e.exit())
+                });
             run_afl(args, "afl-fuzz", timeout);
         }
         ("gotcpu", Some(sub_matches)) => {
