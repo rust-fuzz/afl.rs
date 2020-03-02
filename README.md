@@ -31,3 +31,21 @@ Screen recording of AFL running on Rust code.
 [rustup]: https://rustup.rs/
 [american-fuzzy-lop]: http://lcamtuf.coredump.cx/afl/
 [rust]: https://www.rust-lang.org
+
+## `lazy_static` variables
+
+`lazy_static` variables present problems for AFL's persistent mode, which afl.rs uses. Such variables can cause AFL to give incorrectly low stability reports, or fail to report timeouts, for example.
+
+To address such problems, rust-fuzz provides a ["resettable" version](https://github.com/rust-fuzz/resettable-lazy-static.rs) of `lazy_static`. To use it, make the following two changes to your target's `Cargo.toml` file.
+
+1. Add a `[patch.crates-io]` section and overide the `lazy_static` dependency with the rust-fuzz version:
+    ```toml
+    [patch.crates-io]
+    lazy_static = { git = "https://github.com/rust-fuzz/resettable-lazy-static.rs" }
+
+    ```
+2. Enable the `reset_lazy_staic` feature on afl.rs:
+    ```toml
+    [dependencies]
+    afl = { version = "0.6.0", features = ["reset_lazy_static"] }
+    ```
