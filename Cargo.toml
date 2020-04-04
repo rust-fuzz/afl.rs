@@ -20,3 +20,7 @@ clap = "2.33"
 libc = "0.2.66"
 rustc_version = "0.2"
 xdg = "2.1"
+lazy_static = { version = "1.4.0", optional = true }
+
+[features]
+reset_lazy_static = ["lazy_static"]
