@@ -1,5 +1,10 @@
 # Changes
 
+## 0.7.0
+
+* [Add option to kill afl-fuzz after a time limit](https://github.com/rust-fuzz/afl.rs/pull/162)
+* [Add opt-in resettable-lazy-static.rs feature](https://github.com/rust-fuzz/afl.rs/pull/166)
+
 ## 0.6.0
 
 * [Accept `FnMut` instead of `Fn`](https://github.com/rust-fuzz/afl.rs/pull/165)
