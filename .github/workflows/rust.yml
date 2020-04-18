@@ -1,11 +1,13 @@
 name: Rust
 
-on: [push, pull_request]
+on:
+- push
+- pull_request
 
 jobs:
   build:
-
-    runs-on: [ ubuntu-latest, macos-latest ]
+    runs-on:
+    - ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
