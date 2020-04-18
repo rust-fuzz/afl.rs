@@ -1,5 +1,9 @@
 # Changes
 
+## 0.8.0
+
+* [Migrate from AFL to AFLplusplus](https://github.com/rust-fuzz/afl.rs/pull/169)
+
 ## 0.7.0
 
 * [Add option to kill afl-fuzz after a time limit](https://github.com/rust-fuzz/afl.rs/pull/162)
