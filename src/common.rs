@@ -45,6 +45,7 @@ pub fn object_file_path() -> PathBuf {
     afl_llvm_rt_dir().join("libafl-llvm-rt.o")
 }
 
+#[allow(dead_code)]
 pub fn archive_file_path() -> PathBuf {
     afl_llvm_rt_dir().join("libafl-llvm-rt.a")
 }
