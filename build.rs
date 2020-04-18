@@ -1,11 +1,10 @@
 extern crate rustc_version;
 extern crate xdg;
 
-use std::ffi::OsStr;
 use std::path::Path;
 use std::process::Command;
 
-static AFL_SRC_PATH: &str = "afl-2.52b";
+static AFL_SRC_PATH: &str = "AFLplusplus";
 
 #[path = "src/common.rs"]
 mod common;
@@ -34,18 +33,18 @@ fn build_afl(out_dir: &Path) {
 }
 
 fn build_afl_llvm_runtime() {
-    let status = Command::new("cc")
-        .current_dir(AFL_SRC_PATH)
-        .arg("-c")
-        .arg("-O1")
-        .arg("-fPIC")
-        .arg("-fno-omit-frame-pointer")
-        .arg("llvm_mode/afl-llvm-rt.o.c")
-        .arg("-fpermissive")
-        .args(&[OsStr::new("-o"), common::object_file_path().as_os_str()])
+    let status = Command::new("make")
+        .current_dir(Path::new(AFL_SRC_PATH).join("llvm_mode"))
+        .arg("../afl-llvm-rt.o")
         .status()
-        .expect("could not run 'gcc'");
+        .expect("could not compile 'afl-llvm-rt.o'");
     assert!(status.success());
+
+    std::fs::copy(
+        Path::new(&AFL_SRC_PATH).join("afl-llvm-rt.o"),
+        common::object_file_path(),
+    )
+    .expect("Couldn't copy object file");
 
     let status = Command::new("ar")
         .arg("r")

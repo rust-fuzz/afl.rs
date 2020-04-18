@@ -8,7 +8,10 @@ jobs:
   build_ubuntu:
     runs-on: ubuntu-latest
     steps:
+    - run: sudo apt-get install llvm
     - uses: actions/checkout@v2
+      with:
+        submodules: true
     - name: Build
       run: cargo build --verbose
     - name: Run tests
@@ -17,6 +20,8 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: true
     - name: Build
       run: cargo build --verbose
     - name: Run tests
