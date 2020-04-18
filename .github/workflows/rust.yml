@@ -8,6 +8,7 @@ jobs:
   build_ubuntu:
     runs-on: ubuntu-latest
     steps:
+    - run: sudo apt-get install clang-tidy-8
     - uses: actions/checkout@v2
       with:
         submodules: true
