@@ -4,11 +4,11 @@
   afl.rs
 </h1>
 
-<h4 align="center">Fuzzing <a href="https://www.rust-lang.org">Rust</a> code with <a href="http://lcamtuf.coredump.cx/afl/">american fuzzy lop (AFL)</a></h4>
+<h4 align="center">Fuzzing <a href="https://www.rust-lang.org">Rust</a> code with <a href="https://aflplus.plus/">AFLplusplus</a></h4>
 
 ## What is it?
 
-[Fuzz testing][] is a software testing technique used to find security and stability issues by providing pseudo-random data as input to the software. [American fuzzy lop][american-fuzzy-lop] is a popular, effective, and modern fuzz testing tool. This library, afl.rs, allows one to run AFL on code written in [the Rust programming language][rust].
+[Fuzz testing][] is a software testing technique used to find security and stability issues by providing pseudo-random data as input to the software. [AFLplusplus][] is a popular, effective, and modern fuzz testing tool based on [AFL][american-fuzzy-lop]. This library, afl.rs, allows one to run AFLplusplus on code written in [the Rust programming language][rust].
 
 ## Documentation
 
@@ -30,6 +30,7 @@ Screen recording of AFL running on Rust code.
 [fuzz testing]: https://en.wikipedia.org/wiki/Fuzz_testing
 [rustup]: https://rustup.rs/
 [american-fuzzy-lop]: http://lcamtuf.coredump.cx/afl/
+[AFLplusplus]: https://aflplus.plus/
 [rust]: https://www.rust-lang.org
 
 ## `lazy_static` variables
