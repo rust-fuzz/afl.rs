@@ -8,8 +8,7 @@ jobs:
   build_ubuntu:
     runs-on: ubuntu-latest
     steps:
-    - run: sudo apt-get update
-    - run: sudo apt-get install -t llvm-config
+    - run: sudo apt-get install llvm
     - uses: actions/checkout@v2
       with:
         submodules: true
