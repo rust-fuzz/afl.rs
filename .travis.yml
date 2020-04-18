@@ -6,3 +6,7 @@ rust:
 os:
   - linux
   - osx
+addons:
+  homebrew:
+    packages:
+    - llvm
