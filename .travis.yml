@@ -6,7 +6,4 @@ rust:
 os:
   - linux
   - osx
-addons:
-  homebrew:
-    packages:
-    - llvm
+osx_image: xcode11.3
