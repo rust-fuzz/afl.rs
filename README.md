@@ -45,7 +45,7 @@ To address such problems, rust-fuzz provides a ["resettable" version](https://gi
     lazy_static = { git = "https://github.com/rust-fuzz/resettable-lazy-static.rs" }
 
     ```
-2. Enable the `reset_lazy_staic` feature on afl.rs:
+2. Enable the `reset_lazy_static` feature on afl.rs:
     ```toml
     [dependencies]
     afl = { version = "*", features = ["reset_lazy_static"] }
