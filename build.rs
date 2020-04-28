@@ -46,7 +46,7 @@ fn build_afl_llvm_runtime() {
     )
     .expect("Couldn't copy object file");
 
-    let status = Command::new("ar")
+    let status = Command::new("/usr/bin/ar")
         .arg("r")
         .arg(common::archive_file_path())
         .arg(common::object_file_path())
