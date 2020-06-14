@@ -1,5 +1,9 @@
 # Changes
 
+## 0.9.0
+
+* [MacOS – Hard-code the path to `ar` as `/usr/bin/ar`](https://github.com/rust-fuzz/afl.rs/pull/171)
+
 ## 0.8.0
 
 * [Migrate from AFL to AFLplusplus](https://github.com/rust-fuzz/afl.rs/pull/169)
