@@ -6,6 +6,12 @@ use std::process::Command;
 
 static AFL_SRC_PATH: &str = "AFLplusplus";
 
+// https://github.com/rust-fuzz/afl.rs/issues/148
+#[cfg(target_os = "macos")]
+static AR_CMD: &str = "/usr/bin/ar";
+#[cfg(not(target_os = "macos"))]
+static AR_CMD: &str = "ar";
+
 #[path = "src/common.rs"]
 mod common;
 
@@ -46,7 +52,7 @@ fn build_afl_llvm_runtime() {
     )
     .expect("Couldn't copy object file");
 
-    let status = Command::new("/usr/bin/ar")
+    let status = Command::new(AR_CMD)
         .arg("r")
         .arg(common::archive_file_path())
         .arg(common::object_file_path())
