@@ -205,26 +205,26 @@ where
 /// ```
 #[macro_export]
 macro_rules! fuzz {
-    ( $($x:tt)* ) => { __fuzz!(true, $($x)*) }
+    ( $($x:tt)* ) => { $crate::__fuzz!(true, $($x)*) }
 }
 
 /// Like `fuzz!` above, but panics that are caught inside the fuzzed code are not turned into
 /// crashes.
 #[macro_export]
 macro_rules! fuzz_nohook {
-    ( $($x:tt)* ) => { __fuzz!(false, $($x)*) }
+    ( $($x:tt)* ) => { $crate::__fuzz!(false, $($x)*) }
 }
 
 #[macro_export]
 macro_rules! __fuzz {
     ($hook:expr, |$buf:ident| $body:block) => {
-        afl::fuzz($hook, |$buf| $body);
+        $crate::fuzz($hook, |$buf| $body);
     };
     ($hook:expr, |$buf:ident: &[u8]| $body:block) => {
-        afl::fuzz($hook, |$buf| $body);
+        $crate::fuzz($hook, |$buf| $body);
     };
     ($hook:expr, |$buf:ident: $dty: ty| $body:block) => {
-        afl::fuzz($hook, |$buf| {
+        $crate::fuzz($hook, |$buf| {
             let $buf: $dty = {
                 use arbitrary::{Arbitrary, RingBuffer};
                 if let Ok(d) = RingBuffer::new($buf, $buf.len())
