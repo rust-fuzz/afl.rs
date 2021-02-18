@@ -25,12 +25,12 @@ fn build_afl(out_dir: &Path) {
     command
         .current_dir(AFL_SRC_PATH)
         .args(&["clean", "all", "install"])
+        // skip the checks for the legacy x86 afl-gcc compiler
+        .env("AFL_NO_X86", "1")
+        // build just the runtime to avoid troubles with Xcode clang on macOS
+        .env("NO_BUILD", "1")
         .env("DESTDIR", out_dir)
         .env("PREFIX", "");
-    // sets AFL_NO_X86 to compile for ARM arch
-    if cfg!(target_arch = "arm") {
-        command.env("AFL_NO_X86", "1");
-    }
     let status = command.status().expect("could not run 'make'");
     assert!(status.success());
 }
