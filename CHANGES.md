@@ -4,6 +4,7 @@
 
 * [Qualify uses of `__fuzz!` macro](https://github.com/rust-fuzz/afl.rs/pull/174)
 * [update to AFL++ 3.01a && enable persistent shared memory fuzzing](https://github.com/rust-fuzz/afl.rs/pull/180)
+* [Remove deprecated functions: `read_stdio_bytes` and `read_stdio_string`](https://github.com/rust-fuzz/afl.rs/commit/08db0b0afbf20eb20e09e3dd0397e6adcfe33def)
 
 ## 0.9.0
 
