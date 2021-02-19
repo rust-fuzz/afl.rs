@@ -295,7 +295,7 @@ where
 
     // add some flags to sanitizers to make them work with Rust code
     let asan_options = env::var("ASAN_OPTIONS").unwrap_or_default();
-    let asan_options = format!("detect_odr_violation=0:{}", asan_options);
+    let asan_options = format!("detect_odr_violation=0:abort_on_error=1:symbolize=0:{}", asan_options);
 
     let tsan_options = env::var("TSAN_OPTIONS").unwrap_or_default();
     let tsan_options = format!("report_signal_unsafe=0:{}", tsan_options);
