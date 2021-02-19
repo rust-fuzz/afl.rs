@@ -6,7 +6,7 @@
 // See `LICENSE` in this repository.
 
 use std::io::{self, Read};
-use std::{panic, process};
+use std::panic;
 
 mod common;
 pub use common::*;
