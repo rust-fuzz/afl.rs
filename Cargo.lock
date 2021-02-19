@@ -2,7 +2,7 @@
 # It is not intended for manual editing.
 [[package]]
 name = "afl"
-version = "0.9.0"
+version = "0.10.0"
 dependencies = [
  "cc",
  "clap",
