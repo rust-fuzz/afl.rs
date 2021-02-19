@@ -175,42 +175,48 @@ macro_rules! __fuzz {
 
 #[cfg(test)]
 mod test {
-    /*
-    use std::path::PathBuf;
-    use std::process::{Command, Stdio};
-    use std::thread;
-    use std::time;
+    use std::{path, process, thread, time};
 
-    extern crate libc;
-    extern crate tempdir;
-
-    fn target_path() -> PathBuf {
-        if PathBuf::from("../target/debug/cargo-afl-fuzz").exists() {
-            PathBuf::from("../target/debug/")
-        } else if PathBuf::from("target/debug/cargo-afl-fuzz").exists() {
-            PathBuf::from("target/debug/")
+    fn target_dir_path() -> &'static path::Path {
+        if path::Path::new("../target/debug/cargo-afl").exists() {
+            path::Path::new("../target/debug/")
+        } else if path::Path::new("target/debug/cargo-afl").exists() {
+            path::Path::new("target/debug/")
         } else {
-            panic!("Could not find cargo-afl-fuzz!");
+            panic!("Could not find cargo-afl binary");
         }
     }
 
+    fn cargo_afl_path() -> path::PathBuf {
+        target_dir_path().join("cargo-afl")
+    }
+
+    fn examples_hello_path() -> path::PathBuf {
+        target_dir_path().join("examples").join("hello")
+    }
+
     #[test]
-    fn test_cargo_afl_fuzz() {
-        let temp_dir = tempdir::TempDir::new("aflrs").expect("Could not create temporary directory");
+    fn integration() {
+        let temp_dir =
+            tempdir::TempDir::new("aflrs").expect("Could not create temporary directory");
         let temp_dir_path = temp_dir.path();
-        let mut child = Command::new(target_path().join("cargo-afl-fuzz"))
-            .stdout(Stdio::inherit())
-            .stderr(Stdio::inherit())
+        let mut child = process::Command::new(cargo_afl_path())
+            .arg("afl")
+            .arg("fuzz")
+            .stdout(process::Stdio::inherit())
+            .stderr(process::Stdio::inherit())
             .arg("-i")
             .arg(".")
             .arg("-o")
             .arg(temp_dir_path)
-            .arg(target_path().join("examples").join("hello"))
+            .arg(examples_hello_path())
             .spawn()
-            .expect("Could not run cargo-afl-fuzz");
-        thread::sleep(time::Duration::from_secs(7));
-        child.kill().unwrap();
-        assert!(temp_dir_path.join("fuzzer_stats").is_file());
+            .expect("Could not run cargo afl fuzz");
+        thread::sleep(time::Duration::from_secs(10));
+        for _ in 0..5 {
+            thread::sleep(time::Duration::from_secs(1));
+            let _ = child.kill();
+        }
+        assert!(temp_dir_path.join("default").join("fuzzer_stats").is_file());
     }
-    */
 }
