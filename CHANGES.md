@@ -1,5 +1,10 @@
 # Changes
 
+## 0.10.0
+
+* [Qualify uses of `__fuzz!` macro](https://github.com/rust-fuzz/afl.rs/pull/174)
+* [update to AFL++ 3.01a && enable persistent shared memory fuzzing](https://github.com/rust-fuzz/afl.rs/pull/180)
+
 ## 0.9.0
 
 * [MacOS – Hard-code the path to `ar` as `/usr/bin/ar`](https://github.com/rust-fuzz/afl.rs/pull/171)
