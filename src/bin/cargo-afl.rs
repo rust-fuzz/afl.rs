@@ -46,9 +46,7 @@ fn main() {
                 .unwrap_or_default();
             let timeout = sub_matches
                 .value_of("max_total_time")
-                .map(|_| {
-                    value_t!(sub_matches, "max_total_time", u64).unwrap_or_else(|e| e.exit())
-                });
+                .map(|_| value_t!(sub_matches, "max_total_time", u64).unwrap_or_else(|e| e.exit()));
             run_afl(args, "afl-fuzz", timeout);
         }
         ("gotcpu", Some(sub_matches)) => {
@@ -82,9 +80,7 @@ fn main() {
             run_afl(args, "afl-whatsup", None);
         }
         (subcommand, Some(sub_matches)) => {
-            let args = sub_matches
-                .values_of_os("")
-                .unwrap_or_default();
+            let args = sub_matches.values_of_os("").unwrap_or_default();
             run_cargo(subcommand, args);
         }
         // unreachable due to SubcommandRequiredElseHelp on "afl" subcommand
@@ -93,99 +89,107 @@ fn main() {
 }
 
 fn clap_app() -> clap::App<'static, 'static> {
-    use clap::{App, AppSettings::{
-        AllowExternalSubcommands,
-        AllowLeadingHyphen,
-        DisableHelpSubcommand,
-        DisableHelpFlags,
-        DisableVersion,
-        SubcommandRequiredElseHelp,
-    }, Arg, SubCommand};
+    use clap::{
+        App,
+        AppSettings::{
+            AllowExternalSubcommands, AllowLeadingHyphen, DisableHelpFlags, DisableHelpSubcommand,
+            DisableVersion, SubcommandRequiredElseHelp,
+        },
+        Arg, SubCommand,
+    };
 
-    App::new("cargo afl").bin_name("cargo").setting(SubcommandRequiredElseHelp).subcommand(
-        SubCommand::with_name("afl")
-            .version(crate_version!())
-            .setting(SubcommandRequiredElseHelp)
-            .setting(AllowExternalSubcommands)
-            .usage("cargo afl [SUBCOMMAND or Cargo SUBCOMMAND]")
-            .after_help(
-                "In addition to the subcommands above, Cargo subcommands are also \
+    App::new("cargo afl")
+        .bin_name("cargo")
+        .setting(SubcommandRequiredElseHelp)
+        .subcommand(
+            SubCommand::with_name("afl")
+                .version(crate_version!())
+                .setting(SubcommandRequiredElseHelp)
+                .setting(AllowExternalSubcommands)
+                .usage("cargo afl [SUBCOMMAND or Cargo SUBCOMMAND]")
+                .after_help(
+                    "In addition to the subcommands above, Cargo subcommands are also \
                  supported (see `cargo help` for a list of all Cargo subcommands).",
-            )
-            .subcommand(
-                SubCommand::with_name("analyze")
-                    .about("Invoke afl-analyze")
-                    .setting(AllowLeadingHyphen)
-                    .setting(DisableHelpSubcommand)
-                    .setting(DisableHelpFlags)
-                    .setting(DisableVersion)
-                    .arg(Arg::with_name("afl-analyze args").multiple(true)),
-            )
-            .subcommand(
-                SubCommand::with_name("cmin")
-                    .about("Invoke afl-cmin")
-                    .setting(AllowLeadingHyphen)
-                    .setting(DisableHelpSubcommand)
-                    .setting(DisableHelpFlags)
-                    .setting(DisableVersion)
-                    .arg(Arg::with_name("afl-cmin args").multiple(true)),
-            )
-            .subcommand(
-                SubCommand::with_name("fuzz")
-                    .about("Invoke afl-fuzz")
-                    .setting(AllowLeadingHyphen)
-                    .setting(DisableHelpSubcommand)
-                    .setting(DisableHelpFlags)
-                    .setting(DisableVersion)
-                    .arg(Arg::with_name("max_total_time").long("max_total_time").takes_value(true).help("Maximum amount of time to run the fuzzer"))
-                    .arg(Arg::with_name("afl-fuzz args").multiple(true)),
-            )
-            .subcommand(
-                SubCommand::with_name("gotcpu")
-                    .about("Invoke afl-gotcpu")
-                    .setting(AllowLeadingHyphen)
-                    .setting(DisableHelpSubcommand)
-                    .setting(DisableHelpFlags)
-                    .setting(DisableVersion)
-                    .arg(Arg::with_name("afl-gotcpu args").multiple(true)),
-            )
-            .subcommand(
-                SubCommand::with_name("plot")
-                    .about("Invoke afl-plot")
-                    .setting(AllowLeadingHyphen)
-                    .setting(DisableHelpSubcommand)
-                    .setting(DisableHelpFlags)
-                    .setting(DisableVersion)
-                    .arg(Arg::with_name("afl-plot args").multiple(true)),
-            )
-            .subcommand(
-                SubCommand::with_name("showmap")
-                    .about("Invoke afl-showmap")
-                    .setting(AllowLeadingHyphen)
-                    .setting(DisableHelpSubcommand)
-                    .setting(DisableHelpFlags)
-                    .setting(DisableVersion)
-                    .arg(Arg::with_name("afl-showmap args").multiple(true)),
-            )
-            .subcommand(
-                SubCommand::with_name("tmin")
-                    .about("Invoke afl-tmin")
-                    .setting(AllowLeadingHyphen)
-                    .setting(DisableHelpSubcommand)
-                    .setting(DisableHelpFlags)
-                    .setting(DisableVersion)
-                    .arg(Arg::with_name("afl-tmin args").multiple(true)),
-            )
-            .subcommand(
-                SubCommand::with_name("whatsup")
-                    .about("Invoke afl-whatsup")
-                    .setting(AllowLeadingHyphen)
-                    .setting(DisableHelpSubcommand)
-                    .setting(DisableHelpFlags)
-                    .setting(DisableVersion)
-                    .arg(Arg::with_name("afl-whatsup args").multiple(true)),
-            ),
-    )
+                )
+                .subcommand(
+                    SubCommand::with_name("analyze")
+                        .about("Invoke afl-analyze")
+                        .setting(AllowLeadingHyphen)
+                        .setting(DisableHelpSubcommand)
+                        .setting(DisableHelpFlags)
+                        .setting(DisableVersion)
+                        .arg(Arg::with_name("afl-analyze args").multiple(true)),
+                )
+                .subcommand(
+                    SubCommand::with_name("cmin")
+                        .about("Invoke afl-cmin")
+                        .setting(AllowLeadingHyphen)
+                        .setting(DisableHelpSubcommand)
+                        .setting(DisableHelpFlags)
+                        .setting(DisableVersion)
+                        .arg(Arg::with_name("afl-cmin args").multiple(true)),
+                )
+                .subcommand(
+                    SubCommand::with_name("fuzz")
+                        .about("Invoke afl-fuzz")
+                        .setting(AllowLeadingHyphen)
+                        .setting(DisableHelpSubcommand)
+                        .setting(DisableHelpFlags)
+                        .setting(DisableVersion)
+                        .arg(
+                            Arg::with_name("max_total_time")
+                                .long("max_total_time")
+                                .takes_value(true)
+                                .help("Maximum amount of time to run the fuzzer"),
+                        )
+                        .arg(Arg::with_name("afl-fuzz args").multiple(true)),
+                )
+                .subcommand(
+                    SubCommand::with_name("gotcpu")
+                        .about("Invoke afl-gotcpu")
+                        .setting(AllowLeadingHyphen)
+                        .setting(DisableHelpSubcommand)
+                        .setting(DisableHelpFlags)
+                        .setting(DisableVersion)
+                        .arg(Arg::with_name("afl-gotcpu args").multiple(true)),
+                )
+                .subcommand(
+                    SubCommand::with_name("plot")
+                        .about("Invoke afl-plot")
+                        .setting(AllowLeadingHyphen)
+                        .setting(DisableHelpSubcommand)
+                        .setting(DisableHelpFlags)
+                        .setting(DisableVersion)
+                        .arg(Arg::with_name("afl-plot args").multiple(true)),
+                )
+                .subcommand(
+                    SubCommand::with_name("showmap")
+                        .about("Invoke afl-showmap")
+                        .setting(AllowLeadingHyphen)
+                        .setting(DisableHelpSubcommand)
+                        .setting(DisableHelpFlags)
+                        .setting(DisableVersion)
+                        .arg(Arg::with_name("afl-showmap args").multiple(true)),
+                )
+                .subcommand(
+                    SubCommand::with_name("tmin")
+                        .about("Invoke afl-tmin")
+                        .setting(AllowLeadingHyphen)
+                        .setting(DisableHelpSubcommand)
+                        .setting(DisableHelpFlags)
+                        .setting(DisableVersion)
+                        .arg(Arg::with_name("afl-tmin args").multiple(true)),
+                )
+                .subcommand(
+                    SubCommand::with_name("whatsup")
+                        .about("Invoke afl-whatsup")
+                        .setting(AllowLeadingHyphen)
+                        .setting(DisableHelpSubcommand)
+                        .setting(DisableHelpFlags)
+                        .setting(DisableVersion)
+                        .arg(Arg::with_name("afl-whatsup args").multiple(true)),
+                ),
+        )
 }
 
 fn run_timeout_terminate(mut cmd: Command, timeout: Option<u64>) -> Result<ExitStatus, io::Error> {
@@ -247,7 +251,12 @@ fn run_timeout_terminate(mut cmd: Command, timeout: Option<u64>) -> Result<ExitS
     unsafe {
         // Block until the child process terminates, but leave it in a waitable
         // state still
-        let ret = libc::waitid(libc::P_PID, pid, std::ptr::null_mut(), libc::WEXITED | libc::WNOWAIT);
+        let ret = libc::waitid(
+            libc::P_PID,
+            pid,
+            std::ptr::null_mut(),
+            libc::WEXITED | libc::WNOWAIT,
+        );
         if ret == -1 {
             Err(io::Error::last_os_error())?
         }

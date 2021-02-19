@@ -15,7 +15,7 @@ pub use common::*;
 extern "C" {
     fn __afl_persistent_loop(counter: usize) -> isize;
     fn __afl_manual_init();
-    
+
     static __afl_fuzz_len: *const u32;
     static __afl_fuzz_ptr: *const u8;
 }
