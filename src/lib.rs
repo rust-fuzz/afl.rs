@@ -100,7 +100,13 @@ where
 extern "C" {
     fn __afl_persistent_loop(counter: usize) -> isize;
     fn __afl_manual_init();
+    
+    static __afl_fuzz_len: *const u32;
+    static __afl_fuzz_ptr: *const u8;
 }
+
+#[no_mangle]
+pub static __afl_sharedmem_fuzzing: i32 = 1;
 
 /// Fuzz a closure by passing it a `&[u8]`
 ///
@@ -151,18 +157,29 @@ where
     unsafe { __afl_manual_init() };
 
     while unsafe { __afl_persistent_loop(1000) } != 0 {
-        // get buffer from AFL through stdin
-        let result = io::stdin().read_to_end(&mut input);
-        if result.is_err() {
-            return;
-        }
+        // get the testcase from the fuzzer
+        let input_ref = if unsafe { __afl_fuzz_ptr.is_null() } {
+            // in-memory testcase delivery is not enabled
+            // get buffer from AFL++ through stdin
+            let result = io::stdin().read_to_end(&mut input);
+            if result.is_err() {
+                return;
+            }
+            &input
+        } else {
+            unsafe {
+                // get the testcase from the shared memory
+                let input_len = *__afl_fuzz_len as usize;
+                std::slice::from_raw_parts(__afl_fuzz_ptr, input_len)
+            }
+        };
 
         // We still catch unwinding panics just in case the fuzzed code modifies
         // the panic hook.
         // If so, the fuzzer will be unable to tell different bugs appart and you will
         // only be able to find one bug at a time before fixing it to then find a new one.
         let did_panic = std::panic::catch_unwind(panic::AssertUnwindSafe(|| {
-            closure(&input);
+            closure(input_ref);
         }))
         .is_err();
 

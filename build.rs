@@ -25,29 +25,19 @@ fn build_afl(out_dir: &Path) {
     command
         .current_dir(AFL_SRC_PATH)
         .args(&["clean", "all", "install"])
-        // Rely on LLVM’s built-in execution tracing feature instead of AFL’s
-        // LLVM passi instrumentation.
-        .env("AFL_TRACE_PC", "1")
+        // skip the checks for the legacy x86 afl-gcc compiler
+        .env("AFL_NO_X86", "1")
+        // build just the runtime to avoid troubles with Xcode clang on macOS
+        .env("NO_BUILD", "1")
         .env("DESTDIR", out_dir)
         .env("PREFIX", "");
-    // sets AFL_NO_X86 to compile for ARM arch
-    if cfg!(target_arch = "arm") {
-        command.env("AFL_NO_X86", "1");
-    }
     let status = command.status().expect("could not run 'make'");
     assert!(status.success());
 }
 
 fn build_afl_llvm_runtime() {
-    let status = Command::new("make")
-        .current_dir(Path::new(AFL_SRC_PATH).join("llvm_mode"))
-        .arg("../afl-llvm-rt.o")
-        .status()
-        .expect("could not compile 'afl-llvm-rt.o'");
-    assert!(status.success());
-
     std::fs::copy(
-        Path::new(&AFL_SRC_PATH).join("afl-llvm-rt.o"),
+        Path::new(&AFL_SRC_PATH).join("afl-compiler-rt.o"),
         common::object_file_path(),
     )
     .expect("Couldn't copy object file");
