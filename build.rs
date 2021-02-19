@@ -1,6 +1,3 @@
-extern crate rustc_version;
-extern crate xdg;
-
 use std::path::Path;
 use std::process::Command;
 
