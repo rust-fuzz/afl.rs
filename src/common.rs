@@ -32,10 +32,29 @@ fn pkg_version() -> String {
     ret
 }
 
+// Place directories inside the crate when building for docs.rs. 
+// (Modifying system paths are forbidden.)
+
+#[cfg(docsrs)]
+pub fn afl_dir() -> PathBuf {
+    let path = PathBuf::from("./afl");
+    std::fs::create_dir_all(&path).unwrap();
+    path
+}
+
+#[cfg(not(docsrs))]
 pub fn afl_dir() -> PathBuf {
     xdg_dir().create_data_directory("afl").unwrap()
 }
 
+#[cfg(docsrs)]
+pub fn afl_llvm_rt_dir() -> PathBuf {
+    let path = PathBuf::from("./afl-llvm-rt");
+    std::fs::create_dir_all(&path).unwrap();
+    path
+}
+
+#[cfg(not(docsrs))]
 pub fn afl_llvm_rt_dir() -> PathBuf {
     xdg_dir().create_data_directory("afl-llvm-rt").unwrap()
 }
