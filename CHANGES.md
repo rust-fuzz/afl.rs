@@ -1,5 +1,9 @@
 # Changes
 
+## 0.10.1
+
+* [Get docs building on docs.rs](https://github.com/rust-fuzz/afl.rs/pull/185)
+
 ## 0.10.0
 
 * [Qualify uses of `__fuzz!` macro](https://github.com/rust-fuzz/afl.rs/pull/174)
