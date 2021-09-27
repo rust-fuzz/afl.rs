@@ -291,7 +291,7 @@ where
     I: IntoIterator<Item = S>,
     S: AsRef<OsStr>,
 {
-    let cargo_path = env!("CARGO");
+    let cargo_path = env::var("CARGO").expect("Could not determine `cargo` path");
 
     // add some flags to sanitizers to make them work with Rust code
     let asan_options = env::var("ASAN_OPTIONS").unwrap_or_default();
