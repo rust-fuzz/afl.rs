@@ -295,16 +295,33 @@ where
 
     // add some flags to sanitizers to make them work with Rust code
     let asan_options = env::var("ASAN_OPTIONS").unwrap_or_default();
-    let asan_options = format!("detect_odr_violation=0:abort_on_error=1:symbolize=0:{}", asan_options);
+    let asan_options = format!(
+        "detect_odr_violation=0:abort_on_error=1:symbolize=0:{}",
+        asan_options
+    );
 
     let tsan_options = env::var("TSAN_OPTIONS").unwrap_or_default();
     let tsan_options = format!("report_signal_unsafe=0:{}", tsan_options);
 
+    let version_meta = rustc_version::version_meta().unwrap();
+    let passes = if version_meta.semver.minor >= 57
+        && version_meta.llvm_version.map_or(true, |v| v.major >= 13)
+    {
+        // New LLVM pass manager is enabled when Rust 1.57+ and LLVM 13+
+        // https://github.com/rust-lang/rust/pull/88243
+        "sancov-module"
+    } else {
+        "sancov"
+    };
+
+    // `-C codegen-units=1` is needed to work around link errors
+    // https://github.com/rust-fuzz/afl.rs/pull/193#issuecomment-933550430
     let mut rustflags = format!(
         "--cfg fuzzing \
          -C debug-assertions \
          -C overflow_checks \
-         -C passes=sancov \
+         -C passes={} \
+         -C codegen-units=1 \
          -C llvm-args=-sanitizer-coverage-level=3 \
          -C llvm-args=-sanitizer-coverage-trace-pc-guard \
          -C llvm-args=-sanitizer-coverage-prune-blocks=0 \
@@ -313,6 +330,7 @@ where
          -C debuginfo=0 \
          -l afl-llvm-rt \
          -L {} ",
+        passes,
         common::afl_llvm_rt_dir().display()
     );
 
@@ -323,7 +341,8 @@ where
         "--cfg fuzzing \
          -C debug-assertions \
          -C overflow_checks \
-         -C passes=sancov \
+         -C passes={} \
+         -C codegen-units=1 \
          -C llvm-args=-sanitizer-coverage-level=3 \
          -C llvm-args=-sanitizer-coverage-trace-pc-guard \
          -C llvm-args=-sanitizer-coverage-prune-blocks=0 \
@@ -331,6 +350,7 @@ where
          -C target-cpu=native \
          -C debuginfo=0 \
          -L {} ",
+        passes,
         common::afl_llvm_rt_dir().display()
     );
 
