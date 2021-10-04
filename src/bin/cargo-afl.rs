@@ -314,11 +314,14 @@ where
         "sancov"
     };
 
+    // `-C codegen-units=1` is needed to work around link errors
+    // https://github.com/rust-fuzz/afl.rs/pull/193#issuecomment-933550430
     let mut rustflags = format!(
         "--cfg fuzzing \
          -C debug-assertions \
          -C overflow_checks \
          -C passes={} \
+         -C codegen-units=1 \
          -C llvm-args=-sanitizer-coverage-level=3 \
          -C llvm-args=-sanitizer-coverage-trace-pc-guard \
          -C llvm-args=-sanitizer-coverage-prune-blocks=0 \
@@ -339,6 +342,7 @@ where
          -C debug-assertions \
          -C overflow_checks \
          -C passes={} \
+         -C codegen-units=1 \
          -C llvm-args=-sanitizer-coverage-level=3 \
          -C llvm-args=-sanitizer-coverage-trace-pc-guard \
          -C llvm-args=-sanitizer-coverage-prune-blocks=0 \
