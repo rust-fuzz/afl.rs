@@ -1,36 +1,46 @@
 name: Rust
 
 on:
-- push
-- pull_request
+  - push
+  - pull_request
 
 jobs:
   build_ubuntu:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        toolchain: [stable, nightly]
     steps:
-    - run: sudo apt-get install llvm
-    - uses: actions/checkout@v2
-      with:
-        submodules: true
-    - name: Build
-      run: cargo build --verbose
-    - name: Build examples (with AFL instrumentation)
-      run: cargo run afl build --examples --verbose
-    - name: Run tests (with AFL instrumentation)
-      run: cargo run afl test --verbose
-      env:
-        AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES: "1"
+      - run: sudo apt-get install llvm
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Rustup
+        run: rustup default ${{ matrix.toolchain }}
+      - name: Build
+        run: cargo build --verbose
+      - name: Build examples (with AFL instrumentation)
+        run: cargo run afl build --examples --verbose
+      - name: Run tests (with AFL instrumentation)
+        run: cargo run afl test --verbose
+        env:
+          AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES: "1"
   build_macos:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        toolchain: [stable, nightly]
     steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: true
-    - name: Build
-      run: cargo build --verbose
-    - name: Build examples (with AFL instrumentation)
-      run: cargo run afl build --examples --verbose
-    - name: Run tests (with AFL instrumentation)
-      run: cargo run afl test --verbose
-      env:
-        AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES: "1"
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Rustup
+        run: rustup default ${{ matrix.toolchain }}
+      - name: Build
+        run: cargo build --verbose
+      - name: Build examples (with AFL instrumentation)
+        run: cargo run afl build --examples --verbose
+      - name: Run tests (with AFL instrumentation)
+        run: cargo run afl test --verbose
+        env:
+          AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES: "1"
