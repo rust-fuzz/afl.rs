@@ -1,5 +1,11 @@
 # Changes
 
+## 0.11.0
+
+* [Update rustc_version to 0.4](https://github.com/rust-fuzz/afl.rs/pull/188)
+* [Update AFLplusplus to 3.14c](https://github.com/rust-fuzz/afl.rs/pull/189)
+* [Update for new LLVM pass manager](https://github.com/rust-fuzz/afl.rs/pull/193)
+
 ## 0.10.1
 
 * [Get docs building on docs.rs](https://github.com/rust-fuzz/afl.rs/pull/185)
