@@ -197,8 +197,7 @@ mod test {
 
     #[test]
     fn integration() {
-        let temp_dir =
-            tempdir::TempDir::new("aflrs").expect("Could not create temporary directory");
+        let temp_dir = tempfile::TempDir::new().expect("Could not create temporary directory");
         let temp_dir_path = temp_dir.path();
         let mut child = process::Command::new(cargo_afl_path())
             .arg("afl")
