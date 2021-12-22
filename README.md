@@ -39,7 +39,7 @@ Screen recording of AFL running on Rust code.
 
 To address such problems, rust-fuzz provides a ["resettable" version](https://github.com/rust-fuzz/resettable-lazy-static.rs) of `lazy_static`. To use it, make the following two changes to your target's `Cargo.toml` file.
 
-1. Add a `[patch.crates-io]` section and overide the `lazy_static` dependency with the rust-fuzz version:
+1. Add a `[patch.crates-io]` section and override the `lazy_static` dependency with the rust-fuzz version:
     ```toml
     [patch.crates-io]
     lazy_static = { git = "https://github.com/rust-fuzz/resettable-lazy-static.rs" }
