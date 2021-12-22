@@ -1,5 +1,9 @@
 # Changes
 
+## 0.11.1
+
+* [Handle old LLVM pass manager on rustc 1.57](https://github.com/rust-fuzz/afl.rs/pull/197)
+
 ## 0.11.0
 
 * [Update rustc_version to 0.4](https://github.com/rust-fuzz/afl.rs/pull/188)
