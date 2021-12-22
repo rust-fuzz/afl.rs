@@ -305,7 +305,7 @@ where
 
     // The new LLVM pass manager was not enabled in rustc 1.57 as expected:
     // https://github.com/rust-lang/rust/pull/91263
-    // The fix for now is to only pass `-C passes=sancov-module` to nightly
+    // The fix for now is to pass `-C passes=sancov-module` only to nightly
     // compilers for which the LLVM version is >= 13.
 
     let version_meta = rustc_version::version_meta().unwrap();
