@@ -23,7 +23,7 @@ xdg = "2.1"
 lazy_static = { version = "1.4.0", optional = true }
 
 [dev-dependencies]
-tempdir = "0.3"
+tempfile = "3"
 
 [features]
 reset_lazy_static = ["lazy_static"]
