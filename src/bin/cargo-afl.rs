@@ -1,4 +1,4 @@
-use clap::{crate_version, value_t};
+use clap::crate_version;
 
 use std::env;
 use std::ffi::OsStr;
@@ -28,166 +28,201 @@ fn main() {
     let afl_matches = app_matches.subcommand_matches("afl").unwrap();
 
     match afl_matches.subcommand() {
-        ("analyze", Some(sub_matches)) => {
+        Some(("analyze", sub_matches)) => {
             let args = sub_matches
                 .values_of_os("afl-analyze args")
                 .unwrap_or_default();
             run_afl(args, "afl-analyze", None);
         }
-        ("cmin", Some(sub_matches)) => {
+        Some(("cmin", sub_matches)) => {
             let args = sub_matches
                 .values_of_os("afl-cmin args")
                 .unwrap_or_default();
             run_afl(args, "afl-cmin", None);
         }
-        ("fuzz", Some(sub_matches)) => {
+        Some(("fuzz", sub_matches)) => {
             let args = sub_matches
                 .values_of_os("afl-fuzz args")
                 .unwrap_or_default();
-            let timeout = sub_matches
-                .value_of("max_total_time")
-                .map(|_| value_t!(sub_matches, "max_total_time", u64).unwrap_or_else(|e| e.exit()));
+            let timeout = sub_matches.value_of("max_total_time").map(|_| {
+                sub_matches
+                    .value_of_t::<u64>("max_total_time")
+                    .unwrap_or_else(|e| e.exit())
+            });
             run_afl(args, "afl-fuzz", timeout);
         }
-        ("gotcpu", Some(sub_matches)) => {
+        Some(("gotcpu", sub_matches)) => {
             let args = sub_matches
                 .values_of_os("afl-gotcpu args")
                 .unwrap_or_default();
             run_afl(args, "afl-gotcpu", None);
         }
-        ("plot", Some(sub_matches)) => {
+        Some(("plot", sub_matches)) => {
             let args = sub_matches
                 .values_of_os("afl-plot args")
                 .unwrap_or_default();
             run_afl(args, "afl-plot", None);
         }
-        ("showmap", Some(sub_matches)) => {
+        Some(("showmap", sub_matches)) => {
             let args = sub_matches
                 .values_of_os("afl-showmap args")
                 .unwrap_or_default();
             run_afl(args, "afl-showmap", None);
         }
-        ("tmin", Some(sub_matches)) => {
+        Some(("tmin", sub_matches)) => {
             let args = sub_matches
                 .values_of_os("afl-tmin args")
                 .unwrap_or_default();
             run_afl(args, "afl-tmin", None);
         }
-        ("whatsup", Some(sub_matches)) => {
+        Some(("whatsup", sub_matches)) => {
             let args = sub_matches
                 .values_of_os("afl-whatsup args")
                 .unwrap_or_default();
             run_afl(args, "afl-whatsup", None);
         }
-        (subcommand, Some(sub_matches)) => {
+        Some((subcommand, sub_matches)) => {
             let args = sub_matches.values_of_os("").unwrap_or_default();
             run_cargo(subcommand, args);
         }
         // unreachable due to SubcommandRequiredElseHelp on "afl" subcommand
-        (_, None) => unreachable!(),
+        None => unreachable!(),
     }
 }
 
-fn clap_app() -> clap::App<'static, 'static> {
+fn clap_app() -> clap::App<'static> {
     use clap::{
         App,
         AppSettings::{
-            AllowExternalSubcommands, AllowLeadingHyphen, DisableHelpFlags, DisableHelpSubcommand,
-            DisableVersion, SubcommandRequiredElseHelp,
+            AllowExternalSubcommands, AllowHyphenValues, AllowInvalidUtf8ForExternalSubcommands,
+            DisableHelpFlag, DisableHelpSubcommand, DisableVersionFlag, SubcommandRequiredElseHelp,
         },
-        Arg, SubCommand,
+        Arg,
     };
 
     App::new("cargo afl")
         .bin_name("cargo")
         .setting(SubcommandRequiredElseHelp)
         .subcommand(
-            SubCommand::with_name("afl")
+            App::new("afl")
                 .version(crate_version!())
                 .setting(SubcommandRequiredElseHelp)
                 .setting(AllowExternalSubcommands)
-                .usage("cargo afl [SUBCOMMAND or Cargo SUBCOMMAND]")
+                .setting(AllowInvalidUtf8ForExternalSubcommands)
+                .override_usage("cargo afl [SUBCOMMAND or Cargo SUBCOMMAND]")
                 .after_help(
                     "In addition to the subcommands above, Cargo subcommands are also \
                  supported (see `cargo help` for a list of all Cargo subcommands).",
                 )
                 .subcommand(
-                    SubCommand::with_name("analyze")
+                    App::new("analyze")
                         .about("Invoke afl-analyze")
-                        .setting(AllowLeadingHyphen)
+                        .setting(AllowHyphenValues)
                         .setting(DisableHelpSubcommand)
-                        .setting(DisableHelpFlags)
-                        .setting(DisableVersion)
-                        .arg(Arg::with_name("afl-analyze args").multiple(true)),
-                )
-                .subcommand(
-                    SubCommand::with_name("cmin")
-                        .about("Invoke afl-cmin")
-                        .setting(AllowLeadingHyphen)
-                        .setting(DisableHelpSubcommand)
-                        .setting(DisableHelpFlags)
-                        .setting(DisableVersion)
-                        .arg(Arg::with_name("afl-cmin args").multiple(true)),
-                )
-                .subcommand(
-                    SubCommand::with_name("fuzz")
-                        .about("Invoke afl-fuzz")
-                        .setting(AllowLeadingHyphen)
-                        .setting(DisableHelpSubcommand)
-                        .setting(DisableHelpFlags)
-                        .setting(DisableVersion)
+                        .setting(DisableHelpFlag)
+                        .setting(DisableVersionFlag)
                         .arg(
-                            Arg::with_name("max_total_time")
+                            Arg::new("afl-analyze args")
+                                .allow_invalid_utf8(true)
+                                .multiple_values(true),
+                        ),
+                )
+                .subcommand(
+                    App::new("cmin")
+                        .about("Invoke afl-cmin")
+                        .setting(AllowHyphenValues)
+                        .setting(DisableHelpSubcommand)
+                        .setting(DisableHelpFlag)
+                        .setting(DisableVersionFlag)
+                        .arg(
+                            Arg::new("afl-cmin args")
+                                .allow_invalid_utf8(true)
+                                .multiple_values(true),
+                        ),
+                )
+                .subcommand(
+                    App::new("fuzz")
+                        .about("Invoke afl-fuzz")
+                        .setting(AllowHyphenValues)
+                        .setting(DisableHelpSubcommand)
+                        .setting(DisableHelpFlag)
+                        .setting(DisableVersionFlag)
+                        .arg(
+                            Arg::new("max_total_time")
                                 .long("max_total_time")
                                 .takes_value(true)
                                 .help("Maximum amount of time to run the fuzzer"),
                         )
-                        .arg(Arg::with_name("afl-fuzz args").multiple(true)),
+                        .arg(
+                            Arg::new("afl-fuzz args")
+                                .allow_invalid_utf8(true)
+                                .multiple_values(true),
+                        ),
                 )
                 .subcommand(
-                    SubCommand::with_name("gotcpu")
+                    App::new("gotcpu")
                         .about("Invoke afl-gotcpu")
-                        .setting(AllowLeadingHyphen)
+                        .setting(AllowHyphenValues)
                         .setting(DisableHelpSubcommand)
-                        .setting(DisableHelpFlags)
-                        .setting(DisableVersion)
-                        .arg(Arg::with_name("afl-gotcpu args").multiple(true)),
+                        .setting(DisableHelpFlag)
+                        .setting(DisableVersionFlag)
+                        .arg(
+                            Arg::new("afl-gotcpu args")
+                                .allow_invalid_utf8(true)
+                                .multiple_values(true),
+                        ),
                 )
                 .subcommand(
-                    SubCommand::with_name("plot")
+                    App::new("plot")
                         .about("Invoke afl-plot")
-                        .setting(AllowLeadingHyphen)
+                        .setting(AllowHyphenValues)
                         .setting(DisableHelpSubcommand)
-                        .setting(DisableHelpFlags)
-                        .setting(DisableVersion)
-                        .arg(Arg::with_name("afl-plot args").multiple(true)),
+                        .setting(DisableHelpFlag)
+                        .setting(DisableVersionFlag)
+                        .arg(
+                            Arg::new("afl-plot args")
+                                .allow_invalid_utf8(true)
+                                .multiple_values(true),
+                        ),
                 )
                 .subcommand(
-                    SubCommand::with_name("showmap")
+                    App::new("showmap")
                         .about("Invoke afl-showmap")
-                        .setting(AllowLeadingHyphen)
+                        .setting(AllowHyphenValues)
                         .setting(DisableHelpSubcommand)
-                        .setting(DisableHelpFlags)
-                        .setting(DisableVersion)
-                        .arg(Arg::with_name("afl-showmap args").multiple(true)),
+                        .setting(DisableHelpFlag)
+                        .setting(DisableVersionFlag)
+                        .arg(
+                            Arg::new("afl-showmap args")
+                                .allow_invalid_utf8(true)
+                                .multiple_values(true),
+                        ),
                 )
                 .subcommand(
-                    SubCommand::with_name("tmin")
+                    App::new("tmin")
                         .about("Invoke afl-tmin")
-                        .setting(AllowLeadingHyphen)
+                        .setting(AllowHyphenValues)
                         .setting(DisableHelpSubcommand)
-                        .setting(DisableHelpFlags)
-                        .setting(DisableVersion)
-                        .arg(Arg::with_name("afl-tmin args").multiple(true)),
+                        .setting(DisableHelpFlag)
+                        .setting(DisableVersionFlag)
+                        .arg(
+                            Arg::new("afl-tmin args")
+                                .allow_invalid_utf8(true)
+                                .multiple_values(true),
+                        ),
                 )
                 .subcommand(
-                    SubCommand::with_name("whatsup")
+                    App::new("whatsup")
                         .about("Invoke afl-whatsup")
-                        .setting(AllowLeadingHyphen)
+                        .setting(AllowHyphenValues)
                         .setting(DisableHelpSubcommand)
-                        .setting(DisableHelpFlags)
-                        .setting(DisableVersion)
-                        .arg(Arg::with_name("afl-whatsup args").multiple(true)),
+                        .setting(DisableHelpFlag)
+                        .setting(DisableVersionFlag)
+                        .arg(
+                            Arg::new("afl-whatsup args")
+                                .allow_invalid_utf8(true)
+                                .multiple_values(true),
+                        ),
                 ),
         )
 }
