@@ -421,3 +421,13 @@ fn is_nightly() -> bool {
         .unwrap()
         .success()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_app() {
+        clap_app().debug_assert();
+    }
+}
