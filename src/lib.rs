@@ -158,10 +158,8 @@ macro_rules! __fuzz {
     ($hook:expr, |$buf:ident: $dty: ty| $body:block) => {
         $crate::fuzz($hook, |$buf| {
             let $buf: $dty = {
-                use arbitrary::{Arbitrary, RingBuffer};
-                if let Ok(d) = RingBuffer::new($buf, $buf.len())
-                    .and_then(|mut b| Arbitrary::arbitrary(&mut b).map_err(|_| ""))
-                {
+                let mut data = ::arbitrary::Unstructured::new($buf);
+                if let Ok(d) = ::arbitrary::Arbitrary::arbitrary(&mut data).map_err(|_| "") {
                     d
                 } else {
                     return;
