@@ -15,6 +15,7 @@ xdg = "2.1"
 rustc_version = "0.4"
 
 [dependencies]
+arbitrary = { version = "1", features = ["derive"] }
 cc = "1.0"
 clap = { version = "3.0", features = ["cargo"] }
 libc = "0.2.117"
