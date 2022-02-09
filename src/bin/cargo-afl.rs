@@ -3,7 +3,7 @@ use clap::crate_version;
 use std::env;
 use std::ffi::OsStr;
 use std::io;
-use std::process::{self, Command, ExitStatus};
+use std::process::{self, Command, ExitStatus, Stdio};
 use std::sync::{Arc, Condvar, Mutex};
 use std::thread;
 use std::time::{Duration, Instant};
@@ -417,6 +417,7 @@ where
 fn is_nightly() -> bool {
     Command::new("rustc")
         .args(&["-Z", "help"])
+        .stderr(Stdio::null())
         .status()
         .unwrap()
         .success()
