@@ -15,7 +15,6 @@ xdg = "2.1"
 rustc_version = "0.4"
 
 [dependencies]
-arbitrary = { version = "1", features = ["derive"] }
 cc = "1.0"
 clap = { version = "3.0", features = ["cargo"] }
 libc = "0.2.117"
@@ -24,6 +23,7 @@ xdg = "2.1"
 lazy_static = { version = "1.4.0", optional = true }
 
 [dev-dependencies]
+arbitrary = { version = "1", features = ["derive"] }
 tempfile = "3"
 
 [features]
