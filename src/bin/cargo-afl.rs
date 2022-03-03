@@ -338,13 +338,11 @@ where
     let tsan_options = env::var("TSAN_OPTIONS").unwrap_or_default();
     let tsan_options = format!("report_signal_unsafe=0:{}", tsan_options);
 
-    // The new LLVM pass manager was not enabled in rustc 1.57 as expected:
-    // https://github.com/rust-lang/rust/pull/91263
-    // The fix for now is to pass `-C passes=sancov-module` only to nightly
-    // compilers for which the LLVM version is >= 13.
-
+    // The new LLVM pass manager was enabled in rustc 1.59.
     let version_meta = rustc_version::version_meta().unwrap();
-    let passes = if is_nightly() && version_meta.llvm_version.map_or(true, |v| v.major >= 13) {
+    let passes = if (version_meta.semver.minor >= 59 || is_nightly())
+        && version_meta.llvm_version.map_or(true, |v| v.major >= 13)
+    {
         "sancov-module"
     } else {
         "sancov"
