@@ -1,5 +1,9 @@
 # Changes
 
+## 0.12.2
+
+* [Handle new LLVM pass manager on rustc 1.59](https://github.com/rust-fuzz/afl.rs/pull/220)
+
 ## 0.12.1
 
 * [Use arbitrary::Unstructured instead of arbitrary::RingBuffer](https://github.com/rust-fuzz/afl.rs/pull/211)
