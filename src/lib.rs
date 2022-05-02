@@ -9,6 +9,7 @@ use std::io::{self, Read};
 use std::panic;
 
 mod common;
+#[doc(hidden)]
 pub use common::*;
 
 // those functions are provided by the afl-llvm-rt static library
@@ -20,6 +21,7 @@ extern "C" {
     static __afl_fuzz_ptr: *const u8;
 }
 
+#[doc(hidden)]
 #[no_mangle]
 pub static __afl_sharedmem_fuzzing: i32 = 1;
 
@@ -147,6 +149,7 @@ macro_rules! fuzz_nohook {
     ( $($x:tt)* ) => { $crate::__fuzz!(false, $($x)*) }
 }
 
+#[doc(hidden)]
 #[macro_export]
 macro_rules! __fuzz {
     ($hook:expr, |$buf:ident| $body:block) => {
