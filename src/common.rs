@@ -1,3 +1,4 @@
+use std::env;
 use std::path::{Path, PathBuf};
 
 use xdg;
@@ -15,10 +16,10 @@ fn data_dir(dir_name: &str) -> PathBuf {
     // It is idiomatic to use OUT_DIR in build scripts,
     // and in some environments (e.g., docsrs builds)
     // that may be the only place we can write to.
-    option_env!("OUT_DIR").map_or_else(
-        || xdg_dir().create_data_directory(dir_name).unwrap(),
+    env::var("OUT_DIR").map_or_else(
+        |_| xdg_dir().create_data_directory(dir_name).unwrap(),
         |dir| {
-            let path = Path::new(dir).join(dir_name);
+            let path = Path::new(&dir).join(dir_name);
             std::fs::create_dir_all(&path).unwrap();
             path
         }
