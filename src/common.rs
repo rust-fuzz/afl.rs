@@ -9,6 +9,22 @@ fn xdg_dir() -> xdg::BaseDirectories {
     xdg::BaseDirectories::with_prefix(prefix).unwrap()
 }
 
+fn data_dir(dir_name: &str) -> PathBuf {
+    // In the build script, at build time, use OUT_DIR.
+    // At runtime, use a XDG data directory.
+    // It is idiomatic to use OUT_DIR in build scripts,
+    // and in some environments (e.g., docsrs builds)
+    // that may be the only place we can write to.
+    option_env!("OUT_DIR").map_or_else(
+        || xdg_dir().create_data_directory(dir_name).unwrap(),
+        |dir| {
+            let path = Path::new(dir).join(dir_name);
+            std::fs::create_dir_all(&path).unwrap();
+            path
+        }
+    )
+}
+
 const SHORT_COMMIT_HASH_LEN: usize = 7;
 
 pub fn afl_rustc_version() -> String {
@@ -32,31 +48,12 @@ fn pkg_version() -> String {
     ret
 }
 
-// Place directories inside the crate when building for docs.rs. 
-// (Modifying system paths are forbidden.)
-
-#[cfg(docsrs)]
 pub fn afl_dir() -> PathBuf {
-    let path = PathBuf::from("./afl");
-    std::fs::create_dir_all(&path).unwrap();
-    path
+    data_dir("afl")
 }
 
-#[cfg(not(docsrs))]
-pub fn afl_dir() -> PathBuf {
-    xdg_dir().create_data_directory("afl").unwrap()
-}
-
-#[cfg(docsrs)]
 pub fn afl_llvm_rt_dir() -> PathBuf {
-    let path = PathBuf::from("./afl-llvm-rt");
-    std::fs::create_dir_all(&path).unwrap();
-    path
-}
-
-#[cfg(not(docsrs))]
-pub fn afl_llvm_rt_dir() -> PathBuf {
-    xdg_dir().create_data_directory("afl-llvm-rt").unwrap()
+    data_dir("afl-llvm-rt")
 }
 
 #[allow(dead_code)]
