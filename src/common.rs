@@ -11,19 +11,20 @@ fn xdg_dir() -> xdg::BaseDirectories {
 }
 
 fn data_dir(dir_name: &str) -> PathBuf {
-    // In the build script, at build time, use OUT_DIR.
-    // At runtime, use a XDG data directory.
-    // It is idiomatic to use OUT_DIR in build scripts,
-    // and in some environments (e.g., docsrs builds)
-    // that may be the only place we can write to.
-    env::var("OUT_DIR").map_or_else(
-        |_| xdg_dir().create_data_directory(dir_name).unwrap(),
-        |dir| {
-            let path = Path::new(&dir).join(dir_name);
-            std::fs::create_dir_all(&path).unwrap();
-            path
-        }
-    )
+    // For docs.rs builds, use OUT_DIR.
+    // For other cases, use a XDG data directory.
+    // It is necessary to use OUT_DIR for docs.rs builds,
+    // as that is the only place where we can write to.
+    // The Cargo documentation recommends that build scripts
+    // place their generated files at OUT_DIR too, but we
+    // don't change that for now for normal builds.
+    if cfg!(docsrs) {
+        let path = Path::new(&env::var("OUT_DIR").unwrap()).join(dir_name);
+        std::fs::create_dir_all(&path).unwrap();
+        path
+    } else {
+        xdg_dir().create_data_directory(dir_name).unwrap()
+    }
 }
 
 const SHORT_COMMIT_HASH_LEN: usize = 7;
