@@ -1,5 +1,9 @@
 # Changes
 
+## 0.12.4
+
+* [Set rustc-args instead of rustdoc-args](https://github.com/rust-fuzz/afl.rs/commit/125af5fa32f13e1ecaab0e219eecca286ee9d8e8)
+
 ## 0.12.3
 
 * [Fix docs.rs documentation generation](https://github.com/rust-fuzz/afl.rs/pull/231)
