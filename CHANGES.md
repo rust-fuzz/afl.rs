@@ -1,5 +1,9 @@
 # Changes
 
+## 0.12.3
+
+* [Fix docs.rs documentation generation](https://github.com/rust-fuzz/afl.rs/pull/231)
+
 ## 0.12.2
 
 * [Handle new LLVM pass manager on rustc 1.59](https://github.com/rust-fuzz/afl.rs/pull/220)
