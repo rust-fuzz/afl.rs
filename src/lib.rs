@@ -93,7 +93,7 @@ where
 
         // We still catch unwinding panics just in case the fuzzed code modifies
         // the panic hook.
-        // If so, the fuzzer will be unable to tell different bugs appart and you will
+        // If so, the fuzzer will be unable to tell different bugs apart and you will
         // only be able to find one bug at a time before fixing it to then find a new one.
         let did_panic = std::panic::catch_unwind(panic::AssertUnwindSafe(|| {
             closure(input_ref);
