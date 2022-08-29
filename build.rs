@@ -28,6 +28,9 @@ fn build_afl(out_dir: &Path) {
         .env("NO_BUILD", "1")
         .env("DESTDIR", out_dir)
         .env("PREFIX", "");
+    if std::env::var("DEBUG").as_deref() == Ok("false") {
+        command.env_remove("DEBUG");
+    }
     let status = command.status().expect("could not run 'make'");
     assert!(status.success());
 }
