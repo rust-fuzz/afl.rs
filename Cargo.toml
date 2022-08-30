@@ -11,6 +11,7 @@ homepage = "https://github.com/rust-fuzz/afl.rs"
 edition = "2018"
 
 [build-dependencies]
+lazy_static = "1.4.0"
 rustc_version = "0.4"
 xdg = "2.4"
 
@@ -27,6 +28,3 @@ tempfile = "3"
 
 [features]
 reset_lazy_static = ["lazy_static"]
-
-[package.metadata.docs.rs]
-rustc-args = ["--cfg", "docsrs"]

@@ -10,7 +10,7 @@ fn xdg_dir() -> xdg::BaseDirectories {
     xdg::BaseDirectories::with_prefix(prefix).unwrap()
 }
 
-fn data_dir(dir_name: &str) -> PathBuf {
+fn data_dir(base: Option<&Path>, dir_name: &str) -> PathBuf {
     // For docs.rs builds, use OUT_DIR.
     // For other cases, use a XDG data directory.
     // It is necessary to use OUT_DIR for docs.rs builds,
@@ -18,8 +18,8 @@ fn data_dir(dir_name: &str) -> PathBuf {
     // The Cargo documentation recommends that build scripts
     // place their generated files at OUT_DIR too, but we
     // don't change that for now for normal builds.
-    if cfg!(docsrs) {
-        let path = Path::new(&env::var("OUT_DIR").unwrap()).join(dir_name);
+    if let Some(base) = base {
+        let path = base.join(dir_name);
         std::fs::create_dir_all(&path).unwrap();
         path
     } else {
@@ -50,20 +50,20 @@ fn pkg_version() -> String {
     ret
 }
 
-pub fn afl_dir() -> PathBuf {
-    data_dir("afl")
+pub fn afl_dir(base: Option<&Path>) -> PathBuf {
+    data_dir(base, "afl")
 }
 
-pub fn afl_llvm_rt_dir() -> PathBuf {
-    data_dir("afl-llvm-rt")
-}
-
-#[allow(dead_code)]
-pub fn object_file_path() -> PathBuf {
-    afl_llvm_rt_dir().join("libafl-llvm-rt.o")
+pub fn afl_llvm_rt_dir(base: Option<&Path>) -> PathBuf {
+    data_dir(base, "afl-llvm-rt")
 }
 
 #[allow(dead_code)]
-pub fn archive_file_path() -> PathBuf {
-    afl_llvm_rt_dir().join("libafl-llvm-rt.a")
+pub fn object_file_path(base: Option<&Path>) -> PathBuf {
+    afl_llvm_rt_dir(base).join("libafl-llvm-rt.o")
+}
+
+#[allow(dead_code)]
+pub fn archive_file_path(base: Option<&Path>) -> PathBuf {
+    afl_llvm_rt_dir(base).join("libafl-llvm-rt.a")
 }

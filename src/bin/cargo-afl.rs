@@ -12,7 +12,7 @@ use std::time::{Duration, Instant};
 mod common;
 
 fn main() {
-    if !common::archive_file_path().exists() {
+    if !common::archive_file_path(None).exists() {
         let version = common::afl_rustc_version();
         eprintln!(
             "AFL LLVM runtime is not built with Rust {}, run `cargo \
@@ -314,7 +314,7 @@ where
     I: IntoIterator<Item = S>,
     S: AsRef<OsStr>,
 {
-    let cmd_path = common::afl_dir().join("bin").join(cmd);
+    let cmd_path = common::afl_dir(None).join("bin").join(cmd);
     let mut cmd = Command::new(cmd_path);
     cmd.args(args);
     let status = run_timeout_terminate(cmd, timeout).unwrap();
@@ -365,7 +365,7 @@ where
          -l afl-llvm-rt \
          -L {} ",
         passes,
-        common::afl_llvm_rt_dir().display()
+        common::afl_llvm_rt_dir(None).display()
     );
 
     // RUSTFLAGS are not used by rustdoc, instead RUSTDOCFLAGS are used. Since
@@ -385,7 +385,7 @@ where
          -C debuginfo=0 \
          -L {} ",
         passes,
-        common::afl_llvm_rt_dir().display()
+        common::afl_llvm_rt_dir(None).display()
     );
 
     if cfg!(target_os = "linux") {
