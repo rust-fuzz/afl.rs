@@ -1,5 +1,10 @@
 # Changes
 
+## 0.12.5
+
+* [build.rs: Remove DEBUG environment variable](https://github.com/rust-fuzz/afl.rs/pull/248)
+* [Check for `DOCS_RS` environment variable in build.rs](https://github.com/rust-fuzz/afl.rs/pull/249)
+
 ## 0.12.4
 
 * [Set rustc-args instead of rustdoc-args](https://github.com/rust-fuzz/afl.rs/commit/125af5fa32f13e1ecaab0e219eecca286ee9d8e8)
