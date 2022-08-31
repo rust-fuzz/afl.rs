@@ -9,8 +9,6 @@ use std::io::{self, Read};
 use std::panic;
 
 mod common;
-#[doc(hidden)]
-pub use common::*;
 
 // those functions are provided by the afl-llvm-rt static library
 extern "C" {
@@ -51,8 +49,8 @@ where
 {
     // this marker strings needs to be in the produced executable for
     // afl-fuzz to detect `persistent mode` and `defered mode`
-    static PERSIST_MARKER: &'static str = "##SIG_AFL_PERSISTENT##\0";
-    static DEFERED_MARKER: &'static str = "##SIG_AFL_DEFER_FORKSRV##\0";
+    static PERSIST_MARKER: &str = "##SIG_AFL_PERSISTENT##\0";
+    static DEFERED_MARKER: &str = "##SIG_AFL_DEFER_FORKSRV##\0";
 
     // we now need a fake instruction to prevent the compiler from optimizing out
     // those marker strings
@@ -215,7 +213,7 @@ mod test {
         thread::sleep(time::Duration::from_secs(10));
         for _ in 0..5 {
             thread::sleep(time::Duration::from_secs(1));
-            let _ = child.kill();
+            child.kill().unwrap_or_default();
         }
         assert!(temp_dir_path.join("default").join("fuzzer_stats").is_file());
     }

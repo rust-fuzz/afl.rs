@@ -90,6 +90,7 @@ fn main() {
     }
 }
 
+#[allow(clippy::too_many_lines)]
 fn clap_app() -> clap::App<'static> {
     use clap::{
         App,
@@ -273,9 +274,10 @@ fn run_timeout_terminate(mut cmd: Command, timeout: Option<u64>) -> Result<ExitS
             // exits and the main thread calls wait) and thus its PID won't be
             // reused by another, unrelated process.
             unsafe {
+                #[allow(clippy::cast_possible_wrap)]
                 let ret = libc::kill(pid as i32, libc::SIGTERM);
                 if ret == -1 {
-                    Err(io::Error::last_os_error())?
+                    return Err(io::Error::last_os_error());
                 }
             }
 
@@ -293,7 +295,7 @@ fn run_timeout_terminate(mut cmd: Command, timeout: Option<u64>) -> Result<ExitS
             libc::WEXITED | libc::WNOWAIT,
         );
         if ret == -1 {
-            Err(io::Error::last_os_error())?
+            return Err(io::Error::last_os_error());
         }
     }
     {
@@ -326,6 +328,8 @@ where
     I: IntoIterator<Item = S>,
     S: AsRef<OsStr>,
 {
+    #![allow(clippy::similar_names)]
+
     let cargo_path = env::var("CARGO").expect("Could not determine `cargo` path");
 
     // add some flags to sanitizers to make them work with Rust code

@@ -5,32 +5,28 @@ on:
   - pull_request
 
 jobs:
-  build_ubuntu:
+  lint:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        toolchain: [stable, nightly]
     steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
       - run: sudo apt-get install llvm
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
-      - name: Rustup
-        run: rustup default ${{ matrix.toolchain }}
-      - name: Build
-        run: cargo build --verbose
-      - name: Build examples (with AFL instrumentation)
-        run: cargo run afl build --examples --verbose
-      - name: Run tests (with AFL instrumentation)
-        run: cargo run afl test --verbose
-        env:
-          AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES: "1"
-  build_macos:
-    runs-on: macos-latest
+      - name: Cargo sort
+        run: cargo install cargo-sort && cargo sort --check .
+      - name: Format
+        run: cargo fmt && git diff --exit-code
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings -W clippy::pedantic -A clippy::missing-panics-doc
+  build:
     strategy:
       matrix:
+        environment: [ubuntu-latest, macos-latest]
         toolchain: [stable, nightly]
+    runs-on: ${{ matrix.environment }}
     steps:
+      - if: ${{ matrix.environment == 'ubuntu-latest' }}
+        run: sudo apt-get install llvm
       - uses: actions/checkout@v2
         with:
           submodules: true
@@ -38,7 +34,8 @@ jobs:
         run: rustup default ${{ matrix.toolchain }}
       - name: Build
         run: cargo build --verbose
-      - name: Run afl-system-config
+      - if: ${{ matrix.environment == 'macos-latest' }}
+        name: Run afl-system-config
         run: sudo AFLPlusPlus/afl-system-config
       - name: Build examples (with AFL instrumentation)
         run: cargo run afl build --examples --verbose
