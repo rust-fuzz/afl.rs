@@ -9,6 +9,7 @@ pub struct Rgb {
 }
 
 impl Rgb {
+    #[must_use]
     pub fn as_hex(&self) -> Hex {
         let Rgb { r, g, b } = self;
         Hex(format!("{:02X}{:02X}{:02X}", r, g, b))

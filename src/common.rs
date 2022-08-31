@@ -1,8 +1,6 @@
 use std::env;
 use std::path::{Path, PathBuf};
 
-use xdg;
-
 fn xdg_dir() -> xdg::BaseDirectories {
     let prefix = Path::new("afl.rs")
         .join(afl_rustc_version())
@@ -29,6 +27,7 @@ fn data_dir(base: Option<&Path>, dir_name: &str) -> PathBuf {
 
 const SHORT_COMMIT_HASH_LEN: usize = 7;
 
+#[must_use]
 pub fn afl_rustc_version() -> String {
     let version_meta = rustc_version::version_meta().unwrap();
     let mut ret = String::from("rustc-");
@@ -50,20 +49,26 @@ fn pkg_version() -> String {
     ret
 }
 
+#[allow(dead_code)]
+#[must_use]
 pub fn afl_dir(base: Option<&Path>) -> PathBuf {
     data_dir(base, "afl")
 }
 
+#[allow(dead_code)]
+#[must_use]
 pub fn afl_llvm_rt_dir(base: Option<&Path>) -> PathBuf {
     data_dir(base, "afl-llvm-rt")
 }
 
 #[allow(dead_code)]
+#[must_use]
 pub fn object_file_path(base: Option<&Path>) -> PathBuf {
     afl_llvm_rt_dir(base).join("libafl-llvm-rt.o")
 }
 
 #[allow(dead_code)]
+#[must_use]
 pub fn archive_file_path(base: Option<&Path>) -> PathBuf {
     afl_llvm_rt_dir(base).join("libafl-llvm-rt.a")
 }
