@@ -311,15 +311,28 @@ fn run_timeout_terminate(mut cmd: Command, timeout: Option<u64>) -> Result<ExitS
     child.wait()
 }
 
-fn run_afl<I, S>(args: I, cmd: &str, timeout: Option<u64>)
+fn run_afl<I, S>(args: I, tool: &str, timeout: Option<u64>)
 where
     I: IntoIterator<Item = S>,
     S: AsRef<OsStr>,
 {
-    let cmd_path = common::afl_dir(None).join("bin").join(cmd);
+    let cmd_path = common::afl_dir(None).join("bin").join(tool);
     let mut cmd = Command::new(cmd_path);
     cmd.args(args);
     let status = run_timeout_terminate(cmd, timeout).unwrap();
+    #[cfg(target_os = "macos")]
+    if tool == "afl-fuzz" && !status.success() {
+        let sudo_cmd_path = common::afl_dir(None).join("bin").join("afl-system-config");
+        eprintln!(
+            "
+If you see an error message like `shmget() failed` above, try running the following command:
+
+    sudo {}
+
+Note: You will be prompted to enter your password.",
+            sudo_cmd_path.display()
+        );
+    }
     process::exit(status.code().unwrap_or(1));
 }
 
