@@ -15,16 +15,14 @@ mod common;
 
 fn main() {
     let (work_dir, base) = if env::var("DOCS_RS").is_ok() {
-        let tempdir = tempfile::tempdir().unwrap();
-        let status = Command::new("git")
+        let out_dir = env::var("OUT_DIR").unwrap();
+        let tempdir = tempfile::tempdir_in(&out_dir).unwrap();
+        let output = Command::new("git")
             .args(["clone", AFL_SRC_PATH, &*tempdir.path().to_string_lossy()])
-            .status()
+            .output()
             .expect("could not run 'git'");
-        assert!(status.success());
-        (
-            tempdir.into_path(),
-            Some(PathBuf::from(env::var("OUT_DIR").unwrap())),
-        )
+        assert!(output.status.success(), "{:#?}", output);
+        (tempdir.into_path(), Some(PathBuf::from(out_dir)))
     } else {
         (PathBuf::from(AFL_SRC_PATH), None)
     };
@@ -46,8 +44,8 @@ fn build_afl(work_dir: &Path, base: Option<&Path>) {
     if std::env::var("DEBUG").as_deref() == Ok("false") {
         command.env_remove("DEBUG");
     }
-    let status = command.status().expect("could not run 'make'");
-    assert!(status.success());
+    let output = command.output().expect("could not run 'make'");
+    assert!(output.status.success(), "{:#?}", output);
 }
 
 fn build_afl_llvm_runtime(work_dir: &Path, base: Option<&Path>) {
@@ -57,11 +55,11 @@ fn build_afl_llvm_runtime(work_dir: &Path, base: Option<&Path>) {
     )
     .expect("Couldn't copy object file");
 
-    let status = Command::new(AR_CMD)
+    let output = Command::new(AR_CMD)
         .arg("r")
         .arg(common::archive_file_path(base))
         .arg(common::object_file_path(base))
-        .status()
+        .output()
         .expect("could not run 'ar'");
-    assert!(status.success());
+    assert!(output.status.success(), "{:#?}", output);
 }
