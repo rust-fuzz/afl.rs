@@ -1,5 +1,11 @@
 # Changes
 
+## 0.12.6
+
+* [Build AFL in a temporary directory on docs.rs](https://github.com/rust-fuzz/afl.rs/pull/250)
+* [Add help for `shmget() failed` error message](https://github.com/rust-fuzz/afl.rs/pull/253)
+* [Update AFLpluplus to 4.02c](https://github.com/rust-fuzz/afl.rs/pull/251)
+
 ## 0.12.5
 
 * [build.rs: Remove DEBUG environment variable](https://github.com/rust-fuzz/afl.rs/pull/248)
