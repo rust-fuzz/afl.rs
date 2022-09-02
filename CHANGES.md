@@ -1,5 +1,9 @@
 # Changes
 
+## 0.12.8
+
+* [Copy if AFLplusplus is not a git repository](https://github.com/rust-fuzz/afl.rs/commit/ff8d1c8c970cd5977b3efed74a78af9a49b315f4)
+
 ## 0.12.7
 
 * [Build AFL in a temporary directory in `OUT_DIR`](https://github.com/rust-fuzz/afl.rs/pull/254)
