@@ -1,5 +1,9 @@
 # Changes
 
+## 0.12.7
+
+* [Build AFL in a temporary directory in `OUT_DIR`](https://github.com/rust-fuzz/afl.rs/pull/254)
+
 ## 0.12.6
 
 * [Build AFL in a temporary directory on docs.rs](https://github.com/rust-fuzz/afl.rs/pull/250)
