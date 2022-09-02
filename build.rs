@@ -17,11 +17,23 @@ fn main() {
     let (work_dir, base) = if env::var("DOCS_RS").is_ok() {
         let out_dir = env::var("OUT_DIR").unwrap();
         let tempdir = tempfile::tempdir_in(&out_dir).unwrap();
-        let output = Command::new("git")
-            .args(["clone", AFL_SRC_PATH, &*tempdir.path().to_string_lossy()])
-            .output()
-            .expect("could not run 'git'");
-        assert!(output.status.success(), "{:#?}", output);
+        if Path::new(AFL_SRC_PATH).join(".git").is_dir() {
+            let output = Command::new("git")
+                .args(["clone", AFL_SRC_PATH, &*tempdir.path().to_string_lossy()])
+                .output()
+                .expect("could not run 'git'");
+            assert!(output.status.success(), "{:#?}", output);
+        } else {
+            fs_extra::dir::copy(
+                AFL_SRC_PATH,
+                tempdir.path(),
+                &fs_extra::dir::CopyOptions {
+                    content_only: true,
+                    ..Default::default()
+                },
+            )
+            .unwrap();
+        }
         (tempdir.into_path(), Some(PathBuf::from(out_dir)))
     } else {
         (PathBuf::from(AFL_SRC_PATH), None)

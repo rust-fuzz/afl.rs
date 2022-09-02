@@ -11,6 +11,7 @@ homepage = "https://github.com/rust-fuzz/afl.rs"
 edition = "2018"
 
 [build-dependencies]
+fs_extra = "1.2"
 rustc_version = "0.4"
 tempfile = "3.3"
 xdg = "2.4"
