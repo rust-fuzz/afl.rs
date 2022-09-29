@@ -1,0 +1,33 @@
+name: Update AFLplusplus
+
+on:
+  schedule:
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: update-aflplusplus-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      # smoelius: https://docs.github.com/en/rest/releases/releases#get-the-latest-release
+      - run: |
+          URL='https://api.github.com/repos/AFLplusplus/AFLplusplus/releases/latest'
+          TAG="$(curl -H "Accept: application/vnd.github+json" --silent --show-error "$URL" \
+            | jq -r .tag_name)"
+          cd AFLplusplus
+          git fetch --tags
+          git checkout "$TAG"
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          title: "Update AFLplusplus"
+          token: ${{ secrets.PR_GITHUB_TOKEN }}
