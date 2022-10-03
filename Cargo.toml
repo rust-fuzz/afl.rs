@@ -19,7 +19,7 @@ xdg = "2.4"
 [dependencies]
 clap = { version = "3.2", features = ["cargo"] }
 lazy_static = { version = "1.4.0", optional = true }
-libc = "0.2.133"
+libc = "0.2.134"
 rustc_version = "0.4"
 xdg = "2.4"
 
