@@ -25,6 +25,7 @@ xdg = "2.4"
 
 [dev-dependencies]
 arbitrary = { version = "1", features = ["derive"] }
+assert_cmd = "2.0"
 tempfile = "3.3"
 
 [features]

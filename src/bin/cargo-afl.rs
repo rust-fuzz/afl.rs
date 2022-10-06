@@ -430,12 +430,148 @@ fn is_nightly() -> bool {
         .success()
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 mod tests {
     use super::*;
+    use assert_cmd::Command;
+    use std::os::unix::ffi::OsStringExt;
 
     #[test]
     fn test_app() {
         clap_app().debug_assert();
+    }
+
+    #[test]
+    fn display_name() {
+        assert!(
+            String::from_utf8(cargo_afl(&["-V"]).output().unwrap().stdout)
+                .unwrap()
+                .starts_with("cargo-afl")
+        );
+    }
+
+    #[test]
+    fn afl_required_else_help() {
+        assert_eq!(
+            String::from_utf8(command().arg("--help").output().unwrap().stdout).unwrap(),
+            String::from_utf8(command().output().unwrap().stderr).unwrap()
+        );
+    }
+
+    #[test]
+    fn subcommand_required_else_help() {
+        assert_eq!(
+            String::from_utf8(cargo_afl(&["--help"]).output().unwrap().stdout).unwrap(),
+            String::from_utf8(cargo_afl::<&OsStr>(&[]).output().unwrap().stderr).unwrap()
+        );
+    }
+
+    #[test]
+    fn external_subcommands_allow_invalid_utf8() {
+        let _arg_matches = clap_app()
+            .try_get_matches_from(&[
+                OsStr::new("cargo"),
+                OsStr::new("afl"),
+                OsStr::new("test"),
+                &invalid_utf8(),
+            ])
+            .unwrap();
+    }
+
+    const SUBCOMMANDS: &[&str] = &[
+        "analyze", "cmin", "fuzz", "gotcpu", "plot", "showmap", "tmin", "whatsup",
+    ];
+
+    #[test]
+    fn subcommands_allow_invalid_utf8() {
+        for &subcommand in SUBCOMMANDS.iter() {
+            let _arg_matches = clap_app()
+                .try_get_matches_from(&[
+                    OsStr::new("cargo"),
+                    OsStr::new("afl"),
+                    OsStr::new(subcommand),
+                    &invalid_utf8(),
+                ])
+                .unwrap();
+        }
+    }
+
+    #[test]
+    fn subcommands_allow_hyphen_values() {
+        for &subcommand in SUBCOMMANDS.iter() {
+            let _arg_matches = clap_app()
+                .try_get_matches_from(&["cargo", "afl", subcommand, "-i", "--input"])
+                .unwrap();
+        }
+    }
+
+    #[test]
+    fn subcommands_help_subcommand_disabled() {
+        assert!(
+            String::from_utf8(cargo_afl(&["help"]).output().unwrap().stdout)
+                .unwrap()
+                .starts_with("Usage:")
+        );
+
+        for &subcommand in SUBCOMMANDS.iter() {
+            assert!(
+                !String::from_utf8(cargo_afl(&[subcommand, "help"]).output().unwrap().stdout)
+                    .unwrap()
+                    .starts_with("Usage:")
+            );
+        }
+    }
+
+    #[test]
+    fn subcommands_help_flag_disabled() {
+        assert!(
+            String::from_utf8(cargo_afl(&["--help"]).output().unwrap().stdout)
+                .unwrap()
+                .starts_with("Usage:")
+        );
+
+        for &subcommand in SUBCOMMANDS.iter() {
+            assert!(!String::from_utf8(
+                cargo_afl(&[subcommand, "--help"]).output().unwrap().stdout
+            )
+            .unwrap()
+            .starts_with("Usage:"));
+        }
+    }
+
+    #[test]
+    fn subcommands_version_flag_disabled() {
+        assert!(
+            String::from_utf8(cargo_afl(&["-V"]).output().unwrap().stdout)
+                .unwrap()
+                .starts_with("cargo-afl")
+        );
+
+        for &subcommand in SUBCOMMANDS.iter() {
+            assert!(
+                !String::from_utf8(cargo_afl(&[subcommand, "-V"]).output().unwrap().stdout)
+                    .unwrap()
+                    .starts_with("cargo-afl")
+            );
+        }
+    }
+
+    fn cargo_afl<T: AsRef<OsStr>>(args: &[T]) -> Command {
+        let mut command = command();
+        command.arg("afl").args(args);
+        command
+    }
+
+    fn command() -> Command {
+        Command::cargo_bin("cargo-afl").unwrap()
+    }
+
+    fn invalid_utf8() -> OsString {
+        OsString::from_vec(vec![0xfe])
+    }
+
+    #[test]
+    fn invalid_utf8_is_invalid() {
+        assert!(String::from_utf8(invalid_utf8().into_vec()).is_err());
     }
 }
