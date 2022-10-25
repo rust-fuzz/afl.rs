@@ -21,7 +21,7 @@ extern "C" {
 
 #[doc(hidden)]
 #[no_mangle]
-pub static __afl_sharedmem_fuzzing: i32 = 1;
+pub static mut __afl_sharedmem_fuzzing: i32 = 1;
 
 /// Fuzz a closure by passing it a `&[u8]`
 ///
