@@ -1,5 +1,9 @@
 # Changes
 
+## 0.12.10
+
+- [Update AFLplusplus to 4.0.4c](https://github.com/rust-fuzz/afl.rs/pull/267)
+
 ## 0.12.9
 
 - [Update AFLplusplus to 4.0.3c](https://github.com/rust-fuzz/afl.rs/pull/260)

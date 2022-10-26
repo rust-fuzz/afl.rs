@@ -1,6 +1,6 @@
 [package]
 name = "afl"
-version = "0.12.9"
+version = "0.12.10"
 readme = "README.md"
 license = "Apache-2.0"
 authors = ["Keegan McAllister <mcallister.keegan@gmail.com>",
@@ -19,7 +19,7 @@ xdg = "2.4"
 [dependencies]
 clap = { version = "4.0", features = ["cargo"] }
 lazy_static = { version = "1.4.0", optional = true }
-libc = "0.2.134"
+libc = "0.2.137"
 rustc_version = "0.4"
 xdg = "2.4"
 
