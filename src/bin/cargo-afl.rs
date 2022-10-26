@@ -370,31 +370,8 @@ where
          -C llvm-args=-sanitizer-coverage-prune-blocks=0 \
          -C opt-level=3 \
          -C target-cpu=native \
-         -C debuginfo=0 \
-         -l afl-llvm-rt \
-         -L {} ",
-        passes,
-        common::afl_llvm_rt_dir(None).display()
-    );
-
-    // RUSTFLAGS are not used by rustdoc, instead RUSTDOCFLAGS are used. Since
-    // doctests will try to link against afl-llvm-rt, set up RUSTDOCFLAGS to
-    // have doctests built the same as other code to avoid issues with doctests.
-    let mut rustdocflags = format!(
-        "--cfg fuzzing \
-         -C debug-assertions \
-         -C overflow_checks \
-         -C passes={} \
-         -C codegen-units=1 \
-         -C llvm-args=-sanitizer-coverage-level=3 \
-         -C llvm-args=-sanitizer-coverage-trace-pc-guard \
-         -C llvm-args=-sanitizer-coverage-prune-blocks=0 \
-         -C opt-level=3 \
-         -C target-cpu=native \
-         -C debuginfo=0 \
-         -L {} ",
-        passes,
-        common::afl_llvm_rt_dir(None).display()
+         -C debuginfo=0 ",
+        passes
     );
 
     if cfg!(target_os = "linux") {
@@ -402,8 +379,18 @@ where
         // https://github.com/rust-lang/rust/issues/53945, can be removed once
         // those are fixed.
         rustflags.push_str("-Clink-arg=-fuse-ld=gold ");
-        rustdocflags.push_str("-Clink-arg=-fuse-ld=gold ");
     }
+
+    // RUSTFLAGS are not used by rustdoc, instead RUSTDOCFLAGS are used. Since
+    // doctests will try to link against afl-llvm-rt, set up RUSTDOCFLAGS to
+    // have doctests built the same as other code to avoid issues with doctests.
+    let mut rustdocflags = rustflags.clone();
+
+    rustflags.push_str(&format!(
+        "-l afl-llvm-rt \
+         -L {} ",
+        common::afl_llvm_rt_dir(None).display()
+    ));
 
     // add user provided flags
     rustflags.push_str(&env::var("RUSTFLAGS").unwrap_or_default());
