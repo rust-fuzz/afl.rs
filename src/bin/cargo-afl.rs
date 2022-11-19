@@ -45,6 +45,12 @@ fn main() {
                 .get_many::<OsString>("afl-fuzz args")
                 .unwrap_or_default();
             let timeout = sub_matches.get_one::<u64>("max_total_time").copied();
+            if timeout.is_some() {
+                eprintln!(
+                    "`--max_total_time` is deprecated and will be removed in a \
+                     future version of afl.rs. Please use `-V seconds`."
+                );
+            }
             run_afl(args, "afl-fuzz", timeout);
         }
         Some(("gotcpu", sub_matches)) => {
@@ -541,6 +547,18 @@ mod tests {
                     .starts_with("cargo-afl")
             );
         }
+    }
+
+    #[test]
+    fn max_total_time_is_deprecated() {
+        assert!(String::from_utf8(
+            cargo_afl(&["fuzz", "--max_total_time=0"])
+                .output()
+                .unwrap()
+                .stderr
+        )
+        .unwrap()
+        .starts_with("`--max_total_time` is deprecated"));
     }
 
     fn cargo_afl<T: AsRef<OsStr>>(args: &[T]) -> Command {
