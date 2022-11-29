@@ -249,7 +249,7 @@ fn run_timeout_terminate(mut cmd: Command, timeout: Option<u64>) -> Result<ExitS
             let (stop_mutex, condvar) = &*pair;
             let mut stop = stop_mutex.lock().unwrap();
             loop {
-                let elapsed = Instant::now() - start_time;
+                let elapsed = start_time.elapsed();
                 if elapsed >= timeout {
                     break;
                 }
@@ -416,7 +416,7 @@ where
 
 fn is_nightly() -> bool {
     Command::new("rustc")
-        .args(&["-Z", "help"])
+        .args(["-Z", "help"])
         .stderr(Stdio::null())
         .status()
         .unwrap()
@@ -462,7 +462,7 @@ mod tests {
     #[test]
     fn external_subcommands_allow_invalid_utf8() {
         let _arg_matches = clap_app()
-            .try_get_matches_from(&[
+            .try_get_matches_from([
                 OsStr::new("cargo"),
                 OsStr::new("afl"),
                 OsStr::new("test"),
@@ -479,7 +479,7 @@ mod tests {
     fn subcommands_allow_invalid_utf8() {
         for &subcommand in SUBCOMMANDS.iter() {
             let _arg_matches = clap_app()
-                .try_get_matches_from(&[
+                .try_get_matches_from([
                     OsStr::new("cargo"),
                     OsStr::new("afl"),
                     OsStr::new(subcommand),
@@ -493,7 +493,7 @@ mod tests {
     fn subcommands_allow_hyphen_values() {
         for &subcommand in SUBCOMMANDS.iter() {
             let _arg_matches = clap_app()
-                .try_get_matches_from(&["cargo", "afl", subcommand, "-i", "--input"])
+                .try_get_matches_from(["cargo", "afl", subcommand, "-i", "--input"])
                 .unwrap();
         }
     }
