@@ -1,5 +1,10 @@
 # Changes
 
+## 0.12.11
+
+- [Add --max_total_time deprecation message](https://github.com/rust-fuzz/afl.rs/pull/278)
+- [Update AFLplusplus to 4.0.5c](https://github.com/rust-fuzz/afl.rs/pull/289)
+
 ## 0.12.10
 
 - [Update AFLplusplus to 4.0.4c](https://github.com/rust-fuzz/afl.rs/pull/267)
