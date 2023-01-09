@@ -375,8 +375,7 @@ where
          -C llvm-args=-sanitizer-coverage-trace-pc-guard \
          -C llvm-args=-sanitizer-coverage-prune-blocks=0 \
          -C opt-level=3 \
-         -C target-cpu=native \
-         -C debuginfo=0 ",
+         -C target-cpu=native ",
         passes
     );
 
