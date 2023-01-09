@@ -1,5 +1,9 @@
 # Changes
 
+## 0.12.12
+
+- [Remove debuginfo=0 from default compiler options](https://github.com/rust-fuzz/afl.rs/pull/291)
+
 ## 0.12.11
 
 - [Add --max_total_time deprecation message](https://github.com/rust-fuzz/afl.rs/pull/278)
