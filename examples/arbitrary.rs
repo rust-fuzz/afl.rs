@@ -12,7 +12,7 @@ impl Rgb {
     #[must_use]
     pub fn as_hex(&self) -> Hex {
         let Rgb { r, g, b } = self;
-        Hex(format!("{:02X}{:02X}{:02X}", r, g, b))
+        Hex(format!("{r:02X}{g:02X}{b:02X}"))
     }
 }
 

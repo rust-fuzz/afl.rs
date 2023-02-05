@@ -15,9 +15,8 @@ fn main() {
     if !common::archive_file_path(None).exists() {
         let version = common::afl_rustc_version();
         eprintln!(
-            "AFL LLVM runtime is not built with Rust {}, run `cargo \
-             install --force afl` to build it.",
-            version
+            "AFL LLVM runtime is not built with Rust {version}, run `cargo \
+             install --force afl` to build it."
         );
         process::exit(1);
     }
@@ -345,13 +344,11 @@ where
 
     // add some flags to sanitizers to make them work with Rust code
     let asan_options = env::var("ASAN_OPTIONS").unwrap_or_default();
-    let asan_options = format!(
-        "detect_odr_violation=0:abort_on_error=1:symbolize=0:{}",
-        asan_options
-    );
+    let asan_options =
+        format!("detect_odr_violation=0:abort_on_error=1:symbolize=0:{asan_options}");
 
     let tsan_options = env::var("TSAN_OPTIONS").unwrap_or_default();
-    let tsan_options = format!("report_signal_unsafe=0:{}", tsan_options);
+    let tsan_options = format!("report_signal_unsafe=0:{tsan_options}");
 
     // The new LLVM pass manager was enabled in rustc 1.59.
     let version_meta = rustc_version::version_meta().unwrap();
@@ -369,14 +366,13 @@ where
         "--cfg fuzzing \
          -C debug-assertions \
          -C overflow_checks \
-         -C passes={} \
+         -C passes={passes} \
          -C codegen-units=1 \
          -C llvm-args=-sanitizer-coverage-level=3 \
          -C llvm-args=-sanitizer-coverage-trace-pc-guard \
          -C llvm-args=-sanitizer-coverage-prune-blocks=0 \
          -C opt-level=3 \
-         -C target-cpu=native ",
-        passes
+         -C target-cpu=native "
     );
 
     if cfg!(target_os = "linux") {
