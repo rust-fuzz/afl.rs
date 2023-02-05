@@ -14,7 +14,12 @@ static AR_CMD: &str = "ar";
 mod common;
 
 fn main() {
-    let (work_dir, base) = if env::var("DOCS_RS").is_ok() {
+    let installing = home::cargo_home()
+        .map(|path| Path::new(env!("CARGO_MANIFEST_DIR")).starts_with(path))
+        .unwrap();
+
+    // smoelius: Build AFLplusplus in a temporary directory when installing or when building on docs.rs.
+    let (work_dir, base) = if installing || env::var("DOCS_RS").is_ok() {
         let out_dir = env::var("OUT_DIR").unwrap();
         let tempdir = tempfile::tempdir_in(&out_dir).unwrap();
         if Path::new(AFL_SRC_PATH).join(".git").is_dir() {
