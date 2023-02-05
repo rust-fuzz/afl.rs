@@ -22,7 +22,7 @@ fn main() {
                 .args(["clone", AFL_SRC_PATH, &*tempdir.path().to_string_lossy()])
                 .output()
                 .expect("could not run 'git'");
-            assert!(output.status.success(), "{:#?}", output);
+            assert!(output.status.success(), "{output:#?}");
         } else {
             fs_extra::dir::copy(
                 AFL_SRC_PATH,
@@ -57,7 +57,7 @@ fn build_afl(work_dir: &Path, base: Option<&Path>) {
         command.env_remove("DEBUG");
     }
     let output = command.output().expect("could not run 'make'");
-    assert!(output.status.success(), "{:#?}", output);
+    assert!(output.status.success(), "{output:#?}");
 }
 
 fn build_afl_llvm_runtime(work_dir: &Path, base: Option<&Path>) {
@@ -73,5 +73,5 @@ fn build_afl_llvm_runtime(work_dir: &Path, base: Option<&Path>) {
         .arg(common::object_file_path(base))
         .output()
         .expect("could not run 'ar'");
-    assert!(output.status.success(), "{:#?}", output);
+    assert!(output.status.success(), "{output:#?}");
 }

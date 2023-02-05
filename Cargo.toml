@@ -8,7 +8,7 @@ authors = ["Keegan McAllister <mcallister.keegan@gmail.com>",
 description = "Fuzzing Rust code with american-fuzzy-lop"
 repository = "https://github.com/rust-fuzz/afl.rs"
 homepage = "https://github.com/rust-fuzz/afl.rs"
-edition = "2018"
+edition = "2021"
 
 [build-dependencies]
 fs_extra = "1.2"
