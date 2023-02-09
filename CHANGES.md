@@ -1,5 +1,9 @@
 # Changes
 
+## 0.12.13
+
+- [Do not store object files inside $CARGO_HOME](https://github.com/rust-fuzz/afl.rs/pull/297)
+
 ## 0.12.12
 
 - [Remove debuginfo=0 from default compiler options](https://github.com/rust-fuzz/afl.rs/pull/291)

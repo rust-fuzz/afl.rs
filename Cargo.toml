@@ -1,6 +1,6 @@
 [package]
 name = "afl"
-version = "0.12.12"
+version = "0.12.13"
 readme = "README.md"
 license = "Apache-2.0"
 authors = ["Keegan McAllister <mcallister.keegan@gmail.com>",
