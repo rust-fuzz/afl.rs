@@ -1,5 +1,9 @@
 # Changes
 
+## 0.12.14
+
+- [Fix broken installation (#299)](https://github.com/rust-fuzz/afl.rs/pull/300)
+
 ## 0.12.13
 
 - [Do not store object files inside $CARGO_HOME](https://github.com/rust-fuzz/afl.rs/pull/297)
