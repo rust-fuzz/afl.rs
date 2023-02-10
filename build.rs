@@ -17,10 +17,10 @@ fn main() {
     let installing = home::cargo_home()
         .map(|path| Path::new(env!("CARGO_MANIFEST_DIR")).starts_with(path))
         .unwrap();
+    let out_dir = env::var("OUT_DIR").unwrap();
 
     // smoelius: Build AFLplusplus in a temporary directory when installing or when building on docs.rs.
-    let (work_dir, base) = if installing || env::var("DOCS_RS").is_ok() {
-        let out_dir = env::var("OUT_DIR").unwrap();
+    let work_dir = if installing || env::var("DOCS_RS").is_ok() {
         let tempdir = tempfile::tempdir_in(&out_dir).unwrap();
         if Path::new(AFL_SRC_PATH).join(".git").is_dir() {
             let output = Command::new("git")
@@ -39,10 +39,17 @@ fn main() {
             )
             .unwrap();
         }
-        (tempdir.into_path(), Some(PathBuf::from(out_dir)))
+        tempdir.into_path()
     } else {
-        (PathBuf::from(AFL_SRC_PATH), None)
+        PathBuf::from(AFL_SRC_PATH)
     };
+
+    let base = if env::var("DOCS_RS").is_ok() {
+        Some(PathBuf::from(out_dir))
+    } else {
+        None
+    };
+
     build_afl(&work_dir, base.as_deref());
     build_afl_llvm_runtime(&work_dir, base.as_deref());
 }
