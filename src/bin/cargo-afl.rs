@@ -363,8 +363,7 @@ where
     // `-C codegen-units=1` is needed to work around link errors
     // https://github.com/rust-fuzz/afl.rs/pull/193#issuecomment-933550430
     let mut rustflags = format!(
-        "--cfg fuzzing \
-         -C debug-assertions \
+        "-C debug-assertions \
          -C overflow_checks \
          -C passes={passes} \
          -C codegen-units=1 \
@@ -374,6 +373,10 @@ where
          -C opt-level=3 \
          -C target-cpu=native "
     );
+
+    if cfg!(not(feature = "no_cfg_fuzzing")) {
+        rustflags.push_str("--cfg fuzzing ");
+    }
 
     if cfg!(target_os = "linux") {
         // work around https://github.com/rust-fuzz/afl.rs/issues/141 /

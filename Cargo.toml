@@ -31,3 +31,4 @@ tempfile = "3.4"
 
 [features]
 reset_lazy_static = ["lazy_static"]
+no_cfg_fuzzing = []
