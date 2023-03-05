@@ -1,5 +1,9 @@
 # Changes
 
+## 0.12.15
+
+- [Bump tempfile from 3.3.0 to 3.4.0](https://github.com/rust-fuzz/afl.rs/pull/302)
+
 ## 0.12.14
 
 - [Fix broken installation (#299)](https://github.com/rust-fuzz/afl.rs/pull/300)

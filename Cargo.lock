@@ -4,7 +4,7 @@ version = 3
 
 [[package]]
 name = "afl"
-version = "0.12.14"
+version = "0.12.15"
 dependencies = [
  "arbitrary",
  "assert_cmd",
