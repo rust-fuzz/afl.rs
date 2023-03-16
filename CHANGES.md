@@ -1,5 +1,9 @@
 # Changes
 
+## 0.12.16
+
+- [Add optional feature 'no_cfg_fuzzing'](https://github.com/rust-fuzz/afl.rs/pull/306)
+
 ## 0.12.15
 
 - [Bump tempfile from 3.3.0 to 3.4.0](https://github.com/rust-fuzz/afl.rs/pull/302)
