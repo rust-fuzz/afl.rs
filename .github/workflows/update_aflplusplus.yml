@@ -27,7 +27,7 @@ jobs:
           git checkout "$TAG"
 
       - name: Create pull request
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v5
         with:
           title: "Update AFLplusplus"
           token: ${{ secrets.PR_GITHUB_TOKEN }}
