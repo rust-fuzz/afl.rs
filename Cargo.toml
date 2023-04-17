@@ -18,7 +18,7 @@ tempfile = "3.5"
 xdg = "2.4"
 
 [dependencies]
-clap = { version = "4.1", features = ["cargo"] }
+clap = { version = "4.2", features = ["cargo"] }
 lazy_static = { version = "1.4.0", optional = true }
 libc = "0.2.141"
 rustc_version = "0.4"
