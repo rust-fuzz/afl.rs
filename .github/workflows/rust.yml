@@ -9,6 +9,9 @@ concurrency:
   group: rust-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -38,13 +41,13 @@ jobs:
       - name: Rustup
         run: rustup default ${{ matrix.toolchain }}
       - name: Build
-        run: cargo build --verbose
+        run: cargo build -vv
       - if: ${{ matrix.environment == 'macos-latest' }}
         name: Run afl-system-config
         run: sudo AFLPlusPlus/afl-system-config
       - name: Build examples (with AFL instrumentation)
-        run: cargo run afl build --examples --verbose
+        run: cargo run afl build --examples -vv
       - name: Run tests (with AFL instrumentation)
-        run: cargo run afl test --verbose
+        run: cargo run afl test -vv
         env:
           AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES: "1"
