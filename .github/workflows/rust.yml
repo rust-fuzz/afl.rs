@@ -31,7 +31,16 @@ jobs:
       matrix:
         environment: [ubuntu-latest, macos-latest]
         toolchain: [stable, nightly]
+        cc: [cc, clang]
+        include:
+          - cc: cc
+            cxx: c++
+          - cc: clang
+            cxx: clang++
     runs-on: ${{ matrix.environment }}
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
     steps:
       - if: ${{ matrix.environment == 'ubuntu-latest' }}
         run: sudo apt-get install llvm
