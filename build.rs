@@ -64,10 +64,8 @@ fn build_afl(work_dir: &Path, base: Option<&Path>) {
         // build just the runtime to avoid troubles with Xcode clang on macOS
         .env("NO_BUILD", "1")
         .env("DESTDIR", common::afl_dir(base))
-        .env("PREFIX", "");
-    if std::env::var("DEBUG").as_deref() == Ok("false") {
-        command.env_remove("DEBUG");
-    }
+        .env("PREFIX", "")
+        .env_remove("DEBUG");
     let status = command.status().expect("could not run 'make'");
     assert!(status.success());
 }
