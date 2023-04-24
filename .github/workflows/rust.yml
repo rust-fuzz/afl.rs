@@ -60,3 +60,8 @@ jobs:
         run: cargo run afl test -vv
         env:
           AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES: "1"
+  all-checks:
+    needs: [lint, build]
+    runs-on: ubuntu-latest
+    steps:
+      - run: true
