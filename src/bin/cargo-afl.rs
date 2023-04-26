@@ -370,6 +370,8 @@ where
          -C llvm-args=-sanitizer-coverage-level=3 \
          -C llvm-args=-sanitizer-coverage-trace-pc-guard \
          -C llvm-args=-sanitizer-coverage-prune-blocks=0 \
+         -C llvm-args=-sanitizer-coverage-trace-compares \
+         -C llvm-args=-sanitizer-coverage-trace-divs \
          -C opt-level=3 \
          -C target-cpu=native "
     );
