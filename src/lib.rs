@@ -194,6 +194,10 @@ mod test {
         target_dir_path().join("examples").join("hello")
     }
 
+    fn input_path() -> path::PathBuf {
+        path::Path::new(env!("CARGO_MANIFEST_DIR")).join("input")
+    }
+
     #[test]
     fn integration() {
         let temp_dir = tempfile::TempDir::new().expect("Could not create temporary directory");
@@ -204,10 +208,11 @@ mod test {
             .stdout(process::Stdio::inherit())
             .stderr(process::Stdio::inherit())
             .arg("-i")
-            .arg(".")
+            .arg(input_path())
             .arg("-o")
             .arg(temp_dir_path)
             .arg(examples_hello_path())
+            .env("AFL_NO_UI", "1")
             .spawn()
             .expect("Could not run cargo afl fuzz");
         thread::sleep(time::Duration::from_secs(10));
