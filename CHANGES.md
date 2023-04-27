@@ -2,6 +2,12 @@
 
 ## 0.12.16
 
+- [Adjust build script output](https://github.com/rust-fuzz/afl.rs/pull/317)
+- [Unconditionally remove `DEBUG` environment variable](https://github.com/rust-fuzz/afl.rs/pull/321)
+- [Update AFLplusplus to 4.0.6c](https://github.com/rust-fuzz/afl.rs/pull/322)
+
+## 0.12.16
+
 - [Add optional feature 'no_cfg_fuzzing'](https://github.com/rust-fuzz/afl.rs/pull/306)
 
 ## 0.12.15
