@@ -40,22 +40,12 @@ fn main() {
             run_afl(args, "afl-cmin", None);
         }
         Some(("fuzz", sub_matches)) => {
-            let mut args = sub_matches
+            let args = sub_matches
                 .get_many::<OsString>("afl-fuzz args")
                 .unwrap_or_default();
-            // We use next recursively on the args iterator, until we hit "--".
-            // We are then able to append `-c0` to the AFL++ arguments.
-            let mut front_args = vec![];
-            let separator = OsString::from("--");
-            let cmplog_flag = OsString::from("-c0");
-            for next_value in args.by_ref() {
-                if *next_value == separator {
-                    front_args.push(&cmplog_flag);
-                    break;
-                }
-                front_args.push(next_value);
-            }
-            let args = front_args.into_iter().chain(args);
+            // We prepend -c0 to the AFL++ arguments
+            let cmplog_flag = vec![OsString::from("-c0")];
+            let args = cmplog_flag.iter().chain(args);
             let timeout = sub_matches.get_one::<u64>("max_total_time").copied();
             if timeout.is_some() {
                 eprintln!(
