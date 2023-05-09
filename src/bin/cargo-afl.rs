@@ -43,6 +43,9 @@ fn main() {
             let args = sub_matches
                 .get_many::<OsString>("afl-fuzz args")
                 .unwrap_or_default();
+            // We prepend -c0 to the AFL++ arguments
+            let cmplog_flag = vec![OsString::from("-c0")];
+            let args = cmplog_flag.iter().chain(args);
             let timeout = sub_matches.get_one::<u64>("max_total_time").copied();
             if timeout.is_some() {
                 eprintln!(
@@ -370,6 +373,7 @@ where
          -C llvm-args=-sanitizer-coverage-level=3 \
          -C llvm-args=-sanitizer-coverage-trace-pc-guard \
          -C llvm-args=-sanitizer-coverage-prune-blocks=0 \
+         -C llvm-args=-sanitizer-coverage-trace-compares \
          -C opt-level=3 \
          -C target-cpu=native "
     );
