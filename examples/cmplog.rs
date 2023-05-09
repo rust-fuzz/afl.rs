@@ -18,7 +18,7 @@ fn main() {
             return;
         }
 
-        if data[4..8] != 0x69694141_i32.to_le_bytes() {
+        if data[4..8] != 0x6969_4141_i32.to_le_bytes() {
             return;
         };
 
