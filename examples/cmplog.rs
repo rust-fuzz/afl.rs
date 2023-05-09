@@ -1,6 +1,6 @@
 fn main() {
     // This fuzz harness demonstrates the capabilities of CmpLog.
-    // Simply run the fuzzer with the `-c 0` flag and it should find the crash immediately.
+    // Simply run the fuzzer and it should find the crash immediately.
     afl::fuzz!(|data: &[u8]| {
         if data.len() != 16 {
             return;
