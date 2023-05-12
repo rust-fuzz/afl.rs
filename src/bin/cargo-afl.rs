@@ -2,11 +2,7 @@ use clap::crate_version;
 
 use std::env;
 use std::ffi::{OsStr, OsString};
-use std::io;
-use std::process::{self, Command, ExitStatus, Stdio};
-use std::sync::{Arc, Condvar, Mutex};
-use std::thread;
-use std::time::{Duration, Instant};
+use std::process::{self, Command, Stdio};
 
 #[path = "../common.rs"]
 mod common;
@@ -31,13 +27,13 @@ fn main() {
             let args = sub_matches
                 .get_many::<OsString>("afl-analyze args")
                 .unwrap_or_default();
-            run_afl(args, "afl-analyze", None);
+            run_afl(args, "afl-analyze");
         }
         Some(("cmin", sub_matches)) => {
             let args = sub_matches
                 .get_many::<OsString>("afl-cmin args")
                 .unwrap_or_default();
-            run_afl(args, "afl-cmin", None);
+            run_afl(args, "afl-cmin");
         }
         Some(("fuzz", sub_matches)) => {
             let args = sub_matches
@@ -46,44 +42,37 @@ fn main() {
             // We prepend -c0 to the AFL++ arguments
             let cmplog_flag = vec![OsString::from("-c0")];
             let args = cmplog_flag.iter().chain(args);
-            let timeout = sub_matches.get_one::<u64>("max_total_time").copied();
-            if timeout.is_some() {
-                eprintln!(
-                    "`--max_total_time` is deprecated and will be removed in a \
-                     future version of afl.rs. Please use `-V seconds`."
-                );
-            }
-            run_afl(args, "afl-fuzz", timeout);
+            run_afl(args, "afl-fuzz");
         }
         Some(("gotcpu", sub_matches)) => {
             let args = sub_matches
                 .get_many::<OsString>("afl-gotcpu args")
                 .unwrap_or_default();
-            run_afl(args, "afl-gotcpu", None);
+            run_afl(args, "afl-gotcpu");
         }
         Some(("plot", sub_matches)) => {
             let args = sub_matches
                 .get_many::<OsString>("afl-plot args")
                 .unwrap_or_default();
-            run_afl(args, "afl-plot", None);
+            run_afl(args, "afl-plot");
         }
         Some(("showmap", sub_matches)) => {
             let args = sub_matches
                 .get_many::<OsString>("afl-showmap args")
                 .unwrap_or_default();
-            run_afl(args, "afl-showmap", None);
+            run_afl(args, "afl-showmap");
         }
         Some(("tmin", sub_matches)) => {
             let args = sub_matches
                 .get_many::<OsString>("afl-tmin args")
                 .unwrap_or_default();
-            run_afl(args, "afl-tmin", None);
+            run_afl(args, "afl-tmin");
         }
         Some(("whatsup", sub_matches)) => {
             let args = sub_matches
                 .get_many::<OsString>("afl-whatsup args")
                 .unwrap_or_default();
-            run_afl(args, "afl-whatsup", None);
+            run_afl(args, "afl-whatsup");
         }
         Some((subcommand, sub_matches)) => {
             let args = sub_matches.get_many::<OsString>("").unwrap_or_default();
@@ -228,90 +217,7 @@ fn clap_app() -> clap::Command {
         )
 }
 
-fn run_timeout_terminate(mut cmd: Command, timeout: Option<u64>) -> Result<ExitStatus, io::Error> {
-    let timeout = match timeout {
-        Some(timeout) => Duration::from_secs(timeout),
-        None => return cmd.status(),
-    };
-    let start_time = Instant::now();
-
-    let mut child = cmd.spawn()?;
-    let pid = child.id();
-
-    let pair = Arc::new((Mutex::new(false), Condvar::new()));
-    let (stop_mutex, condvar) = &*pair;
-    let thread_handle = {
-        let pair = pair.clone();
-        thread::spawn(move || -> Result<(), io::Error> {
-            // This thread will wait until the child process has exited, or the
-            // timeout has elapsed, whichever comes first. If the timeout
-            // elapses, and the process is still running, it will send SIGTERM
-            // to the child process.
-
-            let (stop_mutex, condvar) = &*pair;
-            let mut stop = stop_mutex.lock().unwrap();
-            loop {
-                let elapsed = start_time.elapsed();
-                if elapsed >= timeout {
-                    break;
-                }
-
-                let dur = timeout - elapsed;
-                let results = condvar.wait_timeout(stop, dur).unwrap();
-                stop = results.0;
-                if *stop {
-                    // Blocking waitid call on the main thread has returned,
-                    // thus the child process has terminated
-                    return Ok(());
-                }
-                if results.1.timed_out() {
-                    break;
-                }
-            }
-
-            // Since the waitid call on the main thread is using WNOWAIT, the
-            // child process won't be cleaned up (until after this thread
-            // exits and the main thread calls wait) and thus its PID won't be
-            // reused by another, unrelated process.
-            unsafe {
-                #[allow(clippy::cast_possible_wrap)]
-                let ret = libc::kill(pid as i32, libc::SIGTERM);
-                if ret == -1 {
-                    return Err(io::Error::last_os_error());
-                }
-            }
-
-            Ok(())
-        })
-    };
-
-    unsafe {
-        // Block until the child process terminates, but leave it in a waitable
-        // state still
-        let ret = libc::waitid(
-            libc::P_PID,
-            pid,
-            std::ptr::null_mut(),
-            libc::WEXITED | libc::WNOWAIT,
-        );
-        if ret == -1 {
-            return Err(io::Error::last_os_error());
-        }
-    }
-    {
-        let mut stop = stop_mutex.lock().unwrap();
-        *stop = true;
-    }
-    // Tell the timeout thread to stop, wake it, and wait for it to exit
-    condvar.notify_one();
-    thread_handle.join().unwrap()?;
-
-    // Clean up zombie and get exit status (this won't block, because the child
-    // process has terminated and is still waitable)
-    child.wait()
-}
-
-fn run_afl<I, S>(args: I, tool: &str, timeout: Option<u64>)
+fn run_afl<I, S>(args: I, tool: &str)
 where
     I: IntoIterator<Item = S>,
     S: AsRef<OsStr>,
@@ -319,7 +225,7 @@ where
     let cmd_path = common::afl_dir(None).join("bin").join(tool);
     let mut cmd = Command::new(cmd_path);
     cmd.args(args);
-    let status = run_timeout_terminate(cmd, timeout).unwrap();
+    let status = cmd.status().unwrap();
     #[cfg(target_os = "macos")]
     if tool == "afl-fuzz" && !status.success() {
         let sudo_cmd_path = common::afl_dir(None).join("bin").join("afl-system-config");
@@ -549,18 +455,6 @@ mod tests {
                     .starts_with("cargo-afl")
             );
         }
-    }
-
-    #[test]
-    fn max_total_time_is_deprecated() {
-        assert!(String::from_utf8(
-            cargo_afl(&["fuzz", "--max_total_time=0"])
-                .output()
-                .unwrap()
-                .stderr
-        )
-        .unwrap()
-        .starts_with("`--max_total_time` is deprecated"));
     }
 
     fn cargo_afl<T: AsRef<OsStr>>(args: &[T]) -> Command {
