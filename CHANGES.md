@@ -1,5 +1,10 @@
 # Changes
 
+## 0.13.0
+
+- [Add mini CmpLog](https://github.com/rust-fuzz/afl.rs/pull/324)
+- [Remove --max-total-time](https://github.com/rust-fuzz/afl.rs/pull/333)
+
 ## 0.12.16
 
 - [Adjust build script output](https://github.com/rust-fuzz/afl.rs/pull/317)
