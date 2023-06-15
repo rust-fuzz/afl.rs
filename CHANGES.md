@@ -1,5 +1,9 @@
 # Changes
 
+## 0.13.1
+
+- [Update AFLplusplus to 4.07c](https://github.com/rust-fuzz/afl.rs/pull/344)
+
 ## 0.13.0
 
 - [Add mini CmpLog](https://github.com/rust-fuzz/afl.rs/pull/324)
@@ -9,7 +13,7 @@
 
 - [Adjust build script output](https://github.com/rust-fuzz/afl.rs/pull/317)
 - [Unconditionally remove `DEBUG` environment variable](https://github.com/rust-fuzz/afl.rs/pull/321)
-- [Update AFLplusplus to 4.0.6c](https://github.com/rust-fuzz/afl.rs/pull/322)
+- [Update AFLplusplus to 4.06c](https://github.com/rust-fuzz/afl.rs/pull/322)
 
 ## 0.12.16
 
@@ -34,15 +38,15 @@
 ## 0.12.11
 
 - [Add --max_total_time deprecation message](https://github.com/rust-fuzz/afl.rs/pull/278)
-- [Update AFLplusplus to 4.0.5c](https://github.com/rust-fuzz/afl.rs/pull/289)
+- [Update AFLplusplus to 4.05c](https://github.com/rust-fuzz/afl.rs/pull/289)
 
 ## 0.12.10
 
-- [Update AFLplusplus to 4.0.4c](https://github.com/rust-fuzz/afl.rs/pull/267)
+- [Update AFLplusplus to 4.04c](https://github.com/rust-fuzz/afl.rs/pull/267)
 
 ## 0.12.9
 
-- [Update AFLplusplus to 4.0.3c](https://github.com/rust-fuzz/afl.rs/pull/260)
+- [Update AFLplusplus to 4.03c](https://github.com/rust-fuzz/afl.rs/pull/260)
 - [Upgrade to Clap 4](https://github.com/rust-fuzz/afl.rs/pull/263)
 
 ## 0.12.8
@@ -83,7 +87,7 @@
 
 ## 0.12.0
 
-- [Update to AFLplusplus 4.0.0c](https://github.com/rust-fuzz/afl.rs/pull/206)
+- [Update to AFLplusplus 4.00c](https://github.com/rust-fuzz/afl.rs/pull/206)
 
 ## 0.11.1
 
