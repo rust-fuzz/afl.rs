@@ -1,0 +1,37 @@
+[package]
+name = "cargo-afl"
+version = "0.13.1"
+readme = "../README.md"
+license = "Apache-2.0"
+authors = ["Keegan McAllister <mcallister.keegan@gmail.com>",
+           "Corey Farwell <coreyf@rwell.org>",
+           "Samuel Moelius <sam@moeli.us>"]
+description = "Fuzzing Rust code with american-fuzzy-lop"
+repository = "https://github.com/rust-fuzz/afl.rs"
+homepage = "https://github.com/rust-fuzz/afl.rs"
+edition = "2021"
+
+build = "../afl/build.rs"
+
+[[bin]]
+name = "cargo-afl"
+path = "../afl/src/bin/cargo-afl.rs"
+
+[build-dependencies]
+fs_extra = "1.3"
+home = "0.5"
+libc = "0.2"
+rustc_version = "0.4"
+tempfile = "3.6"
+xdg = "2.4"
+
+[dependencies]
+clap = { version = "4.3", features = ["cargo"] }
+libc = "0.2"
+rustc_version = "0.4"
+xdg = "2.4"
+
+[dev-dependencies]
+assert_cmd = "2.0"
+predicates = "3.0"
+tempfile = "3.6"
