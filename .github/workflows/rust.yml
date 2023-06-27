@@ -33,6 +33,7 @@ jobs:
       fail-fast: false
       matrix:
         environment: [ubuntu-latest, macos-latest]
+        package: [afl, cargo-afl]
         toolchain: [stable, nightly]
         cc: [cc, clang]
         include:
@@ -65,9 +66,9 @@ jobs:
             sudo launchctl unload -w ${SL}/LaunchDaemons/${PL}.Root.plist
           fi
       - name: Build examples (with AFL instrumentation)
-        run: cargo run afl build --examples -vv
+        run: cargo run -p ${{ matrix.package }} -- afl build --examples -vv
       - name: Run tests (with AFL instrumentation)
-        run: cargo run afl test -vv
+        run: cargo run -p ${{ matrix.package }} -- afl test -vv
   all-checks:
     needs: [lint, build]
     runs-on: ubuntu-latest
