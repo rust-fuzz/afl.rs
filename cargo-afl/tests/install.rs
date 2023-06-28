@@ -8,11 +8,13 @@ struct Test {
     should_contain_msg: bool,
 }
 
-static MSG: &str = "warning: You appear to be installing `cargo-afl` with:
+static MSG: &str = "warning: You appear to be installing the `cargo-afl` binary with:
 warning:     cargo install afl
 warning: A future version of afl.rs will require you to use:
 warning:     cargo install cargo-afl
-warning: You can use the new command now, if you like.";
+warning: You can use the new command now, if you like.
+warning: Note: If the binary is already installed, you may need to add --force.
+";
 
 static TESTS: &[Test] = &[
     Test {

@@ -26,11 +26,14 @@ fn main() {
     let out_dir = env::var("OUT_DIR").unwrap();
 
     if installing && !building_cargo_afl {
-        println!("cargo:warning=You appear to be installing `cargo-afl` with:");
+        println!("cargo:warning=You appear to be installing the `cargo-afl` binary with:");
         println!("cargo:warning=    cargo install afl");
         println!("cargo:warning=A future version of afl.rs will require you to use:");
         println!("cargo:warning=    cargo install cargo-afl");
         println!("cargo:warning=You can use the new command now, if you like.");
+        println!(
+            "cargo:warning=Note: If the binary is already installed, you may need to add --force."
+        );
     }
 
     // smoelius: Build AFLplusplus in a temporary directory when installing or when building on docs.rs.
