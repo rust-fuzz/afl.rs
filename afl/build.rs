@@ -2,7 +2,7 @@ use std::env;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-static AFL_SRC_PATH: &str = "../AFLplusplus";
+static AFL_SRC_PATH: &str = "AFLplusplus";
 
 // https://github.com/rust-fuzz/afl.rs/issues/148
 #[cfg(target_os = "macos")]

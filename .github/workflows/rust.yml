@@ -57,7 +57,7 @@ jobs:
         run: cargo build -vv
       - name: Run afl-system-config
         run: |
-          sudo AFLplusplus/afl-system-config
+          sudo afl/AFLplusplus/afl-system-config
           # smoelius: Remove once the following is published:
           # https://github.com/AFLplusplus/AFLplusplus/commit/a7b7f3cde9b3a420ea5ac32f7309e8a856a01e94
           if [[ ${{ matrix.environment }} = 'macos-latest' ]]; then

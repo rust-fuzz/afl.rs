@@ -1,0 +1,1 @@
+../../../afl/src/bin/cargo-afl.rs

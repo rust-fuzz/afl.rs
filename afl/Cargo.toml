@@ -1,7 +1,7 @@
 [package]
 name = "afl"
 version = "0.13.2"
-readme = "../README.md"
+readme = "README.md"
 license = "Apache-2.0"
 authors = ["Keegan McAllister <mcallister.keegan@gmail.com>",
            "Corey Farwell <coreyf@rwell.org>"]

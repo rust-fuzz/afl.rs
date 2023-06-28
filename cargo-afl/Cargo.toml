@@ -1,7 +1,7 @@
 [package]
 name = "cargo-afl"
 version = "0.13.2"
-readme = "../README.md"
+readme = "README.md"
 license = "Apache-2.0"
 authors = ["Keegan McAllister <mcallister.keegan@gmail.com>",
            "Corey Farwell <coreyf@rwell.org>",
@@ -10,12 +10,6 @@ description = "Fuzzing Rust code with american-fuzzy-lop"
 repository = "https://github.com/rust-fuzz/afl.rs"
 homepage = "https://github.com/rust-fuzz/afl.rs"
 edition = "2021"
-
-build = "../afl/build.rs"
-
-[[bin]]
-name = "cargo-afl"
-path = "../afl/src/bin/cargo-afl.rs"
 
 [build-dependencies]
 fs_extra = "1.3"
