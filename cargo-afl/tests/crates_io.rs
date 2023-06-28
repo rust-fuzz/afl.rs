@@ -64,3 +64,14 @@ fn install() {
             .success();
     }
 }
+
+#[test]
+fn publish() {
+    for &Test { subdir, .. } in TESTS {
+        Command::new("cargo")
+            .args(["publish", "--allow-dirty", "--dry-run", "--no-verify"])
+            .current_dir(Path::new("..").join(subdir))
+            .assert()
+            .success();
+    }
+}
