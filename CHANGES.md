@@ -1,5 +1,9 @@
 # Changes
 
+## 0.13.2
+
+- [Add transitional message](https://github.com/rust-fuzz/afl.rs/pull/348)
+
 ## 0.13.1
 
 - [Update AFLplusplus to 4.07c](https://github.com/rust-fuzz/afl.rs/pull/344)
