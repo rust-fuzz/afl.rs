@@ -14,16 +14,14 @@ static AR_CMD: &str = "ar";
 mod common;
 
 fn main() {
-    let installing = home::cargo_home()
-        .map(|path| Path::new(env!("CARGO_MANIFEST_DIR")).starts_with(path))
-        .unwrap()
-        || env::var("TESTING_INSTALL").is_ok();
+    let out_dir = env::var("OUT_DIR").unwrap();
+
+    let installing =
+        !Path::new(&out_dir).starts_with(Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap());
 
     let building_cargo_afl = env::var("CARGO_PKG_NAME") == Ok(String::from("cargo-afl"));
 
     let building_on_docs_rs = env::var("DOCS_RS").is_ok();
-
-    let out_dir = env::var("OUT_DIR").unwrap();
 
     if installing && !building_cargo_afl {
         println!("cargo:warning=You appear to be installing the `cargo-afl` binary with:");

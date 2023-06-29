@@ -48,7 +48,6 @@ fn install() {
             ])
             .env("CARGO_HOME", tempdir.path())
             .env("CARGO_TERM_COLOR", "never")
-            .env("TESTING_INSTALL", "1")
             .assert()
             .success();
 
