@@ -3,12 +3,15 @@ use predicates::prelude::*;
 use std::path::Path;
 use tempfile::tempdir;
 
+#[path = "../src/common.rs"]
+mod common;
+
 struct Test {
     subdir: &'static str,
-    should_contain_msg: bool,
+    should_contain_msgs: bool,
 }
 
-static MSG: &str = "warning: You appear to be installing the `cargo-afl` binary with:
+static INSTALL_MSG: &str = "warning: You appear to be installing the `cargo-afl` binary with:
 warning:     cargo install afl
 warning: A future version of afl.rs will require you to use:
 warning:     cargo install cargo-afl
@@ -19,11 +22,11 @@ warning: Note: If the binary is already installed, you may need to add --force.
 static TESTS: &[Test] = &[
     Test {
         subdir: "afl",
-        should_contain_msg: true,
+        should_contain_msgs: true,
     },
     Test {
         subdir: "cargo-afl",
-        should_contain_msg: false,
+        should_contain_msgs: false,
     },
 ];
 
@@ -31,7 +34,7 @@ static TESTS: &[Test] = &[
 fn install() {
     for &Test {
         subdir,
-        should_contain_msg,
+        should_contain_msgs,
     } in TESTS
     {
         let tempdir = tempdir().unwrap();
@@ -52,16 +55,22 @@ fn install() {
             .assert()
             .success();
 
-        if should_contain_msg {
-            assert.stderr(predicates::str::contains(MSG));
+        if should_contain_msgs {
+            assert.stderr(predicates::str::contains(INSTALL_MSG));
         } else {
-            assert.stderr(predicates::str::contains(MSG).not());
+            assert.stderr(predicates::str::contains(INSTALL_MSG).not());
         }
 
-        Command::new(cargo_afl)
+        let assert = Command::new(cargo_afl)
             .args(["afl", "--help"])
             .assert()
             .success();
+
+        if should_contain_msgs {
+            assert.stdout(predicates::str::contains(common::HELP_MSG));
+        } else {
+            assert.stdout(predicates::str::contains(common::HELP_MSG).not());
+        }
     }
 }
 

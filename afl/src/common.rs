@@ -1,6 +1,14 @@
 use std::env;
 use std::path::{Path, PathBuf};
 
+#[allow(dead_code)]
+pub static HELP_MSG: &str = "Note: This binary appears to have been installed with:
+    cargo install afl
+A future version of afl.rs will require you to use:
+    cargo install cargo-afl
+You can use the new command now, if you like. You may need to add --force.
+";
+
 fn xdg_dir() -> xdg::BaseDirectories {
     let prefix = Path::new("afl.rs")
         .join(afl_rustc_version())

@@ -87,6 +87,11 @@ fn main() {
 fn clap_app() -> clap::Command {
     use clap::{value_parser, Arg, Command};
 
+    let help = String::from(
+        "In addition to the subcommands above, Cargo subcommands are also \
+         supported (see `cargo help` for a list of all Cargo subcommands).",
+    ) + include_str!(concat!(env!("OUT_DIR"), "/help.txt"));
+
     Command::new("cargo afl")
         .display_name("cargo")
         .subcommand_required(true)
@@ -99,10 +104,7 @@ fn clap_app() -> clap::Command {
                 .allow_external_subcommands(true)
                 .external_subcommand_value_parser(value_parser!(OsString))
                 .override_usage("cargo afl [SUBCOMMAND or Cargo SUBCOMMAND]")
-                .after_help(
-                    "In addition to the subcommands above, Cargo subcommands are also \
-                 supported (see `cargo help` for a list of all Cargo subcommands).",
-                )
+                .after_help(help)
                 .subcommand(
                     Command::new("analyze")
                         .about("Invoke afl-analyze")

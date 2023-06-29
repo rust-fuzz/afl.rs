@@ -23,7 +23,7 @@ fn main() {
 
     let building_on_docs_rs = env::var("DOCS_RS").is_ok();
 
-    let out_dir = env::var("OUT_DIR").unwrap();
+    let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
 
     if installing && !building_cargo_afl {
         println!("cargo:warning=You appear to be installing the `cargo-afl` binary with:");
@@ -35,6 +35,16 @@ fn main() {
             "cargo:warning=Note: If the binary is already installed, you may need to add --force."
         );
     }
+
+    std::fs::write(
+        out_dir.join("help.txt"),
+        if building_cargo_afl {
+            String::new()
+        } else {
+            String::from("\n\n") + common::HELP_MSG
+        },
+    )
+    .unwrap();
 
     // smoelius: Build AFLplusplus in a temporary directory when installing or when building on docs.rs.
     let work_dir = if installing || building_on_docs_rs {
@@ -62,7 +72,7 @@ fn main() {
     };
 
     let base = if building_on_docs_rs {
-        Some(PathBuf::from(out_dir))
+        Some(out_dir)
     } else {
         None
     };
