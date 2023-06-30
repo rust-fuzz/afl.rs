@@ -1,5 +1,10 @@
 # Changes
 
+## 0.13.3
+
+- [Fix etc symlinks](https://github.com/rust-fuzz/afl.rs/pull/352)
+- [Add more transition messages](https://github.com/rust-fuzz/afl.rs/pull/354)
+
 ## 0.13.2
 
 - [Add transitional message](https://github.com/rust-fuzz/afl.rs/pull/348)
