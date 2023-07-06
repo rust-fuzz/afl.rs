@@ -22,7 +22,7 @@ jobs:
           URL='https://api.github.com/repos/AFLplusplus/AFLplusplus/releases/latest'
           TAG="$(curl -H "Accept: application/vnd.github+json" --silent --show-error "$URL" \
             | jq -r .tag_name)"
-          cd AFLplusplus
+          cd afl/AFLplusplus
           git fetch --tags
           git checkout "$TAG"
 
@@ -31,3 +31,4 @@ jobs:
         with:
           title: "Update AFLplusplus"
           token: ${{ secrets.PR_GITHUB_TOKEN }}
+          branch-suffix: random
