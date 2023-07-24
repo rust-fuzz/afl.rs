@@ -16,14 +16,14 @@ home = "0.5"
 libc = "0.2"
 rustc_version = "0.4"
 tempfile = "3.6"
-xdg = "2.4"
+xdg = "2.5"
 
 [dependencies]
 clap = { version = "4.3", features = ["cargo"] }
 lazy_static = { version = "1.4", optional = true }
 libc = "0.2"
 rustc_version = "0.4"
-xdg = "2.4"
+xdg = "2.5"
 
 [dev-dependencies]
 arbitrary = { version = "1", features = ["derive"] }
