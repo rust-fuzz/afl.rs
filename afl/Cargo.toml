@@ -15,7 +15,7 @@ fs_extra = "1.3"
 home = "0.5"
 libc = "0.2"
 rustc_version = "0.4"
-tempfile = "3.6"
+tempfile = "3.7"
 xdg = "2.5"
 
 [dependencies]
@@ -28,7 +28,7 @@ xdg = "2.5"
 [dev-dependencies]
 arbitrary = { version = "1", features = ["derive"] }
 assert_cmd = "2.0"
-tempfile = "3.6"
+tempfile = "3.7"
 
 [features]
 reset_lazy_static = ["lazy_static"]
