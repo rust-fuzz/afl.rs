@@ -22,6 +22,12 @@ You can use the new command now, if you like. If the binary is already installed
 
 Documentation can be found in the [Rust Fuzz Book](https://rust-fuzz.github.io/book/afl.html).
 
+## Hints
+
+By default the AFL++ CMPLOG feature is activated, which is an amazing feature to achieve good code coverage.
+However it is not beneficial to activate CMPLOG on more than 2 instances.
+So if you run multiple AFL++ instances on your fuzzing target, you can disable CMPLOG by specifying the command line parameter '-c -'.
+
 ## What does it look like?
 
 <img src="etc/screencap.gif" width="563" height="368" alt="Screen recording of afl">
