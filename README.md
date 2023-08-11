@@ -22,14 +22,6 @@ You can use the new command now, if you like. If the binary is already installed
 
 Documentation can be found in the [Rust Fuzz Book](https://rust-fuzz.github.io/book/afl.html).
 
-## Hints
-
-By default the AFL++ CMPLOG feature is activated, which is an amazing feature to achieve good code coverage.
-However it is not beneficial to activate CMPLOG on more than 2 instances.
-So if you run multiple AFL++ instances on your fuzzing target, you can disable CMPLOG by specifying the command line parameter '-c -'.
-
-It is highly recommended to familiarize yourself with the AFL++ features and how to successfully run a fuzzing campaign. This [document](https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/fuzzing_in_depth.md) will help you getting started.
-
 ## What does it look like?
 
 <img src="etc/screencap.gif" width="563" height="368" alt="Screen recording of afl">
@@ -48,6 +40,16 @@ Screen recording of AFL running on Rust code.
 [american-fuzzy-lop]: http://lcamtuf.coredump.cx/afl/
 [AFLplusplus]: https://aflplus.plus/
 [rust]: https://www.rust-lang.org
+
+## Hints
+
+By default, the AFL++ [CMPLOG](https://github.com/AFLplusplus/AFLplusplus/blob/stable/instrumentation/README.cmplog.md)
+feature is activated, which helps to achieve good code coverage.
+However, it is not beneficial to activate CMPLOG on more than two instances.
+So if you run multiple AFL++ instances on your fuzzing target, you can disable CMPLOG by specifying the command line parameter '-c -'.
+
+This [document](https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/fuzzing_in_depth.md)
+will familiarize you with AFL++ features to help in running a successful fuzzing campaign.
 
 ## `lazy_static` variables
 
