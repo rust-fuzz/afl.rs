@@ -1,11 +1,13 @@
 [package]
 name = "cargo-afl"
-version = "0.13.3"
+version = "0.13.4"
 readme = "README.md"
 license = "Apache-2.0"
-authors = ["Keegan McAllister <mcallister.keegan@gmail.com>",
-           "Corey Farwell <coreyf@rwell.org>",
-           "Samuel Moelius <sam@moeli.us>"]
+authors = [
+    "Keegan McAllister <mcallister.keegan@gmail.com>",
+    "Corey Farwell <coreyf@rwell.org>",
+    "Samuel Moelius <sam@moeli.us>",
+]
 description = "Fuzzing Rust code with american-fuzzy-lop"
 repository = "https://github.com/rust-fuzz/afl.rs"
 homepage = "https://github.com/rust-fuzz/afl.rs"
