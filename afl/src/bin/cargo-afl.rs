@@ -50,6 +50,12 @@ fn main() {
                 .unwrap_or_default();
             run_afl(args, "afl-gotcpu");
         }
+        Some(("system-config", sub_matches)) => {
+            let args = sub_matches
+                .get_many::<OsString>("afl-system-config args")
+                .unwrap_or_default();
+            run_afl(args, "afl-system-config");
+        }
         Some(("plot", sub_matches)) => {
             let args = sub_matches
                 .get_many::<OsString>("afl-plot args")
@@ -160,6 +166,19 @@ fn clap_app() -> clap::Command {
                         .disable_version_flag(true)
                         .arg(
                             Arg::new("afl-gotcpu args")
+                                .value_parser(value_parser!(OsString))
+                                .num_args(0..),
+                        ),
+                )
+                .subcommand(
+                    Command::new("system-config")
+                        .about("Invoke afl-system-config (hint: use with sudo)")
+                        .allow_hyphen_values(true)
+                        .disable_help_subcommand(true)
+                        .disable_help_flag(true)
+                        .disable_version_flag(true)
+                        .arg(
+                            Arg::new("afl-system-config args")
                                 .value_parser(value_parser!(OsString))
                                 .num_args(0..),
                         ),
@@ -382,7 +401,15 @@ mod tests {
     }
 
     const SUBCOMMANDS: &[&str] = &[
-        "analyze", "cmin", "fuzz", "gotcpu", "plot", "showmap", "tmin", "whatsup",
+        "analyze",
+        "cmin",
+        "fuzz",
+        "gotcpu",
+        "system-config",
+        "plot",
+        "showmap",
+        "tmin",
+        "whatsup",
     ];
 
     #[test]
