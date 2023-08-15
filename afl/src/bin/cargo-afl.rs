@@ -2,6 +2,7 @@ use clap::crate_version;
 
 use std::env;
 use std::ffi::{OsStr, OsString};
+use std::path::PathBuf;
 use std::process::{self, Command, Stdio};
 
 #[path = "../common.rs"]
@@ -52,9 +53,9 @@ fn main() {
         }
         Some(("system-config", sub_matches)) => {
             let args = sub_matches
-                .get_many::<OsString>("afl-system-config args")
+                .get_many::<OsString>("sudo args")
                 .unwrap_or_default();
-            run_afl(args, "afl-system-config");
+            run_afl(args, "sudo");
         }
         Some(("plot", sub_matches)) => {
             let args = sub_matches
@@ -172,13 +173,13 @@ fn clap_app() -> clap::Command {
                 )
                 .subcommand(
                     Command::new("system-config")
-                        .about("Invoke afl-system-config (hint: use with sudo)")
+                        .about("Invoke afl-system-config (beware, called with sudo!)")
                         .allow_hyphen_values(true)
                         .disable_help_subcommand(true)
                         .disable_help_flag(true)
                         .disable_version_flag(true)
                         .arg(
-                            Arg::new("afl-system-config args")
+                            Arg::new("sudo args")
                                 .value_parser(value_parser!(OsString))
                                 .num_args(0..),
                         ),
@@ -243,11 +244,27 @@ where
     I: IntoIterator<Item = S>,
     S: AsRef<OsStr>,
 {
-    let cmd_path = common::afl_dir(None).join("bin").join(tool);
-    let mut cmd = Command::new(cmd_path);
-    cmd.args(args);
+    let cmd_path: PathBuf;
+    let mut cmd;
+    if tool.to_string() == "sudo".to_string() {
+        cmd_path = tool.into();
+        cmd = Command::new(cmd_path);
+        let target = common::afl_dir(None).join("bin").join("afl-system-config");
+        let mut vec: Vec<&OsString> = vec![];
+        let os_tool = OsString::from(tool);
+        let os_target = target.into_os_string();
+        vec.push(&os_tool);
+        vec.push(&os_target);
+        let arguments = vec.into_iter();
+        cmd.args(arguments);
+    } else {
+        cmd_path = common::afl_dir(None).join("bin").join(tool);
+        cmd = Command::new(cmd_path);
+        cmd.args(args);
+    }
+
     let status = cmd.status().unwrap();
-    #[cfg(target_os = "macos")]
+
     if tool == "afl-fuzz" && !status.success() {
         let sudo_cmd_path = common::afl_dir(None).join("bin").join("afl-system-config");
         eprintln!(
