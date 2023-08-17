@@ -43,7 +43,7 @@ Screen recording of AFL running on Rust code.
 
 ## Hints
 
-Before starting to fuzz you should reconfigure your system for optimal
+Before starting to fuzz, you should reconfigure your system for optimal
 performance and better crash detection. This can be done with `cargo-afl afl system-config`
 but this requires root so it is run with sudo, hence you might need to enter
 your password.
