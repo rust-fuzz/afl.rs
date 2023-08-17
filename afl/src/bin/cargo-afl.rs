@@ -51,12 +51,6 @@ fn main() {
                 .unwrap_or_default();
             run_afl(args, "afl-gotcpu");
         }
-        Some(("system-config", sub_matches)) => {
-            let args = sub_matches
-                .get_many::<OsString>("sudo args")
-                .unwrap_or_default();
-            run_afl(args, "sudo");
-        }
         Some(("plot", sub_matches)) => {
             let args = sub_matches
                 .get_many::<OsString>("afl-plot args")
@@ -68,6 +62,12 @@ fn main() {
                 .get_many::<OsString>("afl-showmap args")
                 .unwrap_or_default();
             run_afl(args, "afl-showmap");
+        }
+        Some(("system-config", sub_matches)) => {
+            let args = sub_matches
+                .get_many::<OsString>("afl-system-config args")
+                .unwrap_or_default();
+            run_afl(args, "afl-system-config");
         }
         Some(("tmin", sub_matches)) => {
             let args = sub_matches
@@ -172,19 +172,6 @@ fn clap_app() -> clap::Command {
                         ),
                 )
                 .subcommand(
-                    Command::new("system-config")
-                        .about("Invoke afl-system-config (beware, called with sudo!)")
-                        .allow_hyphen_values(true)
-                        .disable_help_subcommand(true)
-                        .disable_help_flag(true)
-                        .disable_version_flag(true)
-                        .arg(
-                            Arg::new("sudo args")
-                                .value_parser(value_parser!(OsString))
-                                .num_args(0..),
-                        ),
-                )
-                .subcommand(
                     Command::new("plot")
                         .about("Invoke afl-plot")
                         .allow_hyphen_values(true)
@@ -206,6 +193,19 @@ fn clap_app() -> clap::Command {
                         .disable_version_flag(true)
                         .arg(
                             Arg::new("afl-showmap args")
+                                .value_parser(value_parser!(OsString))
+                                .num_args(0..),
+                        ),
+                )
+                .subcommand(
+                    Command::new("system-config")
+                        .about("Invoke afl-system-config (beware, called with sudo!)")
+                        .allow_hyphen_values(true)
+                        .disable_help_subcommand(true)
+                        .disable_help_flag(true)
+                        .disable_version_flag(true)
+                        .arg(
+                            Arg::new("afl-system-config args")
                                 .value_parser(value_parser!(OsString))
                                 .num_args(0..),
                         ),
@@ -246,14 +246,16 @@ where
 {
     let cmd_path: PathBuf;
     let mut cmd;
-    if tool.to_string() == "sudo".to_string() {
-        cmd_path = tool.into();
+    if tool.to_string() == "afl-system-config".to_string() {
+        cmd_path = "sudo".into();
         cmd = Command::new(cmd_path);
         let target = common::afl_dir(None).join("bin").join("afl-system-config");
         let mut vec: Vec<&OsString> = vec![];
-        let os_tool = OsString::from(tool);
+        let os_tool = OsString::from("sudo");
+        let os_opt = OsString::from("--reset-timestamp");
         let os_target = target.into_os_string();
         vec.push(&os_tool);
+        vec.push(&os_opt);
         vec.push(&os_target);
         let arguments = vec.into_iter();
         cmd.args(arguments);
@@ -266,15 +268,13 @@ where
     let status = cmd.status().unwrap();
 
     if tool == "afl-fuzz" && !status.success() {
-        let sudo_cmd_path = common::afl_dir(None).join("bin").join("afl-system-config");
         eprintln!(
             "
 If you see an error message like `shmget() failed` above, try running the following command:
 
-    sudo {}
+    cargo-afl afl system-config
 
-Note: You will be prompted to enter your password.",
-            sudo_cmd_path.display()
+Note: You might be prompted to enter your password as root privileges are required and hence sudo is run within this command."
         );
     }
     process::exit(status.code().unwrap_or(1));
@@ -422,9 +422,9 @@ mod tests {
         "cmin",
         "fuzz",
         "gotcpu",
-        "system-config",
         "plot",
         "showmap",
+        "system-config",
         "tmin",
         "whatsup",
     ];
