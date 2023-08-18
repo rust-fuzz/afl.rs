@@ -247,6 +247,7 @@ where
     let mut cmd = if tool == "afl-system-config" {
         let mut cmd = Command::new("sudo");
         cmd.args([OsStr::new("--reset-timestamp"), cmd_path.as_os_str()]);
+        eprintln!("Running: {cmd:?}");
         cmd
     } else {
         Command::new(cmd_path)
