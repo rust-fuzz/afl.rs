@@ -243,8 +243,9 @@ where
     I: IntoIterator<Item = S>,
     S: AsRef<OsStr>,
 {
+    let no_sudo = env::var("NO_SUDO").is_ok();
     let cmd_path = common::afl_dir(None).join("bin").join(tool);
-    let mut cmd = if tool == "afl-system-config" {
+    let mut cmd = if !no_sudo && tool == "afl-system-config" {
         let mut cmd = Command::new("sudo");
         cmd.args([OsStr::new("--reset-timestamp"), cmd_path.as_os_str()]);
         eprintln!("Running: {cmd:?}");
@@ -494,7 +495,7 @@ mod tests {
 
     fn cargo_afl<T: AsRef<OsStr>>(args: &[T]) -> Command {
         let mut command = command();
-        command.arg("afl").args(args);
+        command.arg("afl").args(args).env("NO_SUDO", "1");
         command
     }
 
