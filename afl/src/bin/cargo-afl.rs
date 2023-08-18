@@ -2,7 +2,6 @@ use clap::crate_version;
 
 use std::env;
 use std::ffi::{OsStr, OsString};
-use std::path::PathBuf;
 use std::process::{self, Command, Stdio};
 
 #[path = "../common.rs"]
@@ -244,26 +243,15 @@ where
     I: IntoIterator<Item = S>,
     S: AsRef<OsStr>,
 {
-    let cmd_path: PathBuf;
-    let mut cmd;
-    if tool.to_string() == "afl-system-config".to_string() {
-        cmd_path = "sudo".into();
-        cmd = Command::new(cmd_path);
-        let target = common::afl_dir(None).join("bin").join("afl-system-config");
-        let mut vec: Vec<&OsString> = vec![];
-        let os_tool = OsString::from("sudo");
-        let os_opt = OsString::from("--reset-timestamp");
-        let os_target = target.into_os_string();
-        vec.push(&os_tool);
-        vec.push(&os_opt);
-        vec.push(&os_target);
-        let arguments = vec.into_iter();
-        cmd.args(arguments);
+    let cmd_path = common::afl_dir(None).join("bin").join(tool);
+    let mut cmd = if tool == "afl-system-config" {
+        let mut cmd = Command::new("sudo");
+        cmd.args([OsStr::new("--reset-timestamp"), cmd_path.as_os_str()]);
+        cmd
     } else {
-        cmd_path = common::afl_dir(None).join("bin").join(tool);
-        cmd = Command::new(cmd_path);
-        cmd.args(args);
-    }
+        Command::new(cmd_path)
+    };
+    cmd.args(args);
 
     let status = cmd.status().unwrap();
 
@@ -274,7 +262,7 @@ If you see an error message like `shmget() failed` above, try running the follow
 
     cargo-afl afl system-config
 
-Note: You might be prompted to enter your password as root privileges are required and hence sudo is run within this command."
+Note: You will be prompted to enter your password as root privileges are required and hence sudo is run within this command."
         );
     }
     process::exit(status.code().unwrap_or(1));
