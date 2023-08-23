@@ -264,7 +264,7 @@ If you see an error message like `shmget() failed` above, try running the follow
 
     cargo-afl afl system-config
 
-Note: You will be prompted to enter your password as root privileges are required and hence sudo is run within this command."
+Note: You might be prompted to enter your password as root privileges are required and hence sudo is run within this command."
         );
     }
     process::exit(status.code().unwrap_or(1));
