@@ -45,7 +45,7 @@ Screen recording of AFL running on Rust code.
 
 Before starting to fuzz, you should reconfigure your system for optimal
 performance and better crash detection. This can be done with `cargo-afl afl system-config`.
-But this subcommand requires root, so it uses sudo internally. Hence, you will need to enter
+But this subcommand requires root, so it uses sudo internally. Hence, you might need to enter
 your password.
 
 By default, the AFL++ [CMPLOG](https://github.com/AFLplusplus/AFLplusplus/blob/stable/instrumentation/README.cmplog.md)
