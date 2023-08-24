@@ -1,5 +1,9 @@
 # Changes
 
+## 0.13.5
+
+- [Update AFLplusplus to commit ad2af7c (latest on branch stable)](https://github.com/rust-fuzz/afl.rs/pull/374)
+
 ## 0.13.4
 
 - [Update AFLplusplus to 4.08c](https://github.com/rust-fuzz/afl.rs/pull/367)
