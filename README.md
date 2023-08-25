@@ -6,13 +6,13 @@
 
 <h4 align="center">Fuzzing <a href="https://www.rust-lang.org">Rust</a> code with <a href="https://aflplus.plus/">AFLplusplus</a></h4>
 
-**Notice:** A future version of afl.rs will require you to install the `cargo-afl` binary with:
+**Notice:** Version 0.14.0 of afl.rs requires you to install the `cargo-afl` binary with:
 
 ```sh
 cargo install cargo-afl
 ```
 
-You can use the new command now, if you like. If the binary is already installed, you may need to add `--force`.
+If the binary is already installed, you may need to add `--force`.
 
 ## What is it?
 
