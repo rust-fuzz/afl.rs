@@ -93,10 +93,8 @@ fn main() {
 fn clap_app() -> clap::Command {
     use clap::{value_parser, Arg, Command};
 
-    let help = String::from(
-        "In addition to the subcommands above, Cargo subcommands are also \
-         supported (see `cargo help` for a list of all Cargo subcommands).",
-    ) + include_str!(concat!(env!("OUT_DIR"), "/help.txt"));
+    let help = "In addition to the subcommands above, Cargo subcommands are also \
+                      supported (see `cargo help` for a list of all Cargo subcommands).";
 
     Command::new("cargo afl")
         .display_name("cargo")

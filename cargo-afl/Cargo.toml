@@ -29,5 +29,6 @@ xdg = "2.5"
 
 [dev-dependencies]
 assert_cmd = "2.0"
+ctor = "0.2"
 predicates = "3.0"
 tempfile = "3.8"

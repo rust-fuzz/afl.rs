@@ -1,82 +1,91 @@
 use assert_cmd::Command;
 use predicates::prelude::*;
-use std::path::Path;
+use std::{env, fs::OpenOptions, io::Write, path::Path};
 use tempfile::tempdir;
 
-#[path = "../src/common.rs"]
-mod common;
-
-struct Test {
-    subdir: &'static str,
-    should_contain_msgs: bool,
-}
-
-static INSTALL_MSG: &str = "warning: You appear to be installing the `cargo-afl` binary with:
-warning:     cargo install afl
-warning: A future version of afl.rs will require you to use:
-warning:     cargo install cargo-afl
-warning: You can use the new command now, if you like.
-warning: Note: If the binary is already installed, you may need to add --force.
+const BUILD_MSG: &str = "\
+warning: You appear to be building `afl` not under `cargo-afl`.
+warning: Perhaps you used `cargo build` instead of `cargo afl build`?
 ";
 
-static TESTS: &[Test] = &[
-    Test {
-        subdir: "afl",
-        should_contain_msgs: true,
-    },
-    Test {
-        subdir: "cargo-afl",
-        should_contain_msgs: false,
-    },
-];
+#[ctor::ctor]
+fn init() {
+    env::set_var("CARGO_TERM_COLOR", "never");
+}
+
+#[test]
+fn build() {
+    let tempdir = tempdir().unwrap();
+
+    Command::new("cargo")
+        .current_dir(&tempdir)
+        .args(["init", "--name", "a"])
+        .assert()
+        .success();
+
+    Command::new("cargo")
+        .current_dir(&tempdir)
+        .args(["build"])
+        .env("TESTING_BUILD", "1")
+        .assert()
+        .success()
+        .stderr(predicates::str::contains(BUILD_MSG).not());
+
+    let mut file = OpenOptions::new()
+        .append(true)
+        .open(tempdir.path().join("Cargo.toml"))
+        .unwrap();
+    writeln!(
+        file,
+        r#"afl = {{ path = "{}" }}"#,
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../afl")
+            .display()
+    )
+    .unwrap();
+
+    Command::new("cargo")
+        .current_dir(&tempdir)
+        .args(["build"])
+        .env("TESTING_BUILD", "1")
+        .assert()
+        .success()
+        .stderr(predicates::str::contains(BUILD_MSG));
+
+    Command::cargo_bin("cargo-afl")
+        .unwrap()
+        .current_dir(&tempdir)
+        .args(["afl", "build"])
+        .env("TESTING_BUILD", "1")
+        .assert()
+        .success()
+        .stderr(predicates::str::contains(BUILD_MSG).not());
+}
 
 #[test]
 fn install() {
-    for &Test {
-        subdir,
-        should_contain_msgs,
-    } in TESTS
-    {
-        let tempdir = tempdir().unwrap();
+    let tempdir = tempdir().unwrap();
 
-        let cargo_afl = tempdir.path().join("bin/cargo-afl");
+    let cargo_afl = tempdir.path().join("bin/cargo-afl");
 
-        assert!(!cargo_afl.exists());
+    assert!(!cargo_afl.exists());
 
-        let assert = Command::new("cargo")
-            .args([
-                "install",
-                "--path",
-                &Path::new("..").join(subdir).to_string_lossy(),
-            ])
-            .env("CARGO_HOME", tempdir.path())
-            .env("CARGO_TERM_COLOR", "never")
-            .env("TESTING_INSTALL", "1")
-            .assert()
-            .success();
+    Command::new("cargo")
+        .args(["install", "--path", "../cargo-afl"])
+        .env("CARGO_HOME", tempdir.path())
+        .env("TESTING_INSTALL", "1")
+        .assert()
+        .success();
 
-        if should_contain_msgs {
-            assert.stderr(predicates::str::contains(INSTALL_MSG));
-        } else {
-            assert.stderr(predicates::str::contains(INSTALL_MSG).not());
-        }
-
-        let assert = Command::new(cargo_afl)
-            .args(["afl", "--help"])
-            .assert()
-            .success();
-
-        if should_contain_msgs {
-            assert.stdout(predicates::str::contains(common::HELP_MSG));
-        } else {
-            assert.stdout(predicates::str::contains(common::HELP_MSG).not());
-        }
-    }
+    Command::new(cargo_afl)
+        .args(["afl", "--help"])
+        .assert()
+        .success();
 }
 
 #[test]
 fn publish() {
-    for &Test { subdir, .. } in TESTS {
+    for subdir in ["afl", "cargo-afl"] {
         Command::new("cargo")
             .args(["publish", "--allow-dirty", "--dry-run", "--no-verify"])
             .current_dir(Path::new("..").join(subdir))
