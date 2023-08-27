@@ -16,7 +16,6 @@ edition = "2021"
 home = "0.5"
 
 [dependencies]
-lazy_static = { version = "1.4", optional = true }
 libc = "0.2"
 rustc_version = "0.4"
 xdg = "2.5"
@@ -25,5 +24,4 @@ xdg = "2.5"
 arbitrary = { version = "1", features = ["derive"] }
 
 [features]
-reset_lazy_static = ["lazy_static"]
 no_cfg_fuzzing = []

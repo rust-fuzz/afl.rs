@@ -101,12 +101,6 @@ where
             // process before the stack frames are unwinded.
             std::process::abort();
         }
-        // The version of lazy_static.rs at https://github.com/rust-fuzz/resettable-lazy-static.rs
-        // provides the `reset` function.
-        #[cfg(feature = "reset_lazy_static")]
-        unsafe {
-            lazy_static::lazy::reset();
-        }
         input.clear();
     }
 }
