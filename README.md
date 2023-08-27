@@ -55,21 +55,3 @@ So if you run multiple AFL++ instances on your fuzzing target, you can disable C
 
 This [document](https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/fuzzing_in_depth.md)
 will familiarize you with AFL++ features to help in running a successful fuzzing campaign.
-
-## `lazy_static` variables
-
-`lazy_static` variables present problems for AFL's persistent mode, which afl.rs uses. Such variables can cause AFL to give incorrectly low stability reports, or fail to report timeouts, for example.
-
-To address such problems, rust-fuzz provides a ["resettable" version](https://github.com/rust-fuzz/resettable-lazy-static.rs) of `lazy_static`. To use it, make the following two changes to your target's `Cargo.toml` file.
-
-1. Add a `[patch.crates-io]` section and override the `lazy_static` dependency with the rust-fuzz version:
-    ```toml
-    [patch.crates-io]
-    lazy_static = { git = "https://github.com/rust-fuzz/resettable-lazy-static.rs" }
-
-    ```
-2. Enable the `reset_lazy_static` feature on afl.rs:
-    ```toml
-    [dependencies]
-    afl = { version = "*", features = ["reset_lazy_static"] }
-    ```

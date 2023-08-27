@@ -8,7 +8,6 @@ version = "0.13.4"
 dependencies = [
  "arbitrary",
  "home",
- "lazy_static",
  "libc",
  "rustc_version",
  "xdg",
@@ -285,12 +284,6 @@ checksum = "b0fd2260e829bddf4cb6ea802289de2f86d6a7a690192fbe91b3f46e0f2c8473"
 dependencies = [
  "either",
 ]
-
-[[package]]
-name = "lazy_static"
-version = "1.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "libc"
