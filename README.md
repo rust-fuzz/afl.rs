@@ -28,19 +28,6 @@ Documentation can be found in the [Rust Fuzz Book](https://rust-fuzz.github.io/b
 
 Screen recording of AFL running on Rust code.
 
-[conditional compilation]: https://doc.rust-lang.org/reference.html#conditional-compilation
-[Cargo feature]: http://doc.crates.io/manifest.html#the-[features]-section
-[example-defer]: https://github.com/frewsxcv/afl.rs/blob/master/examples/deferred-init.rs
-[LLVM pass]: https://github.com/frewsxcv/afl.rs/blob/master/plugin/src/afl-llvm-pass.o.cc
-[example]: https://github.com/frewsxcv/afl.rs/blob/master/afl/examples/hello.rs
-[Cargo]: http://doc.crates.io/
-[unresolved issue]: https://github.com/frewsxcv/afl.rs/issues/11
-[fuzz testing]: https://en.wikipedia.org/wiki/Fuzz_testing
-[rustup]: https://rustup.rs/
-[american-fuzzy-lop]: http://lcamtuf.coredump.cx/afl/
-[AFLplusplus]: https://aflplus.plus/
-[rust]: https://www.rust-lang.org
-
 ## Hints
 
 Before starting to fuzz, you should reconfigure your system for optimal
@@ -55,3 +42,16 @@ So if you run multiple AFL++ instances on your fuzzing target, you can disable C
 
 This [document](https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/fuzzing_in_depth.md)
 will familiarize you with AFL++ features to help in running a successful fuzzing campaign.
+
+[conditional compilation]: https://doc.rust-lang.org/reference.html#conditional-compilation
+[Cargo feature]: http://doc.crates.io/manifest.html#the-[features]-section
+[example-defer]: https://github.com/frewsxcv/afl.rs/blob/master/examples/deferred-init.rs
+[LLVM pass]: https://github.com/frewsxcv/afl.rs/blob/master/plugin/src/afl-llvm-pass.o.cc
+[example]: https://github.com/frewsxcv/afl.rs/blob/master/afl/examples/hello.rs
+[Cargo]: http://doc.crates.io/
+[unresolved issue]: https://github.com/frewsxcv/afl.rs/issues/11
+[fuzz testing]: https://en.wikipedia.org/wiki/Fuzz_testing
+[rustup]: https://rustup.rs/
+[american-fuzzy-lop]: http://lcamtuf.coredump.cx/afl/
+[AFLplusplus]: https://aflplus.plus/
+[rust]: https://www.rust-lang.org
