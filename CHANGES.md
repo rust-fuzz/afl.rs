@@ -1,5 +1,11 @@
 # Changes
 
+## 0.14.0
+
+- [Make afl-system-config available as system-config](https://github.com/rust-fuzz/afl.rs/pull/371)
+- [Complete separation of `afl` and `cargo-afl`](https://github.com/rust-fuzz/afl.rs/pull/375)
+- [Remove `reset_lazy_static` feature](https://github.com/rust-fuzz/afl.rs/pull/376)
+
 ## 0.13.5
 
 - [Update AFLplusplus to commit ad2af7c (latest on branch stable)](https://github.com/rust-fuzz/afl.rs/pull/374)
