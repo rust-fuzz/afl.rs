@@ -1,5 +1,9 @@
 # Changes
 
+## 0.14.1
+
+- No functional changes. Version 0.14.1 was needed because version 0.14.0 failed to include the AFLplusplus submodule.
+
 ## 0.14.0
 
 - [Make afl-system-config available as system-config](https://github.com/rust-fuzz/afl.rs/pull/371)
