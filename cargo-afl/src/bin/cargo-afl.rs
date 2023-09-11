@@ -419,7 +419,7 @@ mod tests {
 
     #[test]
     fn subcommands_allow_invalid_utf8() {
-        for &subcommand in SUBCOMMANDS.iter() {
+        for &subcommand in SUBCOMMANDS {
             let _arg_matches = clap_app()
                 .try_get_matches_from([
                     OsStr::new("cargo"),
@@ -433,7 +433,7 @@ mod tests {
 
     #[test]
     fn subcommands_allow_hyphen_values() {
-        for &subcommand in SUBCOMMANDS.iter() {
+        for &subcommand in SUBCOMMANDS {
             let _arg_matches = clap_app()
                 .try_get_matches_from(["cargo", "afl", subcommand, "-i", "--input"])
                 .unwrap();
@@ -448,7 +448,7 @@ mod tests {
                 .starts_with("Usage:")
         );
 
-        for &subcommand in SUBCOMMANDS.iter() {
+        for &subcommand in SUBCOMMANDS {
             assert!(
                 !String::from_utf8(cargo_afl(&[subcommand, "help"]).output().unwrap().stdout)
                     .unwrap()
@@ -465,7 +465,7 @@ mod tests {
                 .starts_with("Usage:")
         );
 
-        for &subcommand in SUBCOMMANDS.iter() {
+        for &subcommand in SUBCOMMANDS {
             assert!(!String::from_utf8(
                 cargo_afl(&[subcommand, "--help"]).output().unwrap().stdout
             )
@@ -482,7 +482,7 @@ mod tests {
                 .starts_with("cargo-afl")
         );
 
-        for &subcommand in SUBCOMMANDS.iter() {
+        for &subcommand in SUBCOMMANDS {
             assert!(
                 !String::from_utf8(cargo_afl(&[subcommand, "-V"]).output().unwrap().stdout)
                     .unwrap()
