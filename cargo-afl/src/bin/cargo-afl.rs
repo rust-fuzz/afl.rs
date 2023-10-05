@@ -12,7 +12,7 @@ fn main() {
         let version = common::afl_rustc_version();
         eprintln!(
             "AFL LLVM runtime is not built with Rust {version}, run `cargo \
-             install --force afl` to build it."
+             install --force cargo-afl` to build it."
         );
         process::exit(1);
     }
