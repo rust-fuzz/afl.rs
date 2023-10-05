@@ -1,6 +1,6 @@
 [package]
 name = "cargo-afl"
-version = "0.14.1"
+version = "0.14.2"
 readme = "README.md"
 license = "Apache-2.0"
 authors = [

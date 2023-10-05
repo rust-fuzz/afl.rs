@@ -1,5 +1,9 @@
 # Changes
 
+## 0.14.2
+
+- [Update error message in cargo-afl.rs](https://github.com/rust-fuzz/afl.rs/pull/395)
+
 ## 0.14.1
 
 - No functional changes. Version 0.14.1 was needed because version 0.14.0 failed to include the AFLplusplus submodule.
