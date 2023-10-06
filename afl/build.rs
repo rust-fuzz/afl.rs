@@ -8,7 +8,9 @@ fn main() {
         || env::var("TESTING_BUILD").is_ok();
 
     let cfg_fuzzing = env::var("CARGO_CFG_FUZZING").is_ok();
-    let no_cfg_fuzzing = !env::var("AFL_NO_CFG_FUZZING").unwrap_or_default().is_empty();
+    let no_cfg_fuzzing = !env::var("AFL_NO_CFG_FUZZING")
+        .unwrap_or_default()
+        .is_empty();
 
     // afl-fuzz is sensitive to AFL_ env variables. Let's remove this particular one - it did it's job
     env::remove_var("AFL_NO_CFG_FUZZING");
