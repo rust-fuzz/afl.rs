@@ -1,5 +1,9 @@
 # Changes
 
+## 0.14.3
+
+- [Fix running AFL with no 'fuzzing' flag](https://github.com/rust-fuzz/afl.rs/pull/398)
+
 ## 0.14.2
 
 - [Update error message in cargo-afl.rs](https://github.com/rust-fuzz/afl.rs/pull/395)
@@ -40,7 +44,7 @@
 - [Add mini CmpLog](https://github.com/rust-fuzz/afl.rs/pull/324)
 - [Remove --max-total-time](https://github.com/rust-fuzz/afl.rs/pull/333)
 
-## 0.12.16
+## 0.12.17
 
 - [Adjust build script output](https://github.com/rust-fuzz/afl.rs/pull/317)
 - [Unconditionally remove `DEBUG` environment variable](https://github.com/rust-fuzz/afl.rs/pull/321)
