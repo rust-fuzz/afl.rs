@@ -10,8 +10,6 @@ fn main() {
     let cfg_fuzzing = env::var("CARGO_CFG_FUZZING").is_ok();
     let cfg_no_fuzzing = env::var("CARGO_CFG_NO_FUZZING").is_ok();
 
-    println!("cfg_fuzzing = {:?} ", cfg_fuzzing);
-    println!("cfg_no_fuzzing = {:?} ", cfg_no_fuzzing);
     if building_in_cargo_home && !cfg_fuzzing && !cfg_no_fuzzing {
         println!("cargo:warning=You appear to be building `afl` not under `cargo-afl`.");
         println!("cargo:warning=Perhaps you used `cargo build` instead of `cargo afl build`?");
