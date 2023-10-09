@@ -43,7 +43,7 @@ So if you run multiple AFL++ instances on your fuzzing target, you can disable C
 This [document](https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/fuzzing_in_depth.md)
 will familiarize you with AFL++ features to help in running a successful fuzzing campaign.
 
-By default, 'fuzzing' config is set when `cargo-afl` is used to build. If you want to prevent this, just set the
+By default, the `fuzzing` config is set when `cargo-afl` is used to build. If you want to prevent this, just set the
 environment variable `AFL_NO_CFG_FUZZING` to `1` when building.
 
 [conditional compilation]: https://doc.rust-lang.org/reference.html#conditional-compilation
