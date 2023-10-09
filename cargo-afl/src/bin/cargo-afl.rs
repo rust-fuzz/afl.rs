@@ -310,8 +310,12 @@ where
          -C target-cpu=native "
     );
 
-    let no_cfg_fuzzing = env::var("AFL_NO_CFG_FUZZING").unwrap_or_default();
-    if no_cfg_fuzzing.is_empty() {
+    let no_cfg_fuzzing = env::var("AFL_NO_CFG_FUZZING").is_ok();
+    if no_cfg_fuzzing {
+        rustflags.push_str("--cfg no_fuzzing ");
+        // afl-fuzz is sensitive to AFL_ env variables. Let's remove this particular one - it did it's job
+        env::remove_var("AFL_NO_CFG_FUZZING");
+    } else {
         rustflags.push_str("--cfg fuzzing ");
     }
 
@@ -344,7 +348,6 @@ where
         .env("RUSTDOCFLAGS", &rustdocflags)
         .env("ASAN_OPTIONS", asan_options)
         .env("TSAN_OPTIONS", tsan_options)
-        .env("AFL_NO_CFG_FUZZING", no_cfg_fuzzing)
         .status()
         .unwrap();
     process::exit(status.code().unwrap_or(1));
