@@ -3,10 +3,10 @@ use predicates::prelude::*;
 use std::{env, fs::OpenOptions, io::Write, path::Path};
 use tempfile::tempdir;
 
-const BUILD_MSG: &str = "\
-warning: You appear to be building `afl` not under `cargo-afl`.
-warning: Perhaps you used `cargo build` instead of `cargo afl build`?
-";
+const BUILD_MSGS: &[&str] = &[
+    "You appear to be building `afl` not under `cargo-afl`.",
+    "Perhaps you used `cargo build` instead of `cargo afl build`?",
+];
 
 #[ctor::ctor]
 fn init() {
@@ -29,7 +29,11 @@ fn build() {
         .env("TESTING_BUILD", "1")
         .assert()
         .success()
-        .stderr(predicates::str::contains(BUILD_MSG).not());
+        .stderr(
+            predicates::str::contains(BUILD_MSGS[0])
+                .not()
+                .and(predicates::str::contains(BUILD_MSGS[1]).not()),
+        );
 
     let mut file = OpenOptions::new()
         .append(true)
@@ -50,7 +54,9 @@ fn build() {
         .env("TESTING_BUILD", "1")
         .assert()
         .success()
-        .stderr(predicates::str::contains(BUILD_MSG));
+        .stderr(
+            predicates::str::contains(BUILD_MSGS[0]).and(predicates::str::contains(BUILD_MSGS[1])),
+        );
 
     Command::cargo_bin("cargo-afl")
         .unwrap()
@@ -59,7 +65,11 @@ fn build() {
         .env("TESTING_BUILD", "1")
         .assert()
         .success()
-        .stderr(predicates::str::contains(BUILD_MSG).not());
+        .stderr(
+            predicates::str::contains(BUILD_MSGS[0])
+                .not()
+                .and(predicates::str::contains(BUILD_MSGS[1]).not()),
+        );
 }
 
 #[test]
