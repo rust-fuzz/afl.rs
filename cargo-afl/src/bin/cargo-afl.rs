@@ -23,6 +23,12 @@ fn main() {
     let afl_matches = app_matches.subcommand_matches("afl").unwrap();
 
     match afl_matches.subcommand() {
+        Some(("addseeds", sub_matches)) => {
+            let args = sub_matches
+                .get_many::<OsString>("afl-addseeds args")
+                .unwrap_or_default();
+            run_afl(args, "afl-addseeds");
+        }
         Some(("analyze", sub_matches)) => {
             let args = sub_matches
                 .get_many::<OsString>("afl-analyze args")
@@ -109,6 +115,19 @@ fn clap_app() -> clap::Command {
                 .external_subcommand_value_parser(value_parser!(OsString))
                 .override_usage("cargo afl [SUBCOMMAND or Cargo SUBCOMMAND]")
                 .after_help(help)
+                .subcommand(
+                    Command::new("addseeds")
+                        .about("Invoke afl-addseeds")
+                        .allow_hyphen_values(true)
+                        .disable_help_subcommand(true)
+                        .disable_help_flag(true)
+                        .disable_version_flag(true)
+                        .arg(
+                            Arg::new("afl-addseeds args")
+                                .value_parser(value_parser!(OsString))
+                                .num_args(0..),
+                        ),
+                )
                 .subcommand(
                     Command::new("analyze")
                         .about("Invoke afl-analyze")
@@ -420,6 +439,7 @@ mod tests {
     }
 
     const SUBCOMMANDS: &[&str] = &[
+        "addseeds",
         "analyze",
         "cmin",
         "fuzz",
