@@ -367,6 +367,7 @@ mod tests {
     use super::*;
     use assert_cmd::Command;
     use std::os::unix::ffi::OsStringExt;
+    use std::process::Output;
 
     #[test]
     fn test_app() {
@@ -375,26 +376,34 @@ mod tests {
 
     #[test]
     fn display_name() {
-        assert!(
-            String::from_utf8(cargo_afl(&["-V"]).output().unwrap().stdout)
-                .unwrap()
-                .starts_with("cargo-afl")
-        );
+        let output = cargo_afl(&["-V"]).output().unwrap();
+        assert_success(&output, None);
+        assert!(String::from_utf8(output.stdout)
+            .unwrap()
+            .starts_with("cargo-afl"));
     }
 
     #[test]
     fn afl_required_else_help() {
+        let lhs = command().arg("--help").output().unwrap();
+        let rhs = command().output().unwrap();
+        assert_success(&lhs, None);
+        assert_failure(&rhs, None);
         assert_eq!(
-            String::from_utf8(command().arg("--help").output().unwrap().stdout).unwrap(),
-            String::from_utf8(command().output().unwrap().stderr).unwrap()
+            String::from_utf8(lhs.stdout).unwrap(),
+            String::from_utf8(rhs.stderr).unwrap()
         );
     }
 
     #[test]
     fn subcommand_required_else_help() {
+        let lhs = cargo_afl(&["--help"]).output().unwrap();
+        let rhs = cargo_afl::<&OsStr>(&[]).output().unwrap();
+        assert_success(&lhs, None);
+        assert_failure(&rhs, None);
         assert_eq!(
-            String::from_utf8(cargo_afl(&["--help"]).output().unwrap().stdout).unwrap(),
-            String::from_utf8(cargo_afl::<&OsStr>(&[]).output().unwrap().stderr).unwrap()
+            String::from_utf8(lhs.stdout).unwrap(),
+            String::from_utf8(rhs.stderr).unwrap()
         );
     }
 
@@ -447,52 +456,52 @@ mod tests {
 
     #[test]
     fn subcommands_help_subcommand_disabled() {
-        assert!(
-            String::from_utf8(cargo_afl(&["help"]).output().unwrap().stdout)
-                .unwrap()
-                .starts_with("Usage:")
-        );
+        let output = cargo_afl(&["help"]).output().unwrap();
+        assert_success(&output, None);
+        assert!(String::from_utf8(output.stdout)
+            .unwrap()
+            .starts_with("Usage:"));
 
         for &subcommand in SUBCOMMANDS {
-            assert!(
-                !String::from_utf8(cargo_afl(&[subcommand, "help"]).output().unwrap().stdout)
-                    .unwrap()
-                    .starts_with("Usage:")
-            );
+            let output = cargo_afl(&[subcommand, "help"]).output().unwrap();
+            assert_failure(&output, Some(subcommand));
+            assert!(!String::from_utf8(output.stdout)
+                .unwrap()
+                .starts_with("Usage:"));
         }
     }
 
     #[test]
     fn subcommands_help_flag_disabled() {
-        assert!(
-            String::from_utf8(cargo_afl(&["--help"]).output().unwrap().stdout)
-                .unwrap()
-                .starts_with("Usage:")
-        );
-
-        for &subcommand in SUBCOMMANDS {
-            assert!(!String::from_utf8(
-                cargo_afl(&[subcommand, "--help"]).output().unwrap().stdout
-            )
+        let output = cargo_afl(&["--help"]).output().unwrap();
+        assert_success(&output, None);
+        assert!(String::from_utf8(output.stdout)
             .unwrap()
             .starts_with("Usage:"));
+
+        for &subcommand in SUBCOMMANDS {
+            let output = cargo_afl(&[subcommand, "--help"]).output().unwrap();
+            assert_failure(&output, Some(subcommand));
+            assert!(!String::from_utf8(output.stdout)
+                .unwrap()
+                .starts_with("Usage:"));
         }
     }
 
     #[test]
     fn subcommands_version_flag_disabled() {
-        assert!(
-            String::from_utf8(cargo_afl(&["-V"]).output().unwrap().stdout)
-                .unwrap()
-                .starts_with("cargo-afl")
-        );
+        let output = cargo_afl(&["-V"]).output().unwrap();
+        assert_success(&output, None);
+        assert!(String::from_utf8(output.stdout)
+            .unwrap()
+            .starts_with("cargo-afl"));
 
         for &subcommand in SUBCOMMANDS {
-            assert!(
-                !String::from_utf8(cargo_afl(&[subcommand, "-V"]).output().unwrap().stdout)
-                    .unwrap()
-                    .starts_with("cargo-afl")
-            );
+            let output = cargo_afl(&[subcommand, "-V"]).output().unwrap();
+            assert_failure(&output, Some(subcommand));
+            assert!(!String::from_utf8(output.stdout)
+                .unwrap()
+                .starts_with("cargo-afl"));
         }
     }
 
@@ -504,6 +513,30 @@ mod tests {
 
     fn command() -> Command {
         Command::cargo_bin("cargo-afl").unwrap()
+    }
+
+    fn assert_success(output: &Output, subcommand: Option<&str>) {
+        assert!(
+            output.status.success(),
+            "{}",
+            if let Some(subcommand) = subcommand {
+                format!("{subcommand} failed")
+            } else {
+                String::new()
+            }
+        );
+    }
+
+    fn assert_failure(output: &Output, subcommand: Option<&str>) {
+        assert!(
+            !output.status.success(),
+            "{}",
+            if let Some(subcommand) = subcommand {
+                format!("{subcommand} succeeded")
+            } else {
+                String::new()
+            }
+        );
     }
 
     fn invalid_utf8() -> OsString {
