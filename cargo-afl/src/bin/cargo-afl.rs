@@ -481,7 +481,12 @@ mod tests {
 
         for &subcommand in SUBCOMMANDS {
             let output = cargo_afl(&[subcommand, "--help"]).output().unwrap();
-            assert_failure(&output, Some(subcommand));
+            // smoelius: `afl-system-config` has a `--help` flag.
+            if subcommand == "system-config" {
+                assert_success(&output, Some(subcommand));
+            } else {
+                assert_failure(&output, Some(subcommand));
+            }
             assert!(!String::from_utf8(output.stdout)
                 .unwrap()
                 .starts_with("Usage:"));
