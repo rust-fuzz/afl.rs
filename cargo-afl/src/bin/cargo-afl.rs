@@ -501,8 +501,8 @@ mod tests {
 
         for &subcommand in SUBCOMMANDS {
             let output = cargo_afl(&[subcommand, "--help"]).output().unwrap();
-            // smoelius: `afl-system-config` has a `--help` flag.
-            if subcommand == "system-config" {
+            // smoelius: `afl-addseeds` and `afl-system-config` have `--help` flags.
+            if subcommand == "addseeds" || subcommand == "system-config" {
                 assert_success(&output, Some(subcommand));
             } else {
                 assert_failure(&output, Some(subcommand));
