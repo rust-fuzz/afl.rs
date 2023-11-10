@@ -1,5 +1,9 @@
 # Changes
 
+## 0.14.4
+
+- [Add addseeds command](https://github.com/rust-fuzz/afl.rs/pull/407)
+
 ## 0.14.3
 
 - [Fix running AFL with no 'fuzzing' flag](https://github.com/rust-fuzz/afl.rs/pull/398)
