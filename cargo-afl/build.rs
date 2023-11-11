@@ -1,4 +1,5 @@
 use std::env;
+use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -109,28 +110,21 @@ fn build_afl_llvm_runtime(work_dir: &Path, base: Option<&Path>) {
 
 fn copy_afl_llvm_plugins(work_dir: &Path, base: Option<&Path>) {
     // Iterate over the files in the directory.
-    if let Ok(entries) = work_dir.read_dir() {
-        for entry in entries.flatten() {
-            let file_name = entry.file_name();
-            let file_name_str = file_name.to_string_lossy();
+    for result in work_dir.read_dir().unwrap() {
+        let entry = result.unwrap();
+        let file_name = entry.file_name();
 
-            // Get the file extension.
-            if let Some(extension) = file_name_str.split('.').last() {
-                // Only copy the files that are shared objects
-                if extension == "so" {
-                    // Attempt to copy the shared object file.
-                    std::fs::copy(
-                        work_dir.join(&file_name),
-                        common::afl_llvm_dir(base).join(&file_name),
-                    )
-                    .unwrap_or_else(|_| {
-                        panic!("Couldn't copy shared object file {file_name_str}",)
-                    });
-                }
-            }
+        // Get the file extension. Only copy the files that are shared objects.
+        if Path::new(&file_name).extension() == Some(OsStr::new("so")) {
+            // Attempt to copy the shared object file.
+            std::fs::copy(
+                work_dir.join(&file_name),
+                common::afl_llvm_dir(base).join(&file_name),
+            )
+            .unwrap_or_else(|error| {
+                panic!("Couldn't copy shared object file {file_name:?}: {error}")
+            });
         }
-    } else {
-        eprintln!("Failed to read the work directory. Aborting.");
     }
 }
 
