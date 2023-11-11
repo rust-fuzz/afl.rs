@@ -57,18 +57,18 @@ pub fn afl_dir(base: Option<&Path>) -> PathBuf {
 
 #[allow(dead_code)]
 #[must_use]
-pub fn afl_llvm_rt_dir(base: Option<&Path>) -> PathBuf {
-    data_dir(base, "afl-llvm-rt")
+pub fn afl_llvm_dir(base: Option<&Path>) -> PathBuf {
+    data_dir(base, "afl-llvm")
 }
 
 #[allow(dead_code)]
 #[must_use]
 pub fn object_file_path(base: Option<&Path>) -> PathBuf {
-    afl_llvm_rt_dir(base).join("libafl-llvm-rt.o")
+    afl_llvm_dir(base).join("libafl-llvm-rt.o")
 }
 
 #[allow(dead_code)]
 #[must_use]
 pub fn archive_file_path(base: Option<&Path>) -> PathBuf {
-    afl_llvm_rt_dir(base).join("libafl-llvm-rt.a")
+    afl_llvm_dir(base).join("libafl-llvm-rt.a")
 }

@@ -60,21 +60,34 @@ fn main() {
 
     build_afl(&work_dir, base.as_deref());
     build_afl_llvm_runtime(&work_dir, base.as_deref());
+
+    if cfg!(feature = "plugins") {
+        copy_afl_llvm_plugins(&work_dir, base.as_deref());
+    }
 }
 
 fn build_afl(work_dir: &Path, base: Option<&Path>) {
+    // if you had already installed cargo-afl previously you **must** clean AFL++
     let mut command = Command::new("make");
     command
         .current_dir(work_dir)
-        .args(["clean", "all", "install"])
+        .args(["clean", "install"])
         // skip the checks for the legacy x86 afl-gcc compiler
         .env("AFL_NO_X86", "1")
         // build just the runtime to avoid troubles with Xcode clang on macOS
-        .env("NO_BUILD", "1")
+        //.env("NO_BUILD", "1")
         .env("DESTDIR", common::afl_dir(base))
         .env("PREFIX", "")
         .env_remove("DEBUG");
-    let status = command.status().expect("could not run 'make'");
+
+    if cfg!(feature = "plugins") {
+        let llvm_config = check_llvm_and_get_config();
+        command.env("LLVM_CONFIG", llvm_config);
+    }
+
+    let status = command
+        .status()
+        .expect("could not run 'make clean install'");
     assert!(status.success());
 }
 
@@ -92,6 +105,68 @@ fn build_afl_llvm_runtime(work_dir: &Path, base: Option<&Path>) {
         .status()
         .expect("could not run 'ar'");
     assert!(status.success());
+}
+
+fn copy_afl_llvm_plugins(work_dir: &Path, base: Option<&Path>) {
+    // Iterate over the files in the directory.
+    if let Ok(entries) = work_dir.read_dir() {
+        for entry in entries.flatten() {
+            let file_name = entry.file_name();
+            let file_name_str = file_name.to_string_lossy();
+
+            // Get the file extension.
+            if let Some(extension) = file_name_str.split('.').last() {
+                // Only copy the files that are shared objects
+                if extension == "so" {
+                    // Attempt to copy the shared object file.
+                    std::fs::copy(
+                        work_dir.join(&file_name),
+                        common::afl_llvm_dir(base).join(&file_name),
+                    )
+                    .unwrap_or_else(|_| {
+                        panic!("Couldn't copy shared object file {file_name_str}",)
+                    });
+                }
+            }
+        }
+    } else {
+        eprintln!("Failed to read the work directory. Aborting.");
+    }
+}
+
+fn check_llvm_and_get_config() -> String {
+    // Make sure we are on nightly for the -Z flags
+    assert!(
+        rustc_version::version_meta().unwrap().channel == rustc_version::Channel::Nightly,
+        "cargo-afl must be compiled with nightly for the plugins feature"
+    );
+    let version_meta = rustc_version::version_meta().unwrap();
+    let llvm_version = version_meta.llvm_version.unwrap().major.to_string();
+
+    // Fetch the llvm version of the rust toolchain and set the LLVM_CONFIG environment variable to the same version
+    // This is needed to compile the llvm plugins (needed for cmplog) from afl with the right LLVM version
+    let llvm_config = if cfg!(target_os = "macos") {
+        "llvm-config".to_string()
+    } else {
+        format!("llvm-config-{llvm_version}")
+    };
+
+    // check if llvm tools are installed and with the good version for the plugin compilation
+    let mut command = Command::new(llvm_config.clone());
+    command.args(["--version"]);
+    let out = command
+        .output()
+        .unwrap_or_else(|_| panic!("could not run {llvm_config} --version"));
+
+    let version = String::from_utf8(out.stdout)
+        .expect("could not convert llvm-config --version output to utf8");
+    let major = version
+        .split('.')
+        .next()
+        .expect("could not get major from llvm-config --version output");
+    assert!(major == llvm_version);
+
+    llvm_config
 }
 
 #[cfg(unix)]
