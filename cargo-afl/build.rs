@@ -75,7 +75,6 @@ fn build_afl(work_dir: &Path, base: Option<&Path>) {
         // skip the checks for the legacy x86 afl-gcc compiler
         .env("AFL_NO_X86", "1")
         // build just the runtime to avoid troubles with Xcode clang on macOS
-        //.env("NO_BUILD", "1")
         .env("DESTDIR", common::afl_dir(base))
         .env("PREFIX", "")
         .env_remove("DEBUG");
