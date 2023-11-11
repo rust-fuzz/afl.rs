@@ -1,5 +1,4 @@
-use clap::crate_version;
-
+use std::collections::HashMap;
 use std::env;
 use std::ffi::{OsStr, OsString};
 use std::process::{self, Command, Stdio};
@@ -99,8 +98,14 @@ fn main() {
 fn clap_app() -> clap::Command {
     use clap::{value_parser, Arg, Command};
 
-    let help = "In addition to the subcommands above, Cargo subcommands are also \
+    const HELP: &str = "In addition to the subcommands above, Cargo subcommands are also \
                       supported (see `cargo help` for a list of all Cargo subcommands).";
+
+    const VERSION: &str = if cfg!(feature = "plugins") {
+        concat!(env!("CARGO_PKG_VERSION"), " [feature=plugins]")
+    } else {
+        env!("CARGO_PKG_VERSION")
+    };
 
     Command::new("cargo afl")
         .display_name("cargo")
@@ -108,13 +113,13 @@ fn clap_app() -> clap::Command {
         .arg_required_else_help(true)
         .subcommand(
             Command::new("afl")
-                .version(crate_version!())
+                .version(VERSION)
                 .subcommand_required(true)
                 .arg_required_else_help(true)
                 .allow_external_subcommands(true)
                 .external_subcommand_value_parser(value_parser!(OsString))
                 .override_usage("cargo afl [SUBCOMMAND or Cargo SUBCOMMAND]")
-                .after_help(help)
+                .after_help(HELP)
                 .subcommand(
                     Command::new("addseeds")
                         .about("Invoke afl-addseeds")
@@ -316,18 +321,48 @@ where
 
     // `-C codegen-units=1` is needed to work around link errors
     // https://github.com/rust-fuzz/afl.rs/pull/193#issuecomment-933550430
+
+    let binding = common::afl_llvm_dir(None);
+    let p = binding.display();
+
     let mut rustflags = format!(
         "-C debug-assertions \
-         -C overflow_checks \
-         -C passes={passes} \
-         -C codegen-units=1 \
-         -C llvm-args=-sanitizer-coverage-level=3 \
-         -C llvm-args=-sanitizer-coverage-trace-pc-guard \
-         -C llvm-args=-sanitizer-coverage-prune-blocks=0 \
-         -C llvm-args=-sanitizer-coverage-trace-compares \
-         -C opt-level=3 \
-         -C target-cpu=native "
+             -C overflow_checks \
+             -C passes={passes} \
+             -C codegen-units=1 \
+             -C opt-level=3 \
+             -C target-cpu=native "
     );
+    let mut environment_variables = HashMap::<&str, String>::new();
+    environment_variables.insert("ASAN_OPTIONS", asan_options);
+    environment_variables.insert("TSAN_OPTIONS", tsan_options);
+
+    if cfg!(feature = "plugins") {
+        // Make sure we are on nightly for the -Z flags
+        assert!(
+            rustc_version::version_meta().unwrap().channel == rustc_version::Channel::Nightly,
+            "cargo-afl must be compiled with nightly for CMPLOG and other advanced AFL++ features"
+        );
+
+        rustflags.push_str(&format!(
+            "-Z llvm-plugins={p}/cmplog-instructions-pass.so  \
+            -Z llvm-plugins={p}/cmplog-routines-pass.so \
+            -Z llvm-plugins={p}/cmplog-switches-pass.so \
+            -Z llvm-plugins={p}/SanitizerCoveragePCGUARD.so \
+            -Z llvm-plugins={p}/afl-llvm-dict2file.so
+            "
+        ));
+
+        environment_variables.insert("AFL_QUIET", "1".to_string());
+    } else {
+        rustflags.push_str(
+            "-C llvm-args=-sanitizer-coverage-level=3 \
+            -C llvm-args=-sanitizer-coverage-trace-pc-guard \
+            -C llvm-args=-sanitizer-coverage-prune-blocks=0 \
+            -C llvm-args=-sanitizer-coverage-trace-compares
+            ",
+        );
+    }
 
     let no_cfg_fuzzing = env::var("AFL_NO_CFG_FUZZING").is_ok();
     if no_cfg_fuzzing {
@@ -353,20 +388,20 @@ where
     rustflags.push_str(&format!(
         "-l afl-llvm-rt \
          -L {} ",
-        common::afl_llvm_rt_dir(None).display()
+        common::afl_llvm_dir(None).display()
     ));
 
     // add user provided flags
     rustflags.push_str(&env::var("RUSTFLAGS").unwrap_or_default());
     rustdocflags.push_str(&env::var("RUSTDOCFLAGS").unwrap_or_default());
 
+    environment_variables.insert("RUSTFLAGS", rustflags);
+    environment_variables.insert("RUSTDOCFLAGS", rustdocflags);
+
     let status = Command::new(cargo_path)
         .arg(subcommand)
         .args(args)
-        .env("RUSTFLAGS", &rustflags)
-        .env("RUSTDOCFLAGS", &rustdocflags)
-        .env("ASAN_OPTIONS", asan_options)
-        .env("TSAN_OPTIONS", tsan_options)
+        .envs(&environment_variables)
         .status()
         .unwrap();
     process::exit(status.code().unwrap_or(1));
