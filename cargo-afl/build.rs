@@ -75,7 +75,6 @@ fn build_afl(work_dir: &Path, base: Option<&Path>) {
         .args(["clean", "install"])
         // skip the checks for the legacy x86 afl-gcc compiler
         .env("AFL_NO_X86", "1")
-        // build just the runtime to avoid troubles with Xcode clang on macOS
         .env("DESTDIR", common::afl_dir(base))
         .env("PREFIX", "")
         .env_remove("DEBUG");
@@ -83,6 +82,10 @@ fn build_afl(work_dir: &Path, base: Option<&Path>) {
     if cfg!(feature = "plugins") {
         let llvm_config = check_llvm_and_get_config();
         command.env("LLVM_CONFIG", llvm_config);
+    } else {
+        // build just the runtime to avoid troubles with Xcode clang on macOS
+        // smoelius: `NO_BUILD=1` also makes `cargo build` significantly faster.
+        command.env("NO_BUILD", "1");
     }
 
     let status = command
