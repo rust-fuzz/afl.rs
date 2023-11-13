@@ -1,5 +1,9 @@
 # Changes
 
+## 0.14.5
+
+- [Add plugins feature](https://github.com/rust-fuzz/afl.rs/pull/392)
+
 ## 0.14.4
 
 - [Add addseeds command](https://github.com/rust-fuzz/afl.rs/pull/407)
