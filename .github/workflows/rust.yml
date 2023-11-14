@@ -57,25 +57,21 @@ jobs:
       - name: Rustup
         run: rustup default ${{ matrix.toolchain }}
       - name: Install LLVM
-        id: install-llvm
         run: |
           LLVM_VERSION="$(rustc --version -v | grep '^LLVM version:' | grep -o '[0-9]\+' | head -n 1)"
           if [[ ${{ matrix.environment  }} = 'macos-latest' ]]; then
             brew update
             brew install llvm@"$LLVM_VERSION" || true
-            echo "PATH=/usr/local/opt/llvm/bin:$PATH" >> "$GITHUB_OUTPUT"
+            echo "/usr/local/opt/llvm/bin" >> "$GITHUB_PATH"
           else
             wget https://apt.llvm.org/llvm.sh
             chmod +x llvm.sh
             sudo ./llvm.sh "$LLVM_VERSION"
-            echo "PATH=$PATH" >> "$GITHUB_OUTPUT"
           fi
         env:
           HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
       - name: Build
         run: cargo build --features=${{ matrix.features }} -vv
-        env:
-          PATH: ${{ steps.install-llvm.outputs.path }}
       - name: Run afl-system-config
         run: cargo run --features=${{ matrix.features }} -- afl system-config
       - name: Build examples (with AFL instrumentation)
