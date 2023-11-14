@@ -120,37 +120,37 @@ fn main() {
 
     match afl_args.subcmd {
         Some(AflSubcommand::Addseeds { args }) => {
-            run_afl(args, "afl-addseeds");
+            run_afl("afl-addseeds", args);
         }
         Some(AflSubcommand::Analyze { args }) => {
-            run_afl(args, "afl-analyze");
+            run_afl("afl-analyze", args);
         }
         Some(AflSubcommand::Cmin { args }) => {
-            run_afl(args, "afl-cmin");
+            run_afl("afl-cmin", args);
         }
         Some(AflSubcommand::Fuzz { args }) => {
             // We prepend -c0 to the AFL++ arguments
             let cmplog_flag = vec![OsString::from("-c0")];
             let args = cmplog_flag.into_iter().chain(args);
-            run_afl(args, "afl-fuzz");
+            run_afl("afl-fuzz", args);
         }
         Some(AflSubcommand::Gotcpu { args }) => {
-            run_afl(args, "afl-gotcpu");
+            run_afl("afl-gotcpu", args);
         }
         Some(AflSubcommand::Plot { args }) => {
-            run_afl(args, "afl-plot");
+            run_afl("afl-plot", args);
         }
         Some(AflSubcommand::Showmap { args }) => {
-            run_afl(args, "afl-showmap");
+            run_afl("afl-showmap", args);
         }
         Some(AflSubcommand::SystemConfig { args }) => {
-            run_afl(args, "afl-system-config");
+            run_afl("afl-system-config", args);
         }
         Some(AflSubcommand::Tmin { args }) => {
-            run_afl(args, "afl-tmin");
+            run_afl("afl-tmin", args);
         }
         Some(AflSubcommand::Whatsup { args }) => {
-            run_afl(args, "afl-whatsup");
+            run_afl("afl-whatsup", args);
         }
         None => {
             run_cargo(afl_args.args);
@@ -158,7 +158,7 @@ fn main() {
     }
 }
 
-fn run_afl<I, S>(args: I, tool: &str)
+fn run_afl<I, S>(tool: &str, args: I)
 where
     I: IntoIterator<Item = S>,
     S: AsRef<OsStr>,
