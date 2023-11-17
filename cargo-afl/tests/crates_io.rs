@@ -73,22 +73,44 @@ fn build() {
 }
 
 #[test]
-fn install() {
-    let tempdir = tempdir().unwrap();
+fn install_and_config() {
+    let temp_home = tempdir().unwrap();
+    let temp_cargo_home = tempdir().unwrap();
 
-    let cargo_afl = tempdir.path().join("bin/cargo-afl");
+    let cargo_afl = temp_cargo_home.path().join("bin/cargo-afl");
 
     assert!(!cargo_afl.exists());
 
     Command::new("cargo")
         .args(["install", "--path", "../cargo-afl"])
-        .env("CARGO_HOME", tempdir.path())
+        .env("HOME", temp_home.path())
+        .env("CARGO_HOME", temp_cargo_home.path())
         .env("TESTING_INSTALL", "1")
         .assert()
         .success();
 
-    Command::new(cargo_afl)
+    Command::new(&cargo_afl)
         .args(["afl", "--help"])
+        .assert()
+        .success();
+
+    // smoelius: Verify that `--force` is needed to rebuild AFL++.
+    Command::new(&cargo_afl)
+        .args(["afl", "config", "--build"])
+        .env("HOME", temp_home.path())
+        .assert()
+        .failure()
+        .stderr(
+            predicates::str::is_match(
+                "AFL LLVM runtime was already built for Rust [^;]*; run `cargo \
+                 afl config --build --force` to rebuild it\\.",
+            )
+            .unwrap(),
+        );
+
+    Command::new(cargo_afl)
+        .args(["afl", "config", "--build", "--force"])
+        .env("HOME", temp_home.path())
         .assert()
         .success();
 }
@@ -97,7 +119,7 @@ fn install() {
 fn publish() {
     for subdir in ["afl", "cargo-afl"] {
         Command::new("cargo")
-            .args(["publish", "--allow-dirty", "--dry-run", "--no-verify"])
+            .args(["publish", "--allow-dirty", "--dry-run"])
             .current_dir(Path::new("..").join(subdir))
             .assert()
             .success();
