@@ -34,7 +34,7 @@ pub struct Args {
 }
 
 pub fn config(args: &Args) {
-    if !args.force && common::archive_file_path(None).exists() {
+    if !args.force && common::archive_file_path().exists() {
         let version = common::afl_rustc_version();
         eprintln!(
             "AFL LLVM runtime was already built for Rust {version}; run `cargo \
@@ -68,20 +68,20 @@ pub fn config(args: &Args) {
 
     let work_dir = tempdir.path();
 
-    build_afl(args, work_dir, None);
-    build_afl_llvm_runtime(args, work_dir, None);
+    build_afl(args, work_dir);
+    build_afl_llvm_runtime(args, work_dir);
 
     if args.plugins {
-        copy_afl_llvm_plugins(args, work_dir, None);
+        copy_afl_llvm_plugins(args, work_dir);
     }
 
     eprintln!(
         "Artifacts written to {}",
-        common::afl_dir(None).parent().unwrap().display()
+        common::afl_dir().parent().unwrap().display()
     );
 }
 
-fn build_afl(args: &Args, work_dir: &Path, base: Option<&Path>) {
+fn build_afl(args: &Args, work_dir: &Path) {
     // if you had already installed cargo-afl previously you **must** clean AFL++
     // smoelius: AFL++ is now copied to a temporary directory before being built. So `make clean`
     // is no longer necessary.
@@ -91,7 +91,7 @@ fn build_afl(args: &Args, work_dir: &Path, base: Option<&Path>) {
         .arg("install")
         // skip the checks for the legacy x86 afl-gcc compiler
         .env("AFL_NO_X86", "1")
-        .env("DESTDIR", common::afl_dir(base))
+        .env("DESTDIR", common::afl_dir())
         .env("PREFIX", "")
         .env_remove("DEBUG");
 
@@ -113,18 +113,18 @@ fn build_afl(args: &Args, work_dir: &Path, base: Option<&Path>) {
     assert!(status.success());
 }
 
-fn build_afl_llvm_runtime(args: &Args, work_dir: &Path, base: Option<&Path>) {
+fn build_afl_llvm_runtime(args: &Args, work_dir: &Path) {
     std::fs::copy(
         work_dir.join("afl-compiler-rt.o"),
-        common::object_file_path(base),
+        common::object_file_path(),
     )
     .expect("Couldn't copy object file");
 
     let mut command = Command::new(AR_CMD);
     command
         .arg("r")
-        .arg(common::archive_file_path(base))
-        .arg(common::object_file_path(base));
+        .arg(common::archive_file_path())
+        .arg(common::object_file_path());
 
     if !args.verbose {
         command.stdout(Stdio::null());
@@ -135,7 +135,7 @@ fn build_afl_llvm_runtime(args: &Args, work_dir: &Path, base: Option<&Path>) {
     assert!(status.success());
 }
 
-fn copy_afl_llvm_plugins(_args: &Args, work_dir: &Path, base: Option<&Path>) {
+fn copy_afl_llvm_plugins(_args: &Args, work_dir: &Path) {
     // Iterate over the files in the directory.
     for result in work_dir.read_dir().unwrap() {
         let entry = result.unwrap();
@@ -146,7 +146,7 @@ fn copy_afl_llvm_plugins(_args: &Args, work_dir: &Path, base: Option<&Path>) {
             // Attempt to copy the shared object file.
             std::fs::copy(
                 work_dir.join(&file_name),
-                common::afl_llvm_dir(base).join(&file_name),
+                common::afl_llvm_dir().join(&file_name),
             )
             .unwrap_or_else(|error| {
                 panic!("Couldn't copy shared object file {file_name:?}: {error}")
