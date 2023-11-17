@@ -8,7 +8,7 @@ fn xdg_dir() -> xdg::BaseDirectories {
     xdg::BaseDirectories::with_prefix(prefix).unwrap()
 }
 
-fn data_dir(base: Option<&Path>, dir_name: &str) -> PathBuf {
+fn data_dir(dir_name: &str) -> PathBuf {
     // For docs.rs builds, use OUT_DIR.
     // For other cases, use a XDG data directory.
     // It is necessary to use OUT_DIR for docs.rs builds,
@@ -16,13 +16,8 @@ fn data_dir(base: Option<&Path>, dir_name: &str) -> PathBuf {
     // The Cargo documentation recommends that build scripts
     // place their generated files at OUT_DIR too, but we
     // don't change that for now for normal builds.
-    if let Some(base) = base {
-        let path = base.join(dir_name);
-        std::fs::create_dir_all(&path).unwrap();
-        path
-    } else {
-        xdg_dir().create_data_directory(dir_name).unwrap()
-    }
+    // smoelius: AFL++ is no longer built on docs.rs.
+    xdg_dir().create_data_directory(dir_name).unwrap()
 }
 
 const SHORT_COMMIT_HASH_LEN: usize = 7;
@@ -51,24 +46,24 @@ fn pkg_version() -> String {
 
 #[allow(dead_code)]
 #[must_use]
-pub fn afl_dir(base: Option<&Path>) -> PathBuf {
-    data_dir(base, "afl")
+pub fn afl_dir() -> PathBuf {
+    data_dir("afl")
 }
 
 #[allow(dead_code)]
 #[must_use]
-pub fn afl_llvm_dir(base: Option<&Path>) -> PathBuf {
-    data_dir(base, "afl-llvm")
+pub fn afl_llvm_dir() -> PathBuf {
+    data_dir("afl-llvm")
 }
 
 #[allow(dead_code)]
 #[must_use]
-pub fn object_file_path(base: Option<&Path>) -> PathBuf {
-    afl_llvm_dir(base).join("libafl-llvm-rt.o")
+pub fn object_file_path() -> PathBuf {
+    afl_llvm_dir().join("libafl-llvm-rt.o")
 }
 
 #[allow(dead_code)]
 #[must_use]
-pub fn archive_file_path(base: Option<&Path>) -> PathBuf {
-    afl_llvm_dir(base).join("libafl-llvm-rt.a")
+pub fn archive_file_path() -> PathBuf {
+    afl_llvm_dir().join("libafl-llvm-rt.a")
 }
