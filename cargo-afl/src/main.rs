@@ -1,20 +1,15 @@
-use clap::Parser;
+use clap::{crate_version, Parser};
 use std::collections::HashMap;
 use std::env;
 use std::ffi::{OsStr, OsString};
+use std::path::Path;
 use std::process::{self, Command, Stdio};
 
-#[path = "../common.rs"]
 mod common;
+mod config;
 
 const HELP: &str = "In addition to the subcommands above, Cargo subcommands are also \
 supported (see `cargo help` for a list of all Cargo subcommands).";
-
-const VERSION: &str = if cfg!(feature = "plugins") {
-    concat!(env!("CARGO_PKG_VERSION"), " [feature=plugins]")
-} else {
-    env!("CARGO_PKG_VERSION")
-};
 
 #[derive(Parser)]
 #[clap(
@@ -34,7 +29,7 @@ enum CargoSubcommand {
 
 #[derive(Parser)]
 #[clap(
-    version = VERSION,
+    version = crate_version!(),
     allow_hyphen_values = true,
     arg_required_else_help = true,
     override_usage = "cargo afl [SUBCOMMAND or Cargo SUBCOMMAND]",
@@ -59,7 +54,24 @@ macro_rules! construct_afl_subcommand_variants {
             $($constructed_variants)*
         }
     };
-    // inductive case
+    // inductive case, with args type
+    (
+        {
+            $($constructed_variants:tt)*
+        } $variant:ident ( $about:literal, $args_ty:ty ), $($unused_materials:tt)*
+    ) => {
+        construct_afl_subcommand_variants! {
+            {
+                $($constructed_variants)*
+                #[clap(
+                    about = $about,
+                    arg_required_else_help = true,
+                )]
+                $variant($args_ty),
+            } $($unused_materials)*
+        }
+    };
+    // inductive case, without args type
     (
         {
             $($constructed_variants:tt)*
@@ -93,6 +105,7 @@ declare_afl_subcommand_enum! {
     Addseeds("Invoke afl-addseeds"),
     Analyze("Invoke afl-analyze"),
     Cmin("Invoke afl-cmin"),
+    Config("Build or rebuild AFL++", config::Args),
     Fuzz("Invoke afl-fuzz"),
     Gotcpu("Invoke afl-gotcpu"),
     Plot("Invoke afl-plot"),
@@ -103,27 +116,32 @@ declare_afl_subcommand_enum! {
 }
 
 fn main() {
-    if !common::archive_file_path(None).exists() {
-        let version = common::afl_rustc_version();
-        eprintln!(
-            "AFL LLVM runtime is not built with Rust {version}, run `cargo \
-             install --force cargo-afl` to build it."
-        );
-        process::exit(1);
-    }
-
     let afl_args = match Args::parse() {
         Args {
             subcmd: CargoSubcommand::Afl(afl_args),
         } => afl_args,
     };
 
-    match afl_args.subcmd {
+    if !matches!(afl_args.subcmd, Some(AflSubcommand::Config(..)))
+        && !common::archive_file_path(None).exists()
+    {
+        let version = common::afl_rustc_version();
+        eprintln!(
+            "AFL LLVM runtime was not built for Rust {version}; run `cargo \
+             afl config --build` to build it."
+        );
+        process::exit(1);
+    }
+
+    match &afl_args.subcmd {
         Some(AflSubcommand::Addseeds { args }) => {
             run_afl("afl-addseeds", args);
         }
         Some(AflSubcommand::Analyze { args }) => {
             run_afl("afl-analyze", args);
+        }
+        Some(AflSubcommand::Config(args)) => {
+            config::config(args);
         }
         Some(AflSubcommand::Cmin { args }) => {
             run_afl("afl-cmin", args);
@@ -131,7 +149,7 @@ fn main() {
         Some(AflSubcommand::Fuzz { args }) => {
             // We prepend -c0 to the AFL++ arguments
             let cmplog_flag = vec![OsString::from("-c0")];
-            let args = cmplog_flag.into_iter().chain(args);
+            let args = cmplog_flag.iter().chain(args);
             run_afl("afl-fuzz", args);
         }
         Some(AflSubcommand::Gotcpu { args }) => {
@@ -235,7 +253,7 @@ where
     environment_variables.insert("ASAN_OPTIONS", asan_options);
     environment_variables.insert("TSAN_OPTIONS", tsan_options);
 
-    if cfg!(feature = "plugins") {
+    if plugins_available() {
         // Make sure we are on nightly for the -Z flags
         assert!(
             rustc_version::version_meta().unwrap().channel == rustc_version::Channel::Nightly,
@@ -311,6 +329,18 @@ fn is_nightly() -> bool {
         .status()
         .unwrap()
         .success()
+}
+
+fn plugins_available() -> bool {
+    let afl_llvm_dir = common::afl_llvm_dir(None);
+    for result in afl_llvm_dir.read_dir().unwrap() {
+        let entry = result.unwrap();
+        let file_name = entry.file_name();
+        if Path::new(&file_name).extension() == Some(OsStr::new("so")) {
+            return true;
+        }
+    }
+    false
 }
 
 #[cfg(all(test, unix))]
