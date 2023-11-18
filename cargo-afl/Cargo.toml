@@ -36,3 +36,4 @@ tempfile = "3.8"
 [features]
 default = []
 plugins = []
+fuzzing = []
