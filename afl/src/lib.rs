@@ -58,8 +58,10 @@ where
     // unsafe { asm!("" : : "r"(&DEFERED_MARKER)) };
 
     if hook {
+        let prev_hook = std::panic::take_hook();
         // sets panic hook to abort
-        std::panic::set_hook(Box::new(|_| {
+        std::panic::set_hook(Box::new(move |panic_info| {
+            prev_hook(panic_info);
             std::process::abort();
         }));
     }
