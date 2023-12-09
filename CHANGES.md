@@ -1,5 +1,10 @@
 # Changes
 
+## 0.15.0
+
+- [Call existing panic hook before aborting](https://github.com/rust-fuzz/afl.rs/pull/426)
+- [Add `config` subcommand](https://github.com/rust-fuzz/afl.rs/pull/421)
+
 ## 0.14.5
 
 - [Add plugins feature](https://github.com/rust-fuzz/afl.rs/pull/392)
