@@ -6,8 +6,6 @@
 
 <h4 align="center">Fuzzing <a href="https://www.rust-lang.org">Rust</a> code with <a href="https://aflplus.plus/">AFLplusplus</a></h4>
 
-**Notice:** Version 0.14.0 of afl.rs requires you to install the `cargo-afl` binary with:
-
 ```sh
 cargo install cargo-afl
 ```
@@ -47,6 +45,7 @@ By default, the `fuzzing` config is set when `cargo-afl` is used to build. If yo
 environment variable `AFL_NO_CFG_FUZZING` to `1` when building.
 
 [conditional compilation]: https://doc.rust-lang.org/reference.html#conditional-compilation
+
 [Cargo feature]: http://doc.crates.io/manifest.html#the-[features]-section
 [example-defer]: https://github.com/frewsxcv/afl.rs/blob/master/examples/deferred-init.rs
 [LLVM pass]: https://github.com/frewsxcv/afl.rs/blob/master/plugin/src/afl-llvm-pass.o.cc
