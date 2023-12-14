@@ -85,5 +85,8 @@ jobs:
   all-checks:
     needs: [lint, build]
     runs-on: ubuntu-latest
+    if: ${{ always() }}
     steps:
-      - run: true
+      - name: Check results
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: exit 1
