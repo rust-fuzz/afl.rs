@@ -5,8 +5,10 @@
 // you may not use this file except in compliance with the License.
 // See `LICENSE` in this repository.
 
+use std::env;
 use std::io::{self, Read};
 use std::panic;
+use std::u32;
 
 // those functions are provided by the afl-llvm-rt static library
 extern "C" {
@@ -68,10 +70,15 @@ where
 
     let mut input = vec![];
 
+    let loop_count: u32 = env::var("AFL_FUZZER_LOOPCOUNT")
+        .unwrap_or_else(|_| "4294967295".to_string())
+        .parse()
+        .unwrap_or(u32::MAX);
+
     // initialize forkserver there
     unsafe { __afl_manual_init() };
 
-    while unsafe { __afl_persistent_loop(1000) } != 0 {
+    while unsafe { __afl_persistent_loop(loop_count as usize) } != 0 {
         // get the testcase from the fuzzer
         let input_ref = if unsafe { __afl_fuzz_ptr.is_null() } {
             // in-memory testcase delivery is not enabled
