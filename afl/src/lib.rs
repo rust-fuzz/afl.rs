@@ -70,15 +70,15 @@ where
 
     let mut input = vec![];
 
-    let loop_count: u32 = env::var("AFL_FUZZER_LOOPCOUNT")
-        .unwrap_or_else(|_| "4294967295".to_string())
-        .parse()
-        .unwrap_or(u32::MAX);
+    let loop_count: usize = env::var("AFL_FUZZER_LOOPCOUNT")
+        .unwrap_or_else(|_| u32::MAX.to_string())
+        .parse::<usize>()
+        .expect("Failed to parse environment variable to a number");
 
     // initialize forkserver there
     unsafe { __afl_manual_init() };
 
-    while unsafe { __afl_persistent_loop(loop_count as usize) } != 0 {
+    while unsafe { __afl_persistent_loop(loop_count) } != 0 {
         // get the testcase from the fuzzer
         let input_ref = if unsafe { __afl_fuzz_ptr.is_null() } {
             // in-memory testcase delivery is not enabled
