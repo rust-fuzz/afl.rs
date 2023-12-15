@@ -70,10 +70,13 @@ where
 
     let mut input = vec![];
 
-    let loop_count: usize = env::var("AFL_FUZZER_LOOPCOUNT")
-        .unwrap_or_else(|_| u32::MAX.to_string())
-        .parse::<usize>()
-        .expect("Failed to parse environment variable to a number");
+    let loop_count = if let Ok(value) = env::var("AFL_FUZZER_LOOPCOUNT") {
+        value
+            .parse()
+            .expect("Failed to parse environment variable to a number")
+    } else {
+        usize::MAX
+    };      
 
     // initialize forkserver there
     unsafe { __afl_manual_init() };
