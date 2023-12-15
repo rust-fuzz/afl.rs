@@ -8,7 +8,6 @@
 use std::env;
 use std::io::{self, Read};
 use std::panic;
-use std::u32;
 
 // those functions are provided by the afl-llvm-rt static library
 extern "C" {
