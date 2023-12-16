@@ -5,6 +5,7 @@
 // you may not use this file except in compliance with the License.
 // See `LICENSE` in this repository.
 
+use std::env;
 use std::io::{self, Read};
 use std::panic;
 
@@ -68,10 +69,18 @@ where
 
     let mut input = vec![];
 
+    let loop_count = if let Ok(value) = env::var("AFL_FUZZER_LOOPCOUNT") {
+        value
+            .parse()
+            .expect("Failed to parse environment variable to a number")
+    } else {
+        usize::MAX
+    };
+
     // initialize forkserver there
     unsafe { __afl_manual_init() };
 
-    while unsafe { __afl_persistent_loop(1000) } != 0 {
+    while unsafe { __afl_persistent_loop(loop_count) } != 0 {
         // get the testcase from the fuzzer
         let input_ref = if unsafe { __afl_fuzz_ptr.is_null() } {
             // in-memory testcase delivery is not enabled
