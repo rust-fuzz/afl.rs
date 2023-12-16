@@ -75,7 +75,7 @@ where
             .expect("Failed to parse environment variable to a number")
     } else {
         usize::MAX
-    };      
+    };
 
     // initialize forkserver there
     unsafe { __afl_manual_init() };
