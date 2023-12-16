@@ -1,5 +1,10 @@
 # Changes
 
+## 0.15.1
+
+- [Allow setting `__afl_persistent_loop` argument (support for #433)](https://github.com/rust-fuzz/afl.rs/pull/437)
+- [Update AFLplusplus to 4.09c](https://github.com/rust-fuzz/afl.rs/pull/438)
+
 ## 0.15.0
 
 - [Call existing panic hook before aborting](https://github.com/rust-fuzz/afl.rs/pull/426)
