@@ -1,10 +1,8 @@
 name: Rust
 
 on:
+  merge_group:
   pull_request:
-  push:
-    branches:
-      - master
   workflow_dispatch:
 
 concurrency:
