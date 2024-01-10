@@ -28,7 +28,7 @@ jobs:
         run: cargo clippy --all-targets -- -D warnings -W clippy::pedantic -A clippy::missing-panics-doc
   build:
     strategy:
-      fail-fast: false
+      fail-fast: ${{ github.event_name == 'merge_group' }}
       matrix:
         environment: [ubuntu-latest, macos-latest]
         toolchain: [stable, nightly]
