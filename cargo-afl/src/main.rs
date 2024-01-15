@@ -244,7 +244,6 @@ where
     let mut rustflags = format!(
         "-C debug-assertions \
              -C overflow_checks \
-             -C passes={passes} \
              -C codegen-units=1 \
              -C opt-level=3 \
              -C target-cpu=native "
@@ -253,7 +252,7 @@ where
     environment_variables.insert("ASAN_OPTIONS", asan_options);
     environment_variables.insert("TSAN_OPTIONS", tsan_options);
 
-    if plugins_available() {
+    if plugins_available() && is_nightly() {
         // Make sure we are on nightly for the -Z flags
         assert!(
             rustc_version::version_meta().unwrap().channel == rustc_version::Channel::Nightly,
@@ -271,13 +270,14 @@ where
 
         environment_variables.insert("AFL_QUIET", "1".to_string());
     } else {
-        rustflags.push_str(
-            "-C llvm-args=-sanitizer-coverage-level=3 \
+        rustflags.push_str(&format!(
+            "-C passes={passes} \
+            -C llvm-args=-sanitizer-coverage-level=3 \
             -C llvm-args=-sanitizer-coverage-trace-pc-guard \
             -C llvm-args=-sanitizer-coverage-prune-blocks=0 \
             -C llvm-args=-sanitizer-coverage-trace-compares
             ",
-        );
+        ));
     }
 
     let no_cfg_fuzzing = env::var("AFL_NO_CFG_FUZZING").is_ok();
