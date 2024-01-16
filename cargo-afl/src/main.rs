@@ -252,7 +252,7 @@ where
     environment_variables.insert("ASAN_OPTIONS", asan_options);
     environment_variables.insert("TSAN_OPTIONS", tsan_options);
 
-    if plugins_available() && is_nightly() {
+    if plugins_available() {
         // Make sure we are on nightly for the -Z flags
         assert!(
             rustc_version::version_meta().unwrap().channel == rustc_version::Channel::Nightly,
