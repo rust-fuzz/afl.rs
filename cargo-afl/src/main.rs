@@ -241,12 +241,12 @@ where
     let binding = common::afl_llvm_dir();
     let p = binding.display();
 
-    let mut rustflags = format!(
+    let mut rustflags = String::from(
         "-C debug-assertions \
              -C overflow_checks \
              -C codegen-units=1 \
              -C opt-level=3 \
-             -C target-cpu=native "
+             -C target-cpu=native ",
     );
     let mut environment_variables = HashMap::<&str, String>::new();
     environment_variables.insert("ASAN_OPTIONS", asan_options);
