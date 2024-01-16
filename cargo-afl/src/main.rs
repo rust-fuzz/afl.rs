@@ -148,7 +148,7 @@ fn main() {
         }
         Some(AflSubcommand::Fuzz { args }) => {
             // We prepend -c0 to the AFL++ arguments
-            let cmplog_flag = vec![OsString::from("-c0")];
+            let cmplog_flag = [OsString::from("-c0")];
             let args = cmplog_flag.iter().chain(args);
             run_afl("afl-fuzz", args);
         }
