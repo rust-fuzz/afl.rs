@@ -4,7 +4,7 @@ version = 3
 
 [[package]]
 name = "afl"
-version = "0.15.1"
+version = "0.15.2"
 dependencies = [
  "arbitrary",
  "home",
@@ -125,7 +125,7 @@ dependencies = [
 
 [[package]]
 name = "cargo-afl"
-version = "0.15.1"
+version = "0.15.2"
 dependencies = [
  "assert_cmd",
  "clap",

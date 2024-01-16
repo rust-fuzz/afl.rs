@@ -1,5 +1,9 @@
 # Changes
 
+## 0.15.2
+
+- [Do not pass `-C passes=...` when nightly is used and plugins are compiled](https://github.com/rust-fuzz/afl.rs/pull/449)
+
 ## 0.15.1
 
 - [Allow setting `__afl_persistent_loop` argument (support for #433)](https://github.com/rust-fuzz/afl.rs/pull/437)
