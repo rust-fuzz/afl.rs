@@ -1,5 +1,9 @@
 # Changes
 
+## 0.15.3
+
+- [Update AFLplusplus to 4.10c](https://github.com/rust-fuzz/afl.rs/pull/457)
+
 ## 0.15.2
 
 - [Do not pass `-C passes=...` when nightly is used and plugins are compiled](https://github.com/rust-fuzz/afl.rs/pull/449)
