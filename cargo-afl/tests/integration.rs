@@ -83,6 +83,9 @@ fn integration_cfg() {
         child.kill().unwrap_or_default();
     }
     assert!(temp_dir_path.join("default").join("fuzzer_stats").is_file());
-    let crashes = std::fs::read_dir(temp_dir_path.join("default").join("crashes")).unwrap().count() - 1;
+    let crashes = std::fs::read_dir(temp_dir_path.join("default").join("crashes"))
+        .unwrap()
+        .count()
+        - 1;
     assert_eq!(crashes, 1);
 }
