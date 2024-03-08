@@ -60,10 +60,10 @@ fn integration_cfg() {
             .arg("cfg")
             .arg("--manifest-path")
             .arg("../afl/Cargo.toml")
-            .envs(if !cfg_fuzzing {
-                vec![("AFL_NO_CFG_FUZZING", "1")]
-            } else {
+            .envs(if cfg_fuzzing {
                 vec![]
+            } else {
+                vec![("AFL_NO_CFG_FUZZING", "1")]
             })
             .assert()
             .success();
@@ -90,7 +90,6 @@ fn integration_cfg() {
         let crashes = std::fs::read_dir(temp_dir_path.join("default").join("crashes"))
             .unwrap()
             .count();
-        println!("cfg_fuzzing: {}, crashes: {}", cfg_fuzzing, crashes);
         // Assert that if cfg_fuzzing is set, there is no crashes
         // And if it is not set, there is at least one crash
         assert!((cfg_fuzzing && crashes == 0) || (!cfg_fuzzing && crashes >= 1));
