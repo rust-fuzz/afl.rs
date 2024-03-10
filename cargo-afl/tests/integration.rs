@@ -1,4 +1,7 @@
-use std::{path, process, thread, time};
+use std::{
+    path,
+    process::{self, ExitStatus},
+};
 
 fn target_dir_path() -> &'static path::Path {
     if path::Path::new("../target/debug/cargo-afl").exists() {
@@ -24,35 +27,12 @@ fn input_path() -> path::PathBuf {
 
 #[test]
 fn integration() {
-    let temp_dir = tempfile::TempDir::new().expect("Could not create temporary directory");
-    let temp_dir_path = temp_dir.path();
-    let mut child = process::Command::new(cargo_afl_path())
-        .arg("afl")
-        .arg("fuzz")
-        .stdout(process::Stdio::inherit())
-        .stderr(process::Stdio::inherit())
-        .arg("-i")
-        .arg(input_path())
-        .arg("-o")
-        .arg(temp_dir_path)
-        .arg(examples_path("hello"))
-        .env("AFL_NO_UI", "1")
-        .spawn()
-        .expect("Could not run cargo afl fuzz");
-    thread::sleep(time::Duration::from_secs(10));
-    for _ in 0..5 {
-        thread::sleep(time::Duration::from_secs(1));
-        child.kill().unwrap_or_default();
-    }
-    assert!(temp_dir_path.join("default").join("fuzzer_stats").is_file());
+    fuzz_example("hello", true);
 }
 
 #[test]
 fn integration_cfg() {
     for cfg_fuzzing in [false, true] {
-        let temp_dir = tempfile::TempDir::new().expect("Could not create temporary directory");
-        let temp_dir_path = temp_dir.path();
-
         assert_cmd::Command::new(cargo_afl_path())
             .arg("afl")
             .arg("build")
@@ -68,30 +48,38 @@ fn integration_cfg() {
             .assert()
             .success();
 
-        let mut child = process::Command::new(cargo_afl_path())
-            .arg("afl")
-            .arg("fuzz")
-            .stdout(process::Stdio::inherit())
-            .stderr(process::Stdio::inherit())
-            .arg("-i")
-            .arg(input_path())
-            .arg("-o")
-            .arg(temp_dir_path)
-            .arg(examples_path("cfg"))
-            .env("AFL_NO_UI", "1")
-            .spawn()
-            .expect("Could not run cargo afl fuzz");
-        thread::sleep(time::Duration::from_secs(5));
-        for _ in 0..5 {
-            thread::sleep(time::Duration::from_secs(1));
-            child.kill().unwrap_or_default();
-        }
-        assert!(temp_dir_path.join("default").join("fuzzer_stats").is_file());
-        let crashes = std::fs::read_dir(temp_dir_path.join("default").join("crashes"))
-            .unwrap()
-            .count();
-        // Assert that if cfg_fuzzing is set, there is no crashes
+        // Assert that if cfg_fuzzing is set, there are no crashes
         // And if it is not set, there is at least one crash
-        assert!((cfg_fuzzing && crashes == 0) || (!cfg_fuzzing && crashes >= 1));
+        fuzz_example("cfg", !cfg_fuzzing);
+    }
+}
+
+fn fuzz_example(name: &str, should_crash: bool) {
+    let temp_dir = tempfile::TempDir::new().expect("Could not create temporary directory");
+    let temp_dir_path = temp_dir.path();
+    let _: ExitStatus = process::Command::new(cargo_afl_path())
+        .arg("afl")
+        .arg("fuzz")
+        .arg("-i")
+        .arg(input_path())
+        .arg("-o")
+        .arg(temp_dir_path)
+        .args(["-V", "5"]) // 5 seconds
+        .arg(examples_path(name))
+        .env("AFL_BENCH_UNTIL_CRASH", "1")
+        .env("AFL_NO_CRASH_README", "1")
+        .env("AFL_NO_UI", "1")
+        .stdout(process::Stdio::inherit())
+        .stderr(process::Stdio::inherit())
+        .status()
+        .expect("Could not run cargo afl fuzz");
+    assert!(temp_dir_path.join("default").join("fuzzer_stats").is_file());
+    let crashes = std::fs::read_dir(temp_dir_path.join("default").join("crashes"))
+        .unwrap()
+        .count();
+    if should_crash {
+        assert!(crashes >= 1);
+    } else {
+        assert_eq!(0, crashes);
     }
 }
