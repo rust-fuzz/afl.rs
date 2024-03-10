@@ -1,4 +1,4 @@
-#![deny(clippy::expect_used, clippy::panic, clippy::unwrap_used)]
+#![deny(clippy::disallowed_macros, clippy::expect_used, clippy::unwrap_used)]
 
 use clap::Parser;
 use std::ffi::OsStr;

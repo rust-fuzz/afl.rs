@@ -25,3 +25,6 @@ arbitrary = { version = "1", features = ["derive"] }
 
 [features]
 no_cfg_fuzzing = []
+
+[lints]
+workspace = true
