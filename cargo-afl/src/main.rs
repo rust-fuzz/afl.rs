@@ -123,9 +123,9 @@ fn main() {
     };
 
     if !matches!(afl_args.subcmd, Some(AflSubcommand::Config(..)))
-        && !common::archive_file_path().exists()
+        && !common::archive_file_path().unwrap().exists()
     {
-        let version = common::afl_rustc_version();
+        let version = common::afl_rustc_version().unwrap();
         eprintln!(
             "AFL LLVM runtime was not built for Rust {version}; run `cargo \
              afl config --build` to build it."
@@ -141,7 +141,7 @@ fn main() {
             run_afl("afl-analyze", args);
         }
         Some(AflSubcommand::Config(args)) => {
-            config::config(args);
+            config::config(args).unwrap();
         }
         Some(AflSubcommand::Cmin { args }) => {
             run_afl("afl-cmin", args);
@@ -182,7 +182,7 @@ where
     S: AsRef<OsStr>,
 {
     let no_sudo = env::var("NO_SUDO").is_ok();
-    let cmd_path = common::afl_dir().join("bin").join(tool);
+    let cmd_path = common::afl_dir().unwrap().join("bin").join(tool);
     let mut cmd = if !no_sudo && tool == "afl-system-config" {
         let mut cmd = Command::new("sudo");
         cmd.args([OsStr::new("--reset-timestamp"), cmd_path.as_os_str()]);
@@ -238,7 +238,7 @@ where
     // `-C codegen-units=1` is needed to work around link errors
     // https://github.com/rust-fuzz/afl.rs/pull/193#issuecomment-933550430
 
-    let binding = common::afl_llvm_dir();
+    let binding = common::afl_llvm_dir().unwrap();
     let p = binding.display();
 
     let mut rustflags = String::from(
@@ -304,7 +304,7 @@ where
     rustflags.push_str(&format!(
         "-l afl-llvm-rt \
          -L {} ",
-        common::afl_llvm_dir().display()
+        common::afl_llvm_dir().unwrap().display()
     ));
 
     // add user provided flags
@@ -332,7 +332,7 @@ fn is_nightly() -> bool {
 }
 
 fn plugins_available() -> bool {
-    let afl_llvm_dir = common::afl_llvm_dir();
+    let afl_llvm_dir = common::afl_llvm_dir().unwrap();
     for result in afl_llvm_dir.read_dir().unwrap() {
         let entry = result.unwrap();
         let file_name = entry.file_name();
