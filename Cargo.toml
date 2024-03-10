@@ -1,6 +1,6 @@
 [workspace]
-members = [
-    "afl",
-    "cargo-afl",
-]
+members = ["afl", "cargo-afl"]
 resolver = "2"
+
+[workspace.lints.clippy]
+disallowed-macros = { level = "allow", priority = -1 }

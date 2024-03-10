@@ -40,3 +40,6 @@ tempfile = "3.10"
 [features]
 default = []
 plugins = []
+
+[lints]
+workspace = true

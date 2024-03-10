@@ -1,4 +1,4 @@
-#![deny(clippy::expect_used, clippy::panic, clippy::unwrap_used)]
+#![deny(clippy::disallowed_macros, clippy::expect_used, clippy::unwrap_used)]
 
 use std::env;
 use std::io::{Error, Result};
@@ -38,6 +38,7 @@ pub fn afl_rustc_version() -> Result<String> {
     Ok(ret)
 }
 
+#[allow(clippy::disallowed_macros)]
 fn pkg_version() -> String {
     let mut ret = String::from("afl.rs-");
 
