@@ -1,5 +1,9 @@
 # Changes
 
+## 0.15.4
+
+- [Don't panic in `config::config`](https://github.com/rust-fuzz/afl.rs/pull/472)
+
 ## 0.15.3
 
 - [Update AFLplusplus to 4.10c](https://github.com/rust-fuzz/afl.rs/pull/457)
