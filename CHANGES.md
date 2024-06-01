@@ -1,5 +1,9 @@
 # Changes
 
+## 0.15.6
+
+- [Update AFLplusplus to commit fd71341 (latest on branch stable) to address a performance regression](https://github.com/rust-fuzz/afl.rs/pull/487)
+
 ## 0.15.5
 
 - [Update AFLplusplus to 4.20c](https://github.com/rust-fuzz/afl.rs/pull/480)
