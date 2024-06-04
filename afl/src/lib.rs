@@ -153,13 +153,13 @@ macro_rules! fuzz_nohook {
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __fuzz {
-    ($hook:expr, |$buf:ident| $body:block) => {
+    ($hook:expr, |$buf:ident| $body:expr) => {
         $crate::fuzz($hook, |$buf| $body);
     };
-    ($hook:expr, |$buf:ident: &[u8]| $body:block) => {
+    ($hook:expr, |$buf:ident: &[u8]| $body:expr) => {
         $crate::fuzz($hook, |$buf| $body);
     };
-    ($hook:expr, |$buf:ident: $dty: ty| $body:block) => {
+    ($hook:expr, |$buf:ident: $dty: ty| $body:expr) => {
         $crate::fuzz($hook, |$buf| {
             let $buf: $dty = {
                 let mut data = ::arbitrary::Unstructured::new($buf);
