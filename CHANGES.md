@@ -1,5 +1,9 @@
 # Changes
 
+## 0.15.7
+
+- [Use `expr` metavariable in `fuzz!` macro](https://github.com/rust-fuzz/afl.rs/pull/490)
+
 ## 0.15.6
 
 - [Update AFLplusplus to commit fd71341 (latest on branch stable) to address a performance regression](https://github.com/rust-fuzz/afl.rs/pull/487)
