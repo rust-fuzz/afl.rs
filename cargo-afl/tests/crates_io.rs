@@ -72,35 +72,56 @@ fn build() {
         );
 }
 
+#[derive(PartialEq)]
+enum Test {
+    Force,
+    ChangePlugins,
+}
+
 #[test]
 fn install_and_config() {
-    let temp_home = tempdir().unwrap();
-    let temp_cargo_home = tempdir().unwrap();
+    let is_nightly =
+        rustc_version::version_meta().unwrap().channel == rustc_version::Channel::Nightly;
 
-    let cargo_afl = temp_cargo_home.path().join("bin/cargo-afl");
+    for (install_with_plugins, test) in [false, true]
+        .into_iter()
+        .zip([Test::Force, Test::ChangePlugins])
+    {
+        if (install_with_plugins || test == Test::ChangePlugins)
+            && (!is_nightly || cfg!(target_os = "macos"))
+        {
+            continue;
+        }
 
-    assert!(!cargo_afl.exists());
+        let temp_home = tempdir().unwrap();
+        let temp_cargo_home = tempdir().unwrap();
 
-    Command::new("cargo")
-        .args(["install", "--path", "../cargo-afl"])
-        .env("HOME", temp_home.path())
-        .env("CARGO_HOME", temp_cargo_home.path())
-        .env("TESTING_INSTALL", "1")
-        .assert()
-        .success();
+        let cargo_afl = temp_cargo_home.path().join("bin/cargo-afl");
 
-    Command::new(&cargo_afl)
-        .args(["afl", "--help"])
-        .assert()
-        .success();
+        assert!(!cargo_afl.exists());
 
-    // smoelius: Verify that `--force` is needed to rebuild AFL++.
-    Command::new(&cargo_afl)
-        .args(["afl", "config", "--build"])
-        .env("HOME", temp_home.path())
-        .assert()
-        .failure()
-        .stderr(
+        let mut command = Command::new("cargo");
+        command
+            .args(["install", "--path", "../cargo-afl"])
+            .env("HOME", temp_home.path())
+            .env("CARGO_HOME", temp_cargo_home.path())
+            .env("TESTING_INSTALL", "1");
+        if install_with_plugins {
+            command.arg("--features=plugins");
+        }
+        command.assert().success();
+
+        Command::new(&cargo_afl)
+            .args(["afl", "--help"])
+            .assert()
+            .success();
+
+        // smoelius: Verify that `cargo afl config --build` fails since AFL++ was already built.
+        let mut command = cargo_afl_build_command(temp_home.path(), &cargo_afl);
+        if install_with_plugins {
+            command.arg("--plugins");
+        }
+        command.assert().failure().stderr(
             predicates::str::is_match(
                 "AFL LLVM runtime was already built for Rust [^;]*; run `cargo \
                  afl config --build --force` to rebuild it\\.",
@@ -108,11 +129,26 @@ fn install_and_config() {
             .unwrap(),
         );
 
-    Command::new(cargo_afl)
-        .args(["afl", "config", "--build", "--force"])
-        .env("HOME", temp_home.path())
-        .assert()
-        .success();
+        // smoelius: Verify that `--force` or a change in `--plugins` is needed to rebuild AFL++.
+        let mut command = cargo_afl_build_command(temp_home.path(), &cargo_afl);
+        match test {
+            Test::Force => {
+                command.arg("--force");
+            }
+            Test::ChangePlugins => {
+                if !install_with_plugins {
+                    command.arg("--plugins");
+                }
+            }
+        }
+        command.assert().success();
+    }
+}
+
+fn cargo_afl_build_command(home: &Path, cargo_afl: &Path) -> Command {
+    let mut command = Command::new(cargo_afl);
+    command.args(["afl", "config", "--build"]).env("HOME", home);
+    command
 }
 
 #[test]
