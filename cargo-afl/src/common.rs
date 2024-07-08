@@ -1,6 +1,7 @@
 #![deny(clippy::disallowed_macros, clippy::expect_used, clippy::unwrap_used)]
 
 use std::env;
+use std::ffi::OsStr;
 use std::io::{Error, Result};
 use std::path::{Path, PathBuf};
 
@@ -67,4 +68,17 @@ pub fn object_file_path() -> Result<PathBuf> {
 #[allow(dead_code)]
 pub fn archive_file_path() -> Result<PathBuf> {
     afl_llvm_dir().map(|path| path.join("libafl-llvm-rt.a"))
+}
+
+#[allow(dead_code)]
+pub fn plugins_available() -> Result<bool> {
+    let afl_llvm_dir = afl_llvm_dir()?;
+    for result in afl_llvm_dir.read_dir()? {
+        let entry = result?;
+        let file_name = entry.file_name();
+        if Path::new(&file_name).extension() == Some(OsStr::new("so")) {
+            return Ok(true);
+        }
+    }
+    Ok(false)
 }

@@ -2,7 +2,6 @@ use clap::{crate_version, Parser};
 use std::collections::HashMap;
 use std::env;
 use std::ffi::{OsStr, OsString};
-use std::path::Path;
 use std::process::{self, Command, Stdio};
 
 mod common;
@@ -252,7 +251,7 @@ where
     environment_variables.insert("ASAN_OPTIONS", asan_options);
     environment_variables.insert("TSAN_OPTIONS", tsan_options);
 
-    if plugins_available() {
+    if common::plugins_available().unwrap() {
         // Make sure we are on nightly for the -Z flags
         assert!(
             rustc_version::version_meta().unwrap().channel == rustc_version::Channel::Nightly,
@@ -329,18 +328,6 @@ fn is_nightly() -> bool {
         .status()
         .unwrap()
         .success()
-}
-
-fn plugins_available() -> bool {
-    let afl_llvm_dir = common::afl_llvm_dir().unwrap();
-    for result in afl_llvm_dir.read_dir().unwrap() {
-        let entry = result.unwrap();
-        let file_name = entry.file_name();
-        if Path::new(&file_name).extension() == Some(OsStr::new("so")) {
-            return true;
-        }
-    }
-    false
 }
 
 #[cfg(all(test, unix))]
