@@ -38,7 +38,7 @@ pub struct Args {
 
 pub fn config(args: &Args) -> Result<()> {
     let archive_file_path = common::archive_file_path()?;
-    if !args.force && archive_file_path.exists() {
+    if !args.force && archive_file_path.exists() && args.plugins == common::plugins_available()? {
         let version = common::afl_rustc_version()?;
         return Err(Error::other(format!(
             "AFL LLVM runtime was already built for Rust {version}; run `cargo afl config --build \
