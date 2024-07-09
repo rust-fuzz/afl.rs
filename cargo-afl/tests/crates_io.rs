@@ -87,6 +87,7 @@ fn install_and_config() {
         .into_iter()
         .zip([Test::Force, Test::ChangePlugins])
     {
+        // smoelius: Plugins are currently not tested on macOS.
         if (install_with_plugins || test == Test::ChangePlugins)
             && (!is_nightly || cfg!(target_os = "macos"))
         {
