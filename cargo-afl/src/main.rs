@@ -1,4 +1,4 @@
-use clap::{crate_version, Parser};
+use clap::{crate_version, CommandFactory, FromArgMatches, Parser};
 use std::collections::HashMap;
 use std::env;
 use std::ffi::{OsStr, OsString};
@@ -115,7 +115,9 @@ declare_afl_subcommand_enum! {
 }
 
 fn main() {
-    let afl_args = match Args::parse() {
+    let command = command_with_afl_version();
+
+    let afl_args = match Args::from_arg_matches(&command.get_matches()).unwrap() {
         Args {
             subcmd: CargoSubcommand::Afl(afl_args),
         } => afl_args,
@@ -173,6 +175,42 @@ fn main() {
             run_cargo(afl_args.args);
         }
     }
+}
+
+fn command_with_afl_version() -> clap::Command {
+    let mut command = Args::command();
+
+    (|| -> Option<()> {
+        let afl_version = afl_version()?;
+        let with_plugins = common::plugins_available().ok()?;
+
+        let subcmd = command.find_subcommand_mut("afl").unwrap();
+        let ver = format!(
+            "{} (AFL++ version {}{})",
+            subcmd.get_version().unwrap(),
+            afl_version,
+            if with_plugins { " with plugins" } else { "" }
+        );
+        *subcmd = subcmd.clone().version(ver);
+        Some(())
+    })()
+    .unwrap_or_default();
+
+    command
+}
+
+fn afl_version() -> Option<String> {
+    const PREFIX: &str = "afl-fuzz++";
+    let afl_fuzz_path = common::afl_dir().unwrap().join("bin/afl-fuzz");
+    let output = Command::new(afl_fuzz_path).output().ok()?;
+    let stdout = String::from_utf8(output.stdout).ok()?;
+    let index = stdout.find(PREFIX)?;
+    Some(
+        stdout[index + PREFIX.len()..]
+            .chars()
+            .take_while(|c| !c.is_ascii_whitespace())
+            .collect(),
+    )
 }
 
 fn run_afl<I, S>(tool: &str, args: I)
@@ -334,13 +372,12 @@ fn is_nightly() -> bool {
 mod tests {
     use super::*;
     use assert_cmd::Command;
-    use clap::CommandFactory;
     use std::os::unix::ffi::OsStringExt;
     use std::process::Output;
 
     #[test]
     fn test_app() {
-        Args::command().debug_assert();
+        command_with_afl_version().debug_assert();
     }
 
     #[test]
