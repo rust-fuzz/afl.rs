@@ -1,5 +1,10 @@
 # Changes
 
+## 0.15.9
+
+- [Don't require `--force` when enabling/disabling plugins](https://github.com/rust-fuzz/afl.rs/pull/498)
+- [Display AFL++ version and whether plugins are in use](https://github.com/rust-fuzz/afl.rs/pull/500)
+
 ## 0.15.8
 
 - [Update AFLplusplus to 4.21c](https://github.com/rust-fuzz/afl.rs/pull/492)
