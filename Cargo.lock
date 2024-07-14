@@ -127,7 +127,6 @@ dependencies = [
  "ctor",
  "fs_extra",
  "home",
- "libc",
  "predicates",
  "rustc_version",
  "tempfile",
