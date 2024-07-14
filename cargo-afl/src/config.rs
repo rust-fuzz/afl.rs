@@ -121,7 +121,7 @@ fn build_afl(args: &Args, work_dir: &Path) -> Result<()> {
 
     let success = command.status().as_ref().map_or(false, ExitStatus::success);
     if !success {
-        return Err(Error::other("could not run 'make install"));
+        return Err(Error::other("could not run 'make install'"));
     }
 
     Ok(())
