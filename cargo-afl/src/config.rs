@@ -61,23 +61,28 @@ pub fn config(args: &Args) -> Result<()> {
             return Err(anyhow!("could not run 'git'"));
         }
     } else {
-        let _: u64 = fs_extra::dir::copy(
-            afl_src_dir,
-            tempdir.path(),
-            &fs_extra::dir::CopyOptions {
-                content_only: true,
-                ..Default::default()
-            },
-        )?;
+        let success = Command::new("cp")
+            .args([
+                "-P", // preserve symlinks
+                "-R", // copy directories recursively
+                afl_src_dir_str,
+                &*tempdir.path().to_string_lossy(),
+            ])
+            .status()
+            .as_ref()
+            .map_or(false, ExitStatus::success);
+        if !success {
+            return Err(anyhow!("could not copy directory {afl_src_dir:?}"));
+        }
     }
 
-    let work_dir = tempdir.path();
+    let work_dir = tempdir.path().join(AFL_SRC_PATH);
 
-    build_afl(args, work_dir)?;
-    build_afl_llvm_runtime(args, work_dir)?;
+    build_afl(args, &work_dir)?;
+    build_afl_llvm_runtime(args, &work_dir)?;
 
     if args.plugins {
-        copy_afl_llvm_plugins(args, work_dir)?;
+        copy_afl_llvm_plugins(args, &work_dir)?;
     }
 
     let afl_dir = common::afl_dir()?;
