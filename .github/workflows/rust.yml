@@ -64,7 +64,8 @@ jobs:
           else
             wget https://apt.llvm.org/llvm.sh
             chmod +x llvm.sh
-            sudo ./llvm.sh "$LLVM_VERSION"
+            # smoelius: Re use of `all`, see: https://github.com/llvm/llvm-project/issues/99502
+            sudo ./llvm.sh "$LLVM_VERSION" all
           fi
         env:
           HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
