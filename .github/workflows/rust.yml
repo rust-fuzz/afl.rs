@@ -65,6 +65,7 @@ jobs:
             wget https://apt.llvm.org/llvm.sh
             chmod +x llvm.sh
             # smoelius: Re use of `all`, see: https://github.com/llvm/llvm-project/issues/99502
+            sudo apt remove llvm-"$LLVM_VERSION"
             sudo ./llvm.sh "$LLVM_VERSION" all
           fi
         env:
