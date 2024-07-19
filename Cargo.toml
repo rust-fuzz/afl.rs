@@ -3,4 +3,6 @@ members = ["afl", "cargo-afl"]
 resolver = "2"
 
 [workspace.lints.clippy]
-disallowed-macros = { level = "allow", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+disallowed-macros = "allow"
+missing-panics-doc = "allow"

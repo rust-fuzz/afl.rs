@@ -25,7 +25,7 @@ jobs:
       - name: Format
         run: cargo fmt && git diff --exit-code
       - name: Clippy
-        run: cargo clippy --all-targets -- -D warnings -W clippy::pedantic -A clippy::missing-panics-doc
+        run: cargo clippy --all-targets -- -D warnings
   build:
     strategy:
       fail-fast: ${{ github.event_name == 'merge_group' }}
