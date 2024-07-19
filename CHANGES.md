@@ -1,5 +1,12 @@
 # Changes
 
+## 0.15.10
+
+- [Remove unnecessary `libc` dependency](https://github.com/rust-fuzz/afl.rs/commit/2f7c215caef827013b2b1418ab72eaadccd97ebe)
+- [Fix typo in error message](https://github.com/rust-fuzz/afl.rs/commit/626b605d5757dc5b2cd9e422ca61d49a6165b7a1)
+- [Improve error messages](https://github.com/rust-fuzz/afl.rs/commit/ead58d0422b1b16615627bb3620c1ee50fed92d9)
+- [Eliminate reliance on `fs_extra`; copy AFL++ directory with shell](https://github.com/rust-fuzz/afl.rs/pull/506)
+
 ## 0.15.9
 
 - [Don't require `--force` when enabling/disabling plugins](https://github.com/rust-fuzz/afl.rs/pull/498)
