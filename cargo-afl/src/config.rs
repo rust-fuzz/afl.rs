@@ -1,6 +1,6 @@
 #![deny(clippy::disallowed_macros, clippy::expect_used, clippy::unwrap_used)]
 
-use anyhow::{anyhow, Context, Result};
+use anyhow::{bail, ensure, Context, Result};
 use clap::Parser;
 use std::ffi::OsStr;
 use std::path::Path;
@@ -40,10 +40,10 @@ pub fn config(args: &Args) -> Result<()> {
     let archive_file_path = common::archive_file_path()?;
     if !args.force && archive_file_path.exists() && args.plugins == common::plugins_available()? {
         let version = common::afl_rustc_version()?;
-        return Err(anyhow!(
+        bail!(
             "AFL LLVM runtime was already built for Rust {version}; run `cargo afl config --build \
              --force` to rebuild it."
-        ));
+        );
     }
 
     let afl_src_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join(AFL_SRC_PATH);
@@ -57,9 +57,7 @@ pub fn config(args: &Args) -> Result<()> {
             .status()
             .as_ref()
             .map_or(false, ExitStatus::success);
-        if !success {
-            return Err(anyhow!("could not run 'git'"));
-        }
+        ensure!(success, "could not run 'git'");
     } else {
         let success = Command::new("cp")
             .args([
@@ -71,9 +69,7 @@ pub fn config(args: &Args) -> Result<()> {
             .status()
             .as_ref()
             .map_or(false, ExitStatus::success);
-        if !success {
-            return Err(anyhow!("could not copy directory {afl_src_dir:?}"));
-        }
+        ensure!(success, "could not copy directory {afl_src_dir:?}");
     }
 
     let work_dir = tempdir.path().join(AFL_SRC_PATH);
@@ -87,7 +83,7 @@ pub fn config(args: &Args) -> Result<()> {
 
     let afl_dir = common::afl_dir()?;
     let Some(dir) = afl_dir.parent().map(Path::to_path_buf) else {
-        return Err(anyhow!("could not get afl dir parent"));
+        bail!("could not get afl dir parent");
     };
     eprintln!("Artifacts written to {}", dir.display());
 
@@ -124,9 +120,7 @@ fn build_afl(args: &Args, work_dir: &Path) -> Result<()> {
     }
 
     let success = command.status().as_ref().map_or(false, ExitStatus::success);
-    if !success {
-        return Err(anyhow!("could not run 'make install'"));
-    }
+    ensure!(success, "could not run 'make install'");
 
     Ok(())
 }
@@ -149,9 +143,7 @@ fn build_afl_llvm_runtime(args: &Args, work_dir: &Path) -> Result<()> {
     }
 
     let success = command.status().as_ref().map_or(false, ExitStatus::success);
-    if !success {
-        return Err(anyhow!("could not run 'ar'"));
-    }
+    ensure!(success, "could not run 'ar'");
 
     Ok(())
 }
@@ -181,15 +173,13 @@ fn check_llvm_and_get_config() -> Result<String> {
     // Make sure we are on nightly for the -Z flags
     let version_meta = rustc_version::version_meta()?;
     if version_meta.channel != rustc_version::Channel::Nightly {
-        return Err(anyhow!(
-            "cargo-afl must be compiled with nightly for the plugins feature",
-        ));
+        bail!("cargo-afl must be compiled with nightly for the plugins feature");
     }
     let Some(llvm_version) = version_meta
         .llvm_version
         .map(|llvm_version| llvm_version.major.to_string())
     else {
-        return Err(anyhow!("could not get llvm version"));
+        bail!("could not get llvm version");
     };
 
     // Fetch the llvm version of the rust toolchain and set the LLVM_CONFIG environment variable to the same version
@@ -210,15 +200,13 @@ fn check_llvm_and_get_config() -> Result<String> {
     let version = String::from_utf8(out.stdout)
         .with_context(|| format!("could not convert {llvm_config} --version output to utf8"))?;
     let Some(major) = version.split('.').next() else {
-        return Err(anyhow!(
-            "could not get major from {llvm_config} --version output",
-        ));
+        bail!("could not get major from {llvm_config} --version output");
     };
     if major != llvm_version {
-        return Err(anyhow!(
+        bail!(
             "{llvm_config} --version output does not contain expected major version \
              ({llvm_version})",
-        ));
+        );
     }
 
     Ok(llvm_config)
