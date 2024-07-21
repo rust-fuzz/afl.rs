@@ -237,7 +237,7 @@ where
             "
 If you see an error message like `shmget() failed` above, try running the following command:
 
-    cargo-afl afl system-config
+    cargo afl system-config
 
 Note: You might be prompted to enter your password as root privileges are required and hence sudo is run within this command."
         );
