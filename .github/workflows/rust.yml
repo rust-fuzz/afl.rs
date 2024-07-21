@@ -30,10 +30,7 @@ jobs:
     strategy:
       fail-fast: ${{ github.event_name == 'merge_group' }}
       matrix:
-        # smoelius: Temporarily add `ubuntu-24.04` as a target, and remove `ubuntu-latest`, until
-        # the following issue is resolved: https://github.com/llvm/llvm-project/issues/99502
-        # environment: [ubuntu-latest, macos-latest]
-        environment: [ubuntu-24.04, macos-latest]
+        environment: [ubuntu-latest, ubuntu-24.04, macos-latest]
         toolchain: [stable, nightly]
         plugins: [true, false]
         cc: [cc, clang]
