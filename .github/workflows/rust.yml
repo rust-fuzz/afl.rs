@@ -58,7 +58,9 @@ jobs:
         run: |
           LLVM_VERSION="$(rustc --version -v | grep '^LLVM version:' | grep -o '[0-9]\+' | head -n 1)"
           if [[ ${{ matrix.environment  }} = 'macos-latest' ]]; then
-            brew update
+            # smoelius: Around the time Rust 1.80 was released, running `brew update` would be
+            # followed by "cargo: command not found" errors.
+            # brew update
             brew install llvm@"$LLVM_VERSION" || true
             echo "/usr/local/opt/llvm/bin" >> "$GITHUB_PATH"
           else
