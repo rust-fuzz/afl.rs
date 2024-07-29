@@ -53,7 +53,7 @@ jobs:
         with:
           submodules: true
       - name: Rustup
-        run: rustup default ${{ matrix.toolchain }}
+        run: rustup install ${{ matrix.toolchain }}
       - name: Install LLVM
         run: |
           LLVM_VERSION="$(rustc --version -v | grep '^LLVM version:' | grep -o '[0-9]\+' | head -n 1)"
