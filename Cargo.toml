@@ -2,6 +2,10 @@
 members = ["afl", "cargo-afl"]
 resolver = "2"
 
+[workspace.lints.rust.unexpected_cfgs]
+level = "deny"
+check-cfg = ["cfg(fuzzing)"]
+
 [workspace.lints.clippy]
 pedantic = { level = "warn", priority = -1 }
 disallowed-macros = "allow"
