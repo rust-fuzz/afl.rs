@@ -153,10 +153,10 @@ fn cargo_afl_build_command(home: &Path, cargo_afl: &Path) -> Command {
 }
 
 #[test]
-fn publish() {
+fn package() {
     for subdir in ["afl", "cargo-afl"] {
         Command::new("cargo")
-            .args(["publish", "--allow-dirty", "--dry-run"])
+            .args(["package", "--allow-dirty"])
             .current_dir(Path::new("..").join(subdir))
             .assert()
             .success();
