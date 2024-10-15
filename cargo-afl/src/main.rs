@@ -272,29 +272,40 @@ where
         "sancov"
     };
 
+    let opt_level = env::var("AFL_OPT_LEVEL").unwrap_or("3".to_string());
+    let require_plugins = env::var("AFLRS_REQUIRE_PLUGINS").is_ok();
+
     // `-C codegen-units=1` is needed to work around link errors
     // https://github.com/rust-fuzz/afl.rs/pull/193#issuecomment-933550430
 
     let binding = common::afl_llvm_dir().unwrap();
     let p = binding.display();
 
-    let mut rustflags = String::from(
+    let mut rustflags = format!(
         "-C debug-assertions \
              -C overflow_checks \
              -C codegen-units=1 \
-             -C opt-level=3 \
+             -C opt-level={opt_level} \
              -C target-cpu=native ",
     );
     let mut environment_variables = HashMap::<&str, String>::new();
     environment_variables.insert("ASAN_OPTIONS", asan_options);
     environment_variables.insert("TSAN_OPTIONS", tsan_options);
 
-    if common::plugins_available().unwrap() {
+    let has_plugins = common::plugins_available().unwrap();
+    if require_plugins || has_plugins {
         // Make sure we are on nightly for the -Z flags
         assert!(
             rustc_version::version_meta().unwrap().channel == rustc_version::Channel::Nightly,
             "cargo-afl must be compiled with nightly for CMPLOG and other advanced AFL++ features"
         );
+
+        if require_plugins {
+            assert!(
+                has_plugins,
+                "AFL++ plugins are not available, run cargo afl config --force --plugins"
+            );
+        }
 
         rustflags.push_str(&format!(
             "-Z llvm-plugins={p}/cmplog-instructions-pass.so  \
