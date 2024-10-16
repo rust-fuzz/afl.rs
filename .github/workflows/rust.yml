@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: ${{ github.event_name == 'merge_group' }}
       matrix:
-        environment: [ubuntu-latest, ubuntu-24.04, macos-latest]
+        environment: [ubuntu-latest, macos-latest]
         toolchain: [stable, nightly]
         plugins: [true, false]
         cc: [cc, clang]
