@@ -303,7 +303,7 @@ where
         if require_plugins {
             assert!(
                 has_plugins,
-                "AFL++ plugins are not available, run cargo afl config --force --plugins"
+                "AFL++ plugins are not available; run `cargo afl config --build --force --plugins`"
             );
         }
 
