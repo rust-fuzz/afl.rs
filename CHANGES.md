@@ -1,5 +1,9 @@
 # Changes
 
+## 0.15.11
+
+- [Introduce `AFLRS_REQUIRE_PLUGINS` and `AFL_OPT_LEVEL` environment variable options](https://github.com/rust-fuzz/afl.rs/pull/540)
+
 ## 0.15.10
 
 - [Remove unnecessary `libc` dependency](https://github.com/rust-fuzz/afl.rs/commit/2f7c215caef827013b2b1418ab72eaadccd97ebe)
