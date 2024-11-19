@@ -308,12 +308,12 @@ where
         }
 
         rustflags.push_str(&format!(
-            "-Z llvm-plugins={p}/cmplog-instructions-pass.so  \
-            -Z llvm-plugins={p}/cmplog-routines-pass.so \
+            "-Z llvm-plugins={p}/afl-llvm-dict2file.so \
             -Z llvm-plugins={p}/cmplog-switches-pass.so \
+            -Z llvm-plugins={p}/split-switches-pass.so \
             -Z llvm-plugins={p}/SanitizerCoveragePCGUARD.so \
-            -Z llvm-plugins={p}/afl-llvm-dict2file.so
-            "
+            -Z llvm-plugins={p}/cmplog-instructions-pass.so  \
+            -Z llvm-plugins={p}/cmplog-routines-pass.so"
         ));
 
         environment_variables.insert("AFL_QUIET", "1".to_string());
