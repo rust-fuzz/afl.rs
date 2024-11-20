@@ -3,9 +3,7 @@ members = ["afl", "cargo-afl"]
 resolver = "2"
 
 [workspace.lints.rust.unexpected_cfgs]
-# smoelius: Temporarily setting the lint level to `allow`.
-# level = "deny"
-level = "allow"
+level = "deny"
 check-cfg = ["cfg(fuzzing)"]
 
 [workspace.lints.clippy]
