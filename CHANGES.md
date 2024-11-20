@@ -1,5 +1,9 @@
 # Changes
 
+## 0.15.12
+
+- [Reorder passes and add split-switches-pass to AFL++ instrumentation](https://github.com/rust-fuzz/afl.rs/pull/554)
+
 ## 0.15.11
 
 - [Introduce `AFLRS_REQUIRE_PLUGINS` and `AFL_OPT_LEVEL` environment variable options](https://github.com/rust-fuzz/afl.rs/pull/540)
