@@ -1,5 +1,9 @@
 # Changes
 
+## 0.15.13
+
+- [Update AFLplusplus to 4.30c](https://github.com/rust-fuzz/afl.rs/pull/560)
+
 ## 0.15.12
 
 - [Reorder passes and add split-switches-pass to AFL++ instrumentation](https://github.com/rust-fuzz/afl.rs/pull/554)
