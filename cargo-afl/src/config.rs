@@ -56,7 +56,7 @@ pub fn config(args: &Args) -> Result<()> {
             .args(["clone", afl_src_dir_str, &*tempdir.path().to_string_lossy()])
             .status()
             .as_ref()
-            .map_or(false, ExitStatus::success);
+            .is_ok_and(ExitStatus::success);
         ensure!(success, "could not run 'git'");
     } else {
         let success = Command::new("cp")
@@ -68,7 +68,7 @@ pub fn config(args: &Args) -> Result<()> {
             ])
             .status()
             .as_ref()
-            .map_or(false, ExitStatus::success);
+            .is_ok_and(ExitStatus::success);
         ensure!(success, "could not copy directory {afl_src_dir:?}");
     }
 
@@ -119,7 +119,7 @@ fn build_afl(args: &Args, work_dir: &Path) -> Result<()> {
         command.stderr(Stdio::null());
     }
 
-    let success = command.status().as_ref().map_or(false, ExitStatus::success);
+    let success = command.status().as_ref().is_ok_and(ExitStatus::success);
     ensure!(success, "could not run 'make install'");
 
     Ok(())
@@ -142,7 +142,7 @@ fn build_afl_llvm_runtime(args: &Args, work_dir: &Path) -> Result<()> {
         command.stderr(Stdio::null());
     }
 
-    let success = command.status().as_ref().map_or(false, ExitStatus::success);
+    let success = command.status().as_ref().is_ok_and(ExitStatus::success);
     ensure!(success, "could not run 'ar'");
 
     Ok(())
