@@ -1,5 +1,11 @@
 # Changes
 
+## 0.15.15
+
+- [Update AFLplusplus to 4.31c](https://github.com/rust-fuzz/afl.rs/pull/581)
+
+  Version 0.15.14 claimed that it updated AFLplusplus to 4.31c. However, commit [e586a66](https://github.com/rust-fuzz/afl.rs/commit/e586a66aadc36977501257ee8b8201d61a452021) incorrectly undid the update. This release corrects the error.
+
 ## 0.15.14
 
 - [Update AFLplusplus to 4.31c](https://github.com/rust-fuzz/afl.rs/pull/575)
