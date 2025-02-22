@@ -1,6 +1,6 @@
 #![deny(clippy::disallowed_macros, clippy::expect_used, clippy::unwrap_used)]
 
-use anyhow::{bail, ensure, Context, Result};
+use anyhow::{Context, Result, bail, ensure};
 use clap::Parser;
 use std::ffi::OsStr;
 use std::path::Path;
