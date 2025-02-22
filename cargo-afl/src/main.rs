@@ -1,4 +1,4 @@
-use clap::{crate_version, CommandFactory, FromArgMatches, Parser};
+use clap::{CommandFactory, FromArgMatches, Parser, crate_version};
 use std::collections::HashMap;
 use std::env;
 use std::ffi::{OsStr, OsString};
@@ -396,9 +396,11 @@ mod tests {
     fn display_name() {
         let output = cargo_afl(&["-V"]).output().unwrap();
         assert_success(&output, None);
-        assert!(String::from_utf8(output.stdout)
-            .unwrap()
-            .starts_with("cargo-afl"));
+        assert!(
+            String::from_utf8(output.stdout)
+                .unwrap()
+                .starts_with("cargo-afl")
+        );
     }
 
     #[test]
@@ -474,16 +476,20 @@ mod tests {
     fn subcommands_help_subcommand_disabled() {
         let output = cargo_afl(&["help"]).output().unwrap();
         assert_success(&output, None);
-        assert!(String::from_utf8(output.stdout)
-            .unwrap()
-            .starts_with("Usage:"));
+        assert!(
+            String::from_utf8(output.stdout)
+                .unwrap()
+                .starts_with("Usage:")
+        );
 
         for &subcommand in SUBCOMMANDS {
             let output = cargo_afl(&[subcommand, "help"]).output().unwrap();
             assert_failure(&output, Some(subcommand));
-            assert!(!String::from_utf8(output.stdout)
-                .unwrap()
-                .starts_with("Usage:"));
+            assert!(
+                !String::from_utf8(output.stdout)
+                    .unwrap()
+                    .starts_with("Usage:")
+            );
         }
     }
 
@@ -491,9 +497,11 @@ mod tests {
     fn subcommands_help_flag_disabled() {
         let output = cargo_afl(&["--help"]).output().unwrap();
         assert_success(&output, None);
-        assert!(String::from_utf8(output.stdout)
-            .unwrap()
-            .starts_with("Usage:"));
+        assert!(
+            String::from_utf8(output.stdout)
+                .unwrap()
+                .starts_with("Usage:")
+        );
 
         for &subcommand in SUBCOMMANDS {
             let output = cargo_afl(&[subcommand, "--help"]).output().unwrap();
@@ -503,9 +511,11 @@ mod tests {
             } else {
                 assert_failure(&output, Some(subcommand));
             }
-            assert!(!String::from_utf8(output.stdout)
-                .unwrap()
-                .starts_with("Usage:"));
+            assert!(
+                !String::from_utf8(output.stdout)
+                    .unwrap()
+                    .starts_with("Usage:")
+            );
         }
     }
 
@@ -513,16 +523,20 @@ mod tests {
     fn subcommands_version_flag_disabled() {
         let output = cargo_afl(&["-V"]).output().unwrap();
         assert_success(&output, None);
-        assert!(String::from_utf8(output.stdout)
-            .unwrap()
-            .starts_with("cargo-afl"));
+        assert!(
+            String::from_utf8(output.stdout)
+                .unwrap()
+                .starts_with("cargo-afl")
+        );
 
         for &subcommand in SUBCOMMANDS {
             let output = cargo_afl(&[subcommand, "-V"]).output().unwrap();
             assert_failure(&output, Some(subcommand));
-            assert!(!String::from_utf8(output.stdout)
-                .unwrap()
-                .starts_with("cargo-afl"));
+            assert!(
+                !String::from_utf8(output.stdout)
+                    .unwrap()
+                    .starts_with("cargo-afl")
+            );
         }
     }
 
