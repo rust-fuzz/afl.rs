@@ -265,7 +265,7 @@ where
     // The new LLVM pass manager was enabled in rustc 1.59.
     let version_meta = rustc_version::version_meta().unwrap();
     let passes = if (version_meta.semver.minor >= 59 || is_nightly())
-        && version_meta.llvm_version.map_or(true, |v| v.major >= 13)
+        && version_meta.llvm_version.is_none_or(|v| v.major >= 13)
     {
         "sancov-module"
     } else {
