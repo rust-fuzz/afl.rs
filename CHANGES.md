@@ -1,5 +1,9 @@
 # Changes
 
+## 0.15.16
+
+- [Eliminate use of gold linker](https://github.com/rust-fuzz/afl.rs/pull/597)
+
 ## 0.15.15
 
 - [Update AFLplusplus to 4.31c](https://github.com/rust-fuzz/afl.rs/pull/581)
