@@ -338,13 +338,6 @@ where
         rustflags.push_str("--cfg fuzzing ");
     }
 
-    if cfg!(target_os = "linux") {
-        // work around https://github.com/rust-fuzz/afl.rs/issues/141 /
-        // https://github.com/rust-lang/rust/issues/53945, can be removed once
-        // those are fixed.
-        rustflags.push_str("-Clink-arg=-fuse-ld=gold ");
-    }
-
     // RUSTFLAGS are not used by rustdoc, instead RUSTDOCFLAGS are used. Since
     // doctests will try to link against afl-llvm-rt, set up RUSTDOCFLAGS to
     // have doctests built the same as other code to avoid issues with doctests.
