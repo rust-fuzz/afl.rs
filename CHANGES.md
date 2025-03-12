@@ -1,5 +1,17 @@
 # Changes
 
+## 0.15.17
+
+- The version of AFL++ on crates.io was 4.21a, not 4.31c. This release correct the error.
+
+  Note that if AFL++ is built for your default Rust toolchain, then `cargo afl --version` will show AFL++'s version:
+
+  ```
+  $ cargo afl --version
+  cargo-afl 0.15.17 (AFL++ version 4.31c)
+                                   ^^^^^
+  ```
+
 ## 0.15.16
 
 - [Eliminate use of gold linker](https://github.com/rust-fuzz/afl.rs/pull/597)
