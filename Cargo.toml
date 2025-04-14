@@ -9,4 +9,5 @@ check-cfg = ["cfg(fuzzing)"]
 [workspace.lints.clippy]
 pedantic = { level = "warn", priority = -1 }
 disallowed-macros = "allow"
+format-push-string = "allow"
 missing-panics-doc = "allow"

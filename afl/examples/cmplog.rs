@@ -20,11 +20,11 @@ fn main() {
 
         if data[4..8] != 0x6969_4141_i32.to_le_bytes() {
             return;
-        };
+        }
 
         if data[8..12] != *b"1234" || data[12..16] != *b"EFGH" {
             return;
-        };
+        }
 
         let slice = &data[16..];
         let match_string = "Hello, world!";
