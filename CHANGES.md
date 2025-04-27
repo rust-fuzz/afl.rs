@@ -1,5 +1,9 @@
 # Changes
 
+## 0.15.18
+
+- [Update AFLplusplus to 4.32c](https://github.com/rust-fuzz/afl.rs/pull/581)
+
 ## 0.15.17
 
 - The version of AFL++ on crates.io was 4.21a, not 4.31c. This release correct the error.
