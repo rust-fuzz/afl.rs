@@ -18,7 +18,7 @@ home = "0.5"
 [dependencies]
 libc = "0.2"
 rustc_version = "0.4"
-xdg = "2.5"
+xdg = "3.0"
 
 [dev-dependencies]
 arbitrary = { version = "1", features = ["derive"] }
