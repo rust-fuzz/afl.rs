@@ -10,7 +10,7 @@ fn xdg_dir() -> Result<xdg::BaseDirectories> {
     let prefix = Path::new("afl.rs")
         .join(afl_rustc_version)
         .join(pkg_version());
-    xdg::BaseDirectories::with_prefix(prefix).map_err(Into::into)
+    Ok(xdg::BaseDirectories::with_prefix(prefix))
 }
 
 fn data_dir(dir_name: &str) -> Result<PathBuf> {
