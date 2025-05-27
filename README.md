@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://github.com/frewsxcv/afl.rs/issues/66"><img src="etc/logo.gif" alt="afl.rs logo"></a>
+  <a href="https://github.com/frewsxcv/afl.rs/issues/66"><img src="https://raw.githubusercontent.com/rust-fuzz/afl.rs/refs/heads/master/etc/logo.gif" alt="afl.rs logo"></a>
   <br>
   afl.rs
 </h1>
@@ -16,7 +16,7 @@ Documentation can be found in the [Rust Fuzz Book](https://rust-fuzz.github.io/b
 
 ## What does it look like?
 
-<img src="etc/screencap.gif" width="563" height="368" alt="Screen recording of afl">
+<img src="https://raw.githubusercontent.com/rust-fuzz/afl.rs/refs/heads/master/etc/screencap.gif" width="563" height="368" alt="Screen recording of afl">
 
 Screen recording of AFL running on Rust code.
 

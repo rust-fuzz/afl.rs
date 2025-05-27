@@ -12,6 +12,7 @@ description = "Fuzzing Rust code with american-fuzzy-lop"
 repository = "https://github.com/rust-fuzz/afl.rs"
 homepage = "https://github.com/rust-fuzz/afl.rs"
 edition = "2021"
+exclude = ["etc"]
 
 [build-dependencies]
 anyhow = { version = "1.0", features = ["backtrace"] }
