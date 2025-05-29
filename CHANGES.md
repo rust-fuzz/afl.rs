@@ -2,7 +2,7 @@
 
 ## 0.15.18
 
-- [Update AFLplusplus to 4.32c](https://github.com/rust-fuzz/afl.rs/pull/581)
+- [Update AFLplusplus to 4.32c](https://github.com/rust-fuzz/afl.rs/pull/612)
 
 ## 0.15.17
 
