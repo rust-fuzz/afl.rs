@@ -1,5 +1,9 @@
 # Changes
 
+## 0.15.19
+
+- [Remove images from published crates.io source code](https://github.com/rust-fuzz/afl.rs/pull/618)
+
 ## 0.15.18
 
 - [Update AFLplusplus to 4.32c](https://github.com/rust-fuzz/afl.rs/pull/612)
