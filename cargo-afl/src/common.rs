@@ -75,10 +75,11 @@ pub fn plugins_available() -> Result<bool> {
     let afl_llvm_dir = afl_llvm_dir()?;
     for result in afl_llvm_dir
         .read_dir()
-        .with_context(|| format!("could not read {afl_llvm_dir:?}"))?
+        .with_context(|| format!("could not read `{}`", afl_llvm_dir.display()))?
     {
-        let entry =
-            result.with_context(|| format!("could not read `DirEntry` in {afl_llvm_dir:?}"))?;
+        let entry = result.with_context(|| {
+            format!("could not read `DirEntry` in `{}`", afl_llvm_dir.display())
+        })?;
         let file_name = entry.file_name();
         if Path::new(&file_name).extension() == Some(OsStr::new("so")) {
             return Ok(true);

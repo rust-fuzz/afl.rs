@@ -152,9 +152,10 @@ fn copy_afl_llvm_plugins(_args: &Args, work_dir: &Path) -> Result<()> {
     // Iterate over the files in the directory.
     for result in work_dir
         .read_dir()
-        .with_context(|| format!("could not read {work_dir:?}"))?
+        .with_context(|| format!("could not read `{}`", work_dir.display()))?
     {
-        let entry = result.with_context(|| format!("could not read `DirEntry` in {work_dir:?}"))?;
+        let entry = result
+            .with_context(|| format!("could not read `DirEntry` in `{}`", work_dir.display()))?;
         let file_name = entry.file_name();
 
         // Get the file extension. Only copy the files that are shared objects.
@@ -162,7 +163,12 @@ fn copy_afl_llvm_plugins(_args: &Args, work_dir: &Path) -> Result<()> {
             // Attempt to copy the shared object file.
             let afl_llvm_dir = common::afl_llvm_dir()?;
             let _: u64 = std::fs::copy(work_dir.join(&file_name), afl_llvm_dir.join(&file_name))
-                .with_context(|| format!("could not copy shared object file {file_name:?}"))?;
+                .with_context(|| {
+                    format!(
+                        "could not copy shared object file `{}`",
+                        file_name.display()
+                    )
+                })?;
         }
     }
 
