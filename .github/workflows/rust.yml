@@ -13,7 +13,16 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  check-up-to-dateness:
+    outputs:
+      is-up-to-date: ${{ steps.main.outputs.is-up-to-date }}
+    runs-on: ubuntu-latest
+    steps:
+      - id: main
+        uses: trailofbits/check-up-to-dateness@v1
   lint:
+    needs: [check-up-to-dateness]
+    if: needs.check-up-to-dateness.outputs.is-up-to-date != 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,6 +36,8 @@ jobs:
       - name: Clippy
         run: cargo clippy --all-targets -- -D warnings
   build:
+    needs: [check-up-to-dateness]
+    if: needs.check-up-to-dateness.outputs.is-up-to-date != 'true'
     strategy:
       fail-fast: ${{ github.event_name == 'merge_group' }}
       matrix:
