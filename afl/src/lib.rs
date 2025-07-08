@@ -18,6 +18,7 @@ extern "C" {
     static __afl_fuzz_ptr: *const u8;
 }
 
+#[allow(non_upper_case_globals)]
 #[doc(hidden)]
 #[no_mangle]
 pub static mut __afl_sharedmem_fuzzing: i32 = 1;
@@ -53,8 +54,8 @@ where
 
     // we now need a fake instruction to prevent the compiler from optimizing out
     // those marker strings
-    unsafe { std::ptr::read_volatile(&PERSIST_MARKER) }; // hack used in https://github.com/bluss/bencher for black_box()
-    unsafe { std::ptr::read_volatile(&DEFERED_MARKER) };
+    unsafe { std::ptr::read_volatile(&raw const PERSIST_MARKER) }; // hack used in https://github.com/bluss/bencher for black_box()
+    unsafe { std::ptr::read_volatile(&raw const DEFERED_MARKER) };
     // unsafe { asm!("" : : "r"(&PERSIST_MARKER)) }; // hack used in nightly's back_box(), requires feature asm
     // unsafe { asm!("" : : "r"(&DEFERED_MARKER)) };
 
