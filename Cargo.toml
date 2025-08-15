@@ -11,3 +11,8 @@ pedantic = { level = "warn", priority = -1 }
 disallowed-macros = "allow"
 format-push-string = "allow"
 missing-panics-doc = "allow"
+
+[profile.release]
+lto = "fat"
+strip = "symbols"
+codegen-units = 1
