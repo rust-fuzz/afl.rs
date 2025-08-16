@@ -182,7 +182,7 @@ fn command_with_afl_version() -> clap::Command {
 
     (|| -> Option<()> {
         let afl_version = afl_version()?;
-        let with_plugins = common::plugins_available().ok()?;
+        let with_plugins = common::plugins_installed().ok()?;
 
         let subcmd = command.find_subcommand_mut("afl").unwrap();
         let ver = format!(
@@ -292,7 +292,7 @@ where
     environment_variables.insert("ASAN_OPTIONS", asan_options);
     environment_variables.insert("TSAN_OPTIONS", tsan_options);
 
-    let has_plugins = common::plugins_available().unwrap();
+    let has_plugins = common::plugins_installed().unwrap();
     if require_plugins || has_plugins {
         // Make sure we are on nightly for the -Z flags
         assert!(
@@ -303,7 +303,7 @@ where
         if require_plugins {
             assert!(
                 has_plugins,
-                "AFL++ plugins are not available; run `cargo afl config --build --force --plugins`"
+                "AFL++ plugins are not installed; run `cargo afl config --build --force --plugins`"
             );
         }
 
