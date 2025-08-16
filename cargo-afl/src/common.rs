@@ -66,7 +66,7 @@ pub fn archive_file_path() -> Result<PathBuf> {
     afl_llvm_dir().map(|path| path.join("libafl-llvm-rt.a"))
 }
 
-pub fn plugins_available() -> Result<bool> {
+pub fn plugins_installed() -> Result<bool> {
     let afl_llvm_dir = afl_llvm_dir()?;
     for result in afl_llvm_dir
         .read_dir()
