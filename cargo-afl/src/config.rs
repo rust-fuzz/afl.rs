@@ -90,13 +90,11 @@ pub fn config(args: &Args) -> Result<()> {
 
 fn build_afl(args: &Args, work_dir: &Path) -> Result<()> {
     // if you had already installed cargo-afl previously you **must** clean AFL++
-    // smoelius: AFL++ is now copied to a temporary directory before being built. So `make clean`
-    // is no longer necessary.
     let afl_dir = common::afl_dir()?;
     let mut command = Command::new("make");
     command
         .current_dir(work_dir)
-        .arg("install")
+        .args(["clean", "install"])
         // skip the checks for the legacy x86 afl-gcc compiler
         .env("AFL_NO_X86", "1")
         .env("DESTDIR", afl_dir)
@@ -118,7 +116,11 @@ fn build_afl(args: &Args, work_dir: &Path) -> Result<()> {
     }
 
     let success = command.status().as_ref().is_ok_and(ExitStatus::success);
-    ensure!(success, "could not run 'make install'");
+    ensure!(
+        success,
+        "could not run 'make clean install' in {}",
+        work_dir.display()
+    );
 
     Ok(())
 }
