@@ -59,17 +59,7 @@ pub fn config(args: &Args) -> Result<()> {
             .is_ok_and(ExitStatus::success);
         ensure!(success, "could not run 'git'");
     } else {
-        let success = Command::new("cp")
-            .args([
-                "-P", // preserve symlinks
-                "-R", // copy directories recursively
-                afl_src_dir_str,
-                &*tempdir.path().to_string_lossy(),
-            ])
-            .status()
-            .as_ref()
-            .is_ok_and(ExitStatus::success);
-        ensure!(success, "could not copy directory {afl_src_dir:?}");
+        copy_aflplusplus_submodule(&tempdir.path().join(AFL_SRC_PATH))?;
     }
 
     let work_dir = tempdir.path().join(AFL_SRC_PATH);
@@ -86,6 +76,30 @@ pub fn config(args: &Args) -> Result<()> {
         bail!("could not get afl dir parent");
     };
     eprintln!("Artifacts written to {}", dir.display());
+
+    Ok(())
+}
+
+fn copy_aflplusplus_submodule(aflplusplus_dir: &Path) -> Result<()> {
+    let afl_src_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join(AFL_SRC_PATH);
+    let afl_src_dir_str = &afl_src_dir.to_string_lossy();
+
+    let Some(aflplusplus_dir_parent) = aflplusplus_dir.parent() else {
+        bail!("could not get AFLplusplus dir parent");
+    };
+    debug_assert_eq!(aflplusplus_dir_parent.join(AFL_SRC_PATH), aflplusplus_dir);
+
+    let success = Command::new("cp")
+        .args([
+            "-P", // preserve symlinks
+            "-R", // copy directories recursively
+            afl_src_dir_str,
+            &*aflplusplus_dir_parent.to_string_lossy(),
+        ])
+        .status()
+        .as_ref()
+        .is_ok_and(ExitStatus::success);
+    ensure!(success, "could not copy directory {afl_src_dir:?}");
 
     Ok(())
 }
