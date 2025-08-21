@@ -10,7 +10,7 @@ use std::io::{self, Read};
 use std::panic;
 
 // those functions are provided by the afl-llvm-rt static library
-extern "C" {
+unsafe extern "C" {
     fn __afl_persistent_loop(counter: usize) -> isize;
     fn __afl_manual_init();
 
@@ -20,7 +20,7 @@ extern "C" {
 
 #[allow(non_upper_case_globals)]
 #[doc(hidden)]
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub static mut __afl_sharedmem_fuzzing: i32 = 1;
 
 /// Fuzz a closure by passing it a `&[u8]`

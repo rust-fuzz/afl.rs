@@ -11,7 +11,7 @@ authors = [
 description = "Fuzzing Rust code with american-fuzzy-lop"
 repository = "https://github.com/rust-fuzz/afl.rs"
 homepage = "https://github.com/rust-fuzz/afl.rs"
-edition = "2021"
+edition = "2024"
 exclude = ["etc"]
 
 [build-dependencies]
