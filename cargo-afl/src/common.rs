@@ -5,17 +5,21 @@ use std::env;
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 
-fn xdg_dir() -> Result<xdg::BaseDirectories> {
-    let afl_rustc_version = afl_rustc_version()?;
-    let prefix = Path::new("afl.rs")
-        .join(afl_rustc_version)
-        .join(pkg_version());
-    Ok(xdg::BaseDirectories::with_prefix(prefix))
+/// Return the [`xdg::BaseDirectories`] used by afl.rs
+///
+/// This function is public only for tests. Non-test code should use [`data_dir`], etc.
+pub fn xdg_base_dir() -> xdg::BaseDirectories {
+    xdg::BaseDirectories::with_prefix("afl.rs")
 }
 
 fn data_dir(dir_name: &str) -> Result<PathBuf> {
-    let xdg_dir = xdg_dir()?;
-    xdg_dir.create_data_directory(dir_name).map_err(Into::into)
+    let afl_rustc_version = afl_rustc_version()?;
+    let subdir = PathBuf::from(afl_rustc_version)
+        .join(pkg_version())
+        .join(dir_name);
+    xdg_base_dir()
+        .create_data_directory(subdir)
+        .map_err(Into::into)
 }
 
 const SHORT_COMMIT_HASH_LEN: usize = 7;
