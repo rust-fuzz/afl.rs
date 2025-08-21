@@ -50,27 +50,22 @@ fn pkg_version() -> String {
     ret
 }
 
-#[allow(dead_code)]
 pub fn afl_dir() -> Result<PathBuf> {
     data_dir("afl")
 }
 
-#[allow(dead_code)]
 pub fn afl_llvm_dir() -> Result<PathBuf> {
     data_dir("afl-llvm")
 }
 
-#[allow(dead_code)]
 pub fn object_file_path() -> Result<PathBuf> {
     afl_llvm_dir().map(|path| path.join("libafl-llvm-rt.o"))
 }
 
-#[allow(dead_code)]
 pub fn archive_file_path() -> Result<PathBuf> {
     afl_llvm_dir().map(|path| path.join("libafl-llvm-rt.a"))
 }
 
-#[allow(dead_code)]
 pub fn plugins_available() -> Result<bool> {
     let afl_llvm_dir = afl_llvm_dir()?;
     for result in afl_llvm_dir
