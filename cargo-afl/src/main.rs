@@ -333,7 +333,9 @@ where
     if no_cfg_fuzzing {
         rustflags.push_str("--cfg no_fuzzing ");
         // afl-fuzz is sensitive to AFL_ env variables. Let's remove this particular one - it did it's job
-        env::remove_var("AFL_NO_CFG_FUZZING");
+        unsafe {
+            env::remove_var("AFL_NO_CFG_FUZZING");
+        }
     } else {
         rustflags.push_str("--cfg fuzzing ");
     }

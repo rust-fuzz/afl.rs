@@ -10,7 +10,9 @@ const BUILD_MSGS: &[&str] = &[
 
 #[ctor::ctor]
 fn init() {
-    env::set_var("CARGO_TERM_COLOR", "never");
+    unsafe {
+        env::set_var("CARGO_TERM_COLOR", "never");
+    }
 }
 
 #[test]
