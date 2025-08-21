@@ -7,7 +7,10 @@ use std::path::{Path, PathBuf};
 
 pub const OBJECT_FILE_NAME: &str = "afl-compiler-rt.o";
 
-fn xdg_base_dir() -> xdg::BaseDirectories {
+/// Return the [`xdg::BaseDirectories`] used by afl.rs
+///
+/// This function is public only for tests. Non-test code should use [`data_dir`], etc.
+pub fn xdg_base_dir() -> xdg::BaseDirectories {
     xdg::BaseDirectories::with_prefix("afl.rs")
 }
 
