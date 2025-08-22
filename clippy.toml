@@ -4,3 +4,4 @@ disallowed-macros = [
     "std::assert_ne",
     "std::panic",
 ]
+doc-valid-idents = ["AFLplusplus"]
