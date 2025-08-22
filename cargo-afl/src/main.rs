@@ -104,7 +104,7 @@ declare_afl_subcommand_enum! {
     Addseeds("Invoke afl-addseeds"),
     Analyze("Invoke afl-analyze"),
     Cmin("Invoke afl-cmin"),
-    Config("Build or rebuild AFL++", config::Args),
+    Config("Build, rebuild, or update AFL++", config::Args),
     Fuzz("Invoke afl-fuzz"),
     Gotcpu("Invoke afl-gotcpu"),
     Plot("Invoke afl-plot"),
