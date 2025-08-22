@@ -534,6 +534,16 @@ mod tests {
         }
     }
 
+    #[test]
+    fn tag_requires_update() {
+        let output = cargo_afl(&["config", "--tag", "v4.33c"]).output().unwrap();
+        assert_failure(&output, None);
+        assert!(String::from_utf8(output.stderr).unwrap().contains(
+            "error: the following required arguments were not provided:
+  --update"
+        ));
+    }
+
     fn cargo_afl<T: AsRef<OsStr>>(args: &[T]) -> Command {
         let mut command = command();
         command.arg("afl").args(args).env("NO_SUDO", "1");
