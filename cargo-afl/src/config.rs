@@ -1,5 +1,3 @@
-#![deny(clippy::disallowed_macros, clippy::expect_used, clippy::unwrap_used)]
-
 use anyhow::{Context, Result, bail, ensure};
 use clap::Parser;
 use std::ffi::OsStr;
@@ -9,6 +7,7 @@ use std::process::{Command, ExitStatus, Stdio};
 use super::common;
 
 const AFL_SRC_PATH: &str = "AFLplusplus";
+const AFLPLUSPLUS_URL: &str = "https://github.com/AFLplusplus/AFLplusplus";
 
 #[allow(clippy::struct_excessive_bools)]
 #[derive(Default, Parser)]
@@ -20,11 +19,28 @@ pub struct Args {
     #[clap(long, help = "Build AFL++ for the default toolchain")]
     pub build: bool,
 
-    #[clap(long, help = "Rebuild AFL++ if it was already built")]
+    #[clap(
+        long,
+        help = "Rebuild AFL++ if it was already built. Note: AFL++ will be built without plugins \
+                if `--plugins` is not passed."
+    )]
     pub force: bool,
 
     #[clap(long, help = "Enable building of LLVM plugins")]
     pub plugins: bool,
+
+    #[clap(
+        long,
+        help = "Update to <TAG> instead of the latest stable version",
+        requires = "update"
+    )]
+    pub tag: Option<String>,
+
+    #[clap(
+        long,
+        help = "Update AFL++ to the latest stable version (preserving plugins, if applicable)"
+    )]
+    pub update: bool,
 
     #[clap(long, help = "Show build output")]
     pub verbose: bool,
@@ -32,7 +48,12 @@ pub struct Args {
 
 pub fn config(args: &Args) -> Result<()> {
     let object_file_path = common::object_file_path()?;
-    if !args.force && object_file_path.exists() && args.plugins == common::plugins_installed()? {
+
+    if !args.force
+        && !args.update
+        && object_file_path.exists()
+        && args.plugins == common::plugins_installed()?
+    {
         let version = common::afl_rustc_version()?;
         bail!(
             "AFL LLVM runtime was already built for Rust {version}; run `cargo afl config --build \
@@ -40,38 +61,109 @@ pub fn config(args: &Args) -> Result<()> {
         );
     }
 
-    let afl_src_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join(AFL_SRC_PATH);
-    let afl_src_dir_str = &afl_src_dir.to_string_lossy();
+    // smoelius: If updating and AFL++ was built with plugins before, build with plugins again.
+    let args = Args {
+        plugins: if args.update {
+            common::plugins_installed().is_ok_and(|is_true| is_true)
+        } else {
+            args.plugins
+        },
+        tag: args.tag.clone(),
+        ..*args
+    };
 
-    let tempdir = tempfile::tempdir().with_context(|| "could not create temporary directory")?;
+    let aflplusplus_dir =
+        common::aflplusplus_dir().with_context(|| "could not determine AFLplusplus directory")?;
 
-    if afl_src_dir.join(".git").is_dir() {
-        let success = Command::new("git")
-            .args(["clone", afl_src_dir_str, &*tempdir.path().to_string_lossy()])
-            .status()
-            .as_ref()
-            .is_ok_and(ExitStatus::success);
-        ensure!(success, "could not run 'git'");
-    } else {
-        copy_aflplusplus_submodule(&tempdir.path().join(AFL_SRC_PATH))?;
+    // smoelius: The AFLplusplus directory could be in one of three possible states:
+    //
+    // 1. Nonexistent
+    // 2. Initialized with a copy of the AFLplusplus submodule from afl.rs's source tree
+    // 3. Cloned from `AFLPLUSPLUS_URL`
+    //
+    // If we are not updating and the AFLplusplus directory is nonexistent: initialize the directory
+    // with a copy of the AFLplusplus submodule from afl.rs's source tree (the `else` case in the
+    // next `if` statement).
+    //
+    // If we are updating and the AFLplusplus directory is a copy of the AFLplusplus submodule from
+    // afl.rs's source tree: remove it and create a new directory by cloning AFL++ (the `else` case
+    // in `update_to_stable_or_tag`).
+    //
+    // Finally, if we are updating: check out either `origin/stable` or the tag that was passed.
+    if args.update {
+        let rev_prev = if is_repo(&aflplusplus_dir)? {
+            rev(&aflplusplus_dir).map(Some)?
+        } else {
+            None
+        };
+
+        update_to_stable_or_tag(&aflplusplus_dir, args.tag.as_deref())?;
+
+        let rev_curr = rev(&aflplusplus_dir)?;
+
+        if rev_prev == Some(rev_curr) && !args.force {
+            eprintln!("Nothing to do. Pass `--force` to force rebuilding.");
+            return Ok(());
+        }
+    } else if !aflplusplus_dir.join(".git").try_exists()? {
+        copy_aflplusplus_submodule(&aflplusplus_dir)?;
     }
 
-    let work_dir = tempdir.path().join(AFL_SRC_PATH);
-
-    build_afl(args, &work_dir)?;
-    build_afl_llvm_runtime(args, &work_dir)?;
+    build_afl(&args, &aflplusplus_dir)?;
+    build_afl_llvm_runtime(&args, &aflplusplus_dir)?;
 
     if args.plugins {
-        copy_afl_llvm_plugins(args, &work_dir)?;
+        copy_afl_llvm_plugins(&args, &aflplusplus_dir)?;
     }
 
     let afl_dir = common::afl_dir()?;
-    let Some(dir) = afl_dir.parent().map(Path::to_path_buf) else {
+    let Some(afl_dir_parent) = afl_dir.parent() else {
         bail!("could not get afl dir parent");
     };
-    eprintln!("Artifacts written to {}", dir.display());
+    eprintln!("Artifacts written to {}", afl_dir_parent.display());
 
     Ok(())
+}
+
+fn update_to_stable_or_tag(aflplusplus_dir: &Path, tag: Option<&str>) -> Result<()> {
+    if is_repo(aflplusplus_dir)? {
+        let success = Command::new("git")
+            .arg("fetch")
+            .current_dir(aflplusplus_dir)
+            .status()
+            .as_ref()
+            .is_ok_and(ExitStatus::success);
+        ensure!(success, "could not run 'git fetch'");
+    } else {
+        remove_aflplusplus_dir(aflplusplus_dir).unwrap_or_default();
+        let success = Command::new("git")
+            .args([
+                "clone",
+                AFLPLUSPLUS_URL,
+                &*aflplusplus_dir.to_string_lossy(),
+            ])
+            .status()
+            .as_ref()
+            .is_ok_and(ExitStatus::success);
+        ensure!(success, "could not run 'git clone'");
+    }
+
+    let mut command = Command::new("git");
+    command.arg("checkout");
+    if let Some(tag) = tag {
+        command.arg(tag);
+    } else {
+        command.arg("origin/stable");
+    }
+    command.current_dir(aflplusplus_dir);
+    let success = command.status().as_ref().is_ok_and(ExitStatus::success);
+    ensure!(success, "could not run 'git checkout'");
+
+    Ok(())
+}
+
+fn remove_aflplusplus_dir(aflplusplus_dir: &Path) -> Result<()> {
+    std::fs::remove_dir_all(aflplusplus_dir).map_err(Into::into)
 }
 
 fn copy_aflplusplus_submodule(aflplusplus_dir: &Path) -> Result<()> {
@@ -100,6 +192,28 @@ fn copy_aflplusplus_submodule(aflplusplus_dir: &Path) -> Result<()> {
     );
 
     Ok(())
+}
+
+// smoelius: `dot_git` will refer to an ASCII text file if it was copied from the AFLplusplus
+// submodule from afl.rs's source tree.
+fn is_repo(aflplusplus_dir: &Path) -> Result<bool> {
+    let dot_git = aflplusplus_dir.join(".git");
+    if dot_git.try_exists()? {
+        Ok(dot_git.is_dir())
+    } else {
+        Ok(false)
+    }
+}
+
+fn rev(dir: &Path) -> Result<String> {
+    let mut command = Command::new("git");
+    command.args(["rev-parse", "HEAD"]);
+    command.current_dir(dir);
+    let output = command
+        .output()
+        .with_context(|| "could not run `git rev-parse`")?;
+    ensure!(output.status.success(), "`git rev-parse` failed");
+    String::from_utf8(output.stdout).map_err(Into::into)
 }
 
 fn build_afl(args: &Args, work_dir: &Path) -> Result<()> {
