@@ -1,5 +1,9 @@
 # Changes
 
+## 0.15.21
+
+- [Enable link time optimization and strip symbols for release builds](https://github.com/rust-fuzz/afl.rs/pull/634)
+
 ## 0.15.20
 
 - [Update AFLplusplus to 4.33c](https://github.com/rust-fuzz/afl.rs/pull/624)
