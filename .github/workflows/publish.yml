@@ -1,0 +1,24 @@
+# https://blog.rust-lang.org/2025/07/11/crates-io-development-update-2025-07/
+
+name: Publish to crates.io
+
+on:
+  push:
+    tags: ["v*"] # Triggers when pushing tags starting with 'v'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: release # Optional: for enhanced security
+    permissions:
+      id-token: write # Required for OIDC token exchange
+    steps:
+      - uses: actions/checkout@v5
+      - uses: rust-lang/crates-io-auth-action@v1
+        id: auth
+      - run: |
+          for X in afl cargo-afl; do
+            pushd "$X" && (cargo publish || true) && popd
+          done
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
