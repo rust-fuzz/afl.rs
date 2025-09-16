@@ -5,25 +5,18 @@ use std::env;
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 
-fn xdg_dir() -> Result<xdg::BaseDirectories> {
-    let afl_rustc_version = afl_rustc_version()?;
-    let prefix = Path::new("afl.rs")
-        .join(afl_rustc_version)
-        .join(pkg_version());
-    Ok(xdg::BaseDirectories::with_prefix(prefix))
+fn xdg_base_dir() -> xdg::BaseDirectories {
+    xdg::BaseDirectories::with_prefix("afl.rs")
 }
 
 fn data_dir(dir_name: &str) -> Result<PathBuf> {
-    // For docs.rs builds, use OUT_DIR.
-    // For other cases, use a XDG data directory.
-    // It is necessary to use OUT_DIR for docs.rs builds,
-    // as that is the only place where we can write to.
-    // The Cargo documentation recommends that build scripts
-    // place their generated files at OUT_DIR too, but we
-    // don't change that for now for normal builds.
-    // smoelius: AFL++ is no longer built on docs.rs.
-    let xdg_dir = xdg_dir()?;
-    xdg_dir.create_data_directory(dir_name).map_err(Into::into)
+    let afl_rustc_version = afl_rustc_version()?;
+    let subdir = PathBuf::from(afl_rustc_version)
+        .join(pkg_version())
+        .join(dir_name);
+    xdg_base_dir()
+        .create_data_directory(subdir)
+        .map_err(Into::into)
 }
 
 const SHORT_COMMIT_HASH_LEN: usize = 7;
