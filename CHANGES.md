@@ -1,5 +1,9 @@
 # Changes
 
+## 0.15.22
+
+- Go back to conventional publishing. Attempting to use trusted publishing caused the AFLplusplus submodule to not be included.
+
 ## 0.15.21
 
 - [Enable link time optimization and strip symbols for release builds](https://github.com/rust-fuzz/afl.rs/pull/634)
