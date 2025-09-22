@@ -69,7 +69,11 @@ pub fn config(args: &Args) -> Result<()> {
             .status()
             .as_ref()
             .is_ok_and(ExitStatus::success);
-        ensure!(success, "could not copy directory {afl_src_dir:?}");
+        ensure!(
+            success,
+            "could not copy directory `{}`",
+            afl_src_dir.display()
+        );
     }
 
     let work_dir = tempdir.path().join(AFL_SRC_PATH);
