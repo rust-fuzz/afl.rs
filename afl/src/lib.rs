@@ -9,7 +9,7 @@ use std::env;
 use std::io::{self, Read};
 use std::panic;
 
-// those functions are provided by the afl-llvm-rt static library
+// those functions are provided by the afl-compiler-rt static library
 unsafe extern "C" {
     fn __afl_persistent_loop(counter: usize) -> isize;
     fn __afl_manual_init();
@@ -17,6 +17,195 @@ unsafe extern "C" {
     static __afl_fuzz_len: *const u32;
     static __afl_fuzz_ptr: *const u8;
 }
+
+// AFL++ IJON functions in afl-compiler-rt
+unsafe extern "C" {
+    pub fn ijon_max(addr: u32, val: u64);
+    pub fn ijon_min(addr: u32, val: u64);
+    pub fn ijon_set(addr: u32, val: u32);
+    pub fn ijon_inc(addr: u32, val: u32);
+    pub fn ijon_xor_state(val: u32);
+    pub fn ijon_reset_state();
+    pub fn ijon_simple_hash(x: u64) -> u64;
+    pub fn ijon_hashint(old: u32, val: u32) -> u32;
+    pub fn ijon_hashstr(old: u32, val: *const u8) -> u32;
+    pub fn ijon_hashmen(old: u32, val: *const u8, len: usize) -> u32;
+    pub fn ijon_hashstack_backtrace() -> u32;
+    pub fn ijon_hashstack() -> u32;
+    pub fn ijon_strdist(a: *const u8, b: *const u8) -> u32;
+    pub fn ijon_memdist(a: *const u8, b: *const u8, len: usize) -> u32;
+    pub fn ijon_max_variadic(addr: u32, ...);
+    pub fn ijon_min_variadic(addr: u32, ...);
+}
+
+#[macro_export]
+macro_rules! ijon_inc {
+    ($x:expr) => {{
+        use std::sync::atomic::{AtomicU32, Ordering};
+        static LOC_CACHE: AtomicU32 = AtomicU32::new(0);
+        let mut loc = LOC_CACHE.load(Ordering::Relaxed);
+        if loc == 0 {
+            let new_val = ijon_hashstr(line!(), file!());
+            LOC_CACHE.store(new_val, Ordering::Relaxed);
+            loc = new_val;
+        }
+        ijon_inc(loc, $x);
+    }};
+}
+
+#[macro_export]
+macro_rules! ijon_max {
+    ($($x:expr),+ $(,)?) => {{
+        use std::sync::atomic::{AtomicU32, Ordering};
+        static LOC_CACHE: AtomicU32 = AtomicU32::new(0);
+        let mut loc = LOC_CACHE.load(Ordering::Relaxed);
+        if loc == 0 {
+            let new_val = ijon_hashstr(line!(), file!());
+            LOC_CACHE.store(new_val, Ordering::Relaxed);
+            loc = new_val;
+        }
+        ijon_max_variadic(loc, $($x),+, 0u64);
+    }};
+}
+
+#[macro_export]
+macro_rules! ijon_min {
+    ($($x:expr),+ $(,)?) => {{
+        use std::sync::atomic::{AtomicU32, Ordering};
+        static LOC_CACHE: AtomicU32 = AtomicU32::new(0);
+        let mut loc = LOC_CACHE.load(Ordering::Relaxed);
+        if loc == 0 {
+            let new_val = ijon_hashstr(line!(), file!());
+            LOC_CACHE.store(new_val, Ordering::Relaxed);
+            loc = new_val;
+        }
+        ijon_min_variadic(loc, $($x),+, 0u64);
+    }};
+}
+
+#[macro_export]
+macro_rules! ijon_set {
+    ($x:expr) => {{
+        use std::sync::atomic::{AtomicU32, Ordering};
+        static LOC_CACHE: AtomicU32 = AtomicU32::new(0);
+        let mut loc = LOC_CACHE.load(Ordering::Relaxed);
+        if loc == 0 {
+            let new_val = ijon_hashstr(line!(), file!());
+            LOC_CACHE.store(new_val, Ordering::Relaxed);
+            loc = new_val;
+        }
+        ijon_set(loc, $x);
+    }};
+}
+
+#[macro_export]
+macro_rules! ijon_state {
+    ($n:expr) => {
+        ijon_xor_state($n)
+    };
+}
+
+#[macro_export]
+macro_rules! ijon_ctx {
+    ($x:expr) => {{
+        let hash = ijon_hashstr(line!(), file!());
+        ijon_xor_state(hash);
+        let temp = $x;
+        ijon_xor_state(hash);
+        temp
+    }};
+}
+
+#[macro_export]
+macro_rules! ijon_max_at {
+    ($addr:expr, $x:expr) => {
+        ijon_max($addr, $x)
+    };
+}
+
+#[macro_export]
+macro_rules! ijon_min_at {
+    ($addr:expr, $x:expr) => {
+        ijon_min($addr, $x)
+    };
+}
+
+#[macro_export]
+macro_rules! _ijon_abs_dist {
+    ($x:expr, $y:expr) => {
+        if $x < $y { $y - $x } else { $x - $y }
+    };
+}
+
+#[macro_export]
+macro_rules! ijon_bits {
+    ($x:expr) => {
+        ijon_set(ijon_hashint(
+            ijon_hashstack(),
+            if $x == 0 {
+                0
+            } else {
+                $x.leading_zeros() as u32
+            },
+        ))
+    };
+}
+
+#[macro_export]
+macro_rules! ijon_strdist {
+    ($x:expr, $y:expr) => {
+        ijon_set(ijon_hashint(ijon_hashstack(), ijon_strdist($x, $y)))
+    };
+}
+
+#[macro_export]
+macro_rules! ijon_dist {
+    ($x:expr, $y:expr) => {
+        ijon_set(ijon_hashint(
+            ijon_hashstack(),
+            $crate::_ijon_abs_dist!($x, $y),
+        ))
+    };
+}
+
+#[macro_export]
+macro_rules! ijon_cmp {
+    ($x:expr, $y:expr) => {
+        ijon_inc(ijon_hashint(ijon_hashstack(), ($x ^ $y).count_ones()))
+    };
+}
+
+#[macro_export]
+macro_rules! ijon_stack_max {
+    ($x:expr) => {{
+        use std::sync::atomic::{AtomicU32, Ordering};
+        static LOC: AtomicU32 = AtomicU32::new(0);
+        let mut loc = LOC.load(Ordering::Relaxed);
+        if loc == 0 {
+            let new_val = ijon_hashstr(line!(), file!());
+            LOC.store(new_val, Ordering::Relaxed);
+            loc = new_val;
+        }
+        ijon_max(ijon_hashint(loc, ijon_hashstack()), $x);
+    }};
+}
+
+#[macro_export]
+macro_rules! ijon_stack_min {
+    ($x:expr) => {{
+        use std::sync::atomic::{AtomicU32, Ordering};
+        static LOC: AtomicU32 = AtomicU32::new(0);
+        let mut loc = LOC.load(Ordering::Relaxed);
+        if loc == 0 {
+            let new_val = ijon_hashstr(line!(), file!());
+            LOC.store(new_val, Ordering::Relaxed);
+            loc = new_val;
+        }
+        ijon_min(ijon_hashint(loc, ijon_hashstack()), $x);
+    }};
+}
+
+// end if AFL++ IJON functions
 
 #[allow(non_upper_case_globals)]
 #[doc(hidden)]
