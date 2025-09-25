@@ -124,7 +124,7 @@ fn main() {
     };
 
     if !matches!(afl_args.subcmd, Some(AflSubcommand::Config(..)))
-        && !common::archive_file_path().unwrap().exists()
+        && !common::object_file_path().unwrap().exists()
     {
         let version = common::afl_rustc_version().unwrap();
         eprintln!(
@@ -346,9 +346,8 @@ where
     let mut rustdocflags = rustflags.clone();
 
     rustflags.push_str(&format!(
-        "-l afl-llvm-rt \
-         -L {} ",
-        common::afl_llvm_dir().unwrap().display()
+        "-Clink-arg={} ",
+        common::object_file_path().unwrap().display()
     ));
 
     // add user provided flags
