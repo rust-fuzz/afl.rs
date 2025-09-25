@@ -54,6 +54,22 @@ fn integration_cfg() {
     }
 }
 
+#[test]
+fn integration_maze() {
+    assert_cmd::Command::new(cargo_afl_path())
+        .arg("afl")
+        .arg("build")
+        .arg("-r")
+        .arg("--example")
+        .arg("maze")
+        .arg("--manifest-path")
+        .arg("../afl/Cargo.toml")
+        .assert()
+        .success();
+
+    fuzz_example("maze", true);
+}
+
 fn fuzz_example(name: &str, should_crash: bool) {
     let temp_dir = tempfile::TempDir::new().expect("Could not create temporary directory");
     let temp_dir_path = temp_dir.path();
@@ -64,7 +80,7 @@ fn fuzz_example(name: &str, should_crash: bool) {
         .arg(input_path())
         .arg("-o")
         .arg(temp_dir_path)
-        .args(["-V", "5"]) // 5 seconds
+        .args(["-V", "10"]) // 5 seconds
         .arg(examples_path(name))
         .env("AFL_BENCH_UNTIL_CRASH", "1")
         .env("AFL_NO_CRASH_README", "1")
