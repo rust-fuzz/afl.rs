@@ -7,6 +7,7 @@
 
 use std::env;
 use std::io::{self, Read};
+use std::os::raw::c_char;
 use std::panic;
 
 // those functions are provided by the afl-compiler-rt static library
@@ -28,7 +29,7 @@ unsafe extern "C" {
     pub fn ijon_reset_state();
     pub fn ijon_simple_hash(x: u64) -> u64;
     pub fn ijon_hashint(old: u32, val: u32) -> u32;
-    pub fn ijon_hashstr(old: u32, val: *const u8) -> u32;
+    pub fn ijon_hashstr(old: u32, val: *const c_char) -> u32;
     pub fn ijon_hashmen(old: u32, val: *const u8, len: usize) -> u32;
     pub fn ijon_hashstack_backtrace() -> u32;
     pub fn ijon_hashstack() -> u32;
@@ -45,11 +46,12 @@ macro_rules! ijon_inc {
         static LOC_CACHE: AtomicU32 = AtomicU32::new(0);
         let mut loc = LOC_CACHE.load(Ordering::Relaxed);
         if loc == 0 {
-            let new_val = ijon_hashstr(line!(), file!());
+            let cfile = CString::new(file!()).unwrap();
+            let new_val = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
             LOC_CACHE.store(new_val, Ordering::Relaxed);
             loc = new_val;
         }
-        ijon_inc(loc, $x);
+        unsafe { ijon_inc(loc, $x) };
     }};
 }
 
@@ -60,11 +62,12 @@ macro_rules! ijon_max {
         static LOC_CACHE: AtomicU32 = AtomicU32::new(0);
         let mut loc = LOC_CACHE.load(Ordering::Relaxed);
         if loc == 0 {
-            let new_val = ijon_hashstr(line!(), file!());
+            let cfile = CString::new(file!()).unwrap();
+            let new_val = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
             LOC_CACHE.store(new_val, Ordering::Relaxed);
             loc = new_val;
         }
-        ijon_max_variadic(loc, $($x),+, 0u64);
+        unsafe {  ijon_max_variadic(loc, $($x),+, 0u64) };
     }};
 }
 
@@ -75,11 +78,12 @@ macro_rules! ijon_min {
         static LOC_CACHE: AtomicU32 = AtomicU32::new(0);
         let mut loc = LOC_CACHE.load(Ordering::Relaxed);
         if loc == 0 {
-            let new_val = ijon_hashstr(line!(), file!());
+            let cfile = CString::new(file!()).unwrap();
+            let new_val = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
             LOC_CACHE.store(new_val, Ordering::Relaxed);
             loc = new_val;
         }
-        ijon_min_variadic(loc, $($x),+, 0u64);
+        unsafe { ijon_min_variadic(loc, $($x),+, 0u64) };
     }};
 }
 
@@ -90,28 +94,30 @@ macro_rules! ijon_set {
         static LOC_CACHE: AtomicU32 = AtomicU32::new(0);
         let mut loc = LOC_CACHE.load(Ordering::Relaxed);
         if loc == 0 {
-            let new_val = ijon_hashstr(line!(), file!());
+            let cfile = CString::new(file!()).unwrap();
+            let new_val = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
             LOC_CACHE.store(new_val, Ordering::Relaxed);
             loc = new_val;
         }
-        ijon_set(loc, $x);
+        unsafe { ijon_set(loc, $x) };
     }};
 }
 
 #[macro_export]
 macro_rules! ijon_state {
     ($n:expr) => {
-        ijon_xor_state($n)
+        unsafe { ijon_xor_state($n) }
     };
 }
 
 #[macro_export]
 macro_rules! ijon_ctx {
     ($x:expr) => {{
-        let hash = ijon_hashstr(line!(), file!());
-        ijon_xor_state(hash);
+        let cfile = CString::new(file!()).unwrap();
+        let hash = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
+        unsafe { ijon_xor_state(hash) };
         let temp = $x;
-        ijon_xor_state(hash);
+        unsafe { ijon_xor_state(hash) };
         temp
     }};
 }
@@ -119,14 +125,14 @@ macro_rules! ijon_ctx {
 #[macro_export]
 macro_rules! ijon_max_at {
     ($addr:expr, $x:expr) => {
-        ijon_max($addr, $x)
+        unsafe { ijon_max($addr, $x) }
     };
 }
 
 #[macro_export]
 macro_rules! ijon_min_at {
     ($addr:expr, $x:expr) => {
-        ijon_min($addr, $x)
+        unsafe { ijon_min($addr, $x) }
     };
 }
 
@@ -140,38 +146,42 @@ macro_rules! _ijon_abs_dist {
 #[macro_export]
 macro_rules! ijon_bits {
     ($x:expr) => {
-        ijon_set(ijon_hashint(
-            ijon_hashstack(),
-            if $x == 0 {
-                0
-            } else {
-                $x.leading_zeros() as u32
-            },
-        ))
+        unsafe {
+            ijon_set(ijon_hashint(
+                ijon_hashstack(),
+                if $x == 0 {
+                    0
+                } else {
+                    $x.leading_zeros() as u32
+                },
+            ))
+        }
     };
 }
 
 #[macro_export]
 macro_rules! ijon_strdist {
     ($x:expr, $y:expr) => {
-        ijon_set(ijon_hashint(ijon_hashstack(), ijon_strdist($x, $y)))
+        unsafe { ijon_set(ijon_hashint(ijon_hashstack(), ijon_strdist($x, $y))) }
     };
 }
 
 #[macro_export]
 macro_rules! ijon_dist {
     ($x:expr, $y:expr) => {
-        ijon_set(ijon_hashint(
-            ijon_hashstack(),
-            $crate::_ijon_abs_dist!($x, $y),
-        ))
+        unsafe {
+            ijon_set(ijon_hashint(
+                ijon_hashstack(),
+                $crate::_ijon_abs_dist!($x, $y),
+            ))
+        }
     };
 }
 
 #[macro_export]
 macro_rules! ijon_cmp {
     ($x:expr, $y:expr) => {
-        ijon_inc(ijon_hashint(ijon_hashstack(), ($x ^ $y).count_ones()))
+        unsafe { ijon_inc(ijon_hashint(ijon_hashstack(), ($x ^ $y).count_ones())) }
     };
 }
 
@@ -182,11 +192,12 @@ macro_rules! ijon_stack_max {
         static LOC: AtomicU32 = AtomicU32::new(0);
         let mut loc = LOC.load(Ordering::Relaxed);
         if loc == 0 {
-            let new_val = ijon_hashstr(line!(), file!());
+            let cfile = CString::new(file!()).unwrap();
+            let new_val = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
             LOC.store(new_val, Ordering::Relaxed);
             loc = new_val;
         }
-        ijon_max(ijon_hashint(loc, ijon_hashstack()), $x);
+        unsafe { ijon_max(ijon_hashint(loc, ijon_hashstack()), $x) };
     }};
 }
 
@@ -197,11 +208,12 @@ macro_rules! ijon_stack_min {
         static LOC: AtomicU32 = AtomicU32::new(0);
         let mut loc = LOC.load(Ordering::Relaxed);
         if loc == 0 {
-            let new_val = ijon_hashstr(line!(), file!());
+            let cfile = CString::new(file!()).unwrap();
+            let new_val = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
             LOC.store(new_val, Ordering::Relaxed);
             loc = new_val;
         }
-        ijon_min(ijon_hashint(loc, ijon_hashstack()), $x);
+        unsafe { ijon_min(ijon_hashint(loc, ijon_hashstack()), $x) };
     }};
 }
 

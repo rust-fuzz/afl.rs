@@ -37,8 +37,10 @@ The maze:
 cddbddcccacaaaccaaaaaabbbbbbbbbbaaccccccccccccaaccaabbbbbbbbbbbbbbbbbbbbbbbbbaacccccccccccccccccccccccccccccdddddddddddddddddddddddddddddbbbbbbbbbbbbbbbd
 */
 
-use afl::ijon_set;
 use afl::ijon_hashint;
+use afl::ijon_hashstr;
+use afl::ijon_set;
+use std::ffi::CString;
 
 fn main() {
     afl::fuzz!(|data: &[u8]| {
@@ -190,7 +192,6 @@ fn main() {
             }
 
             ijon_set!(ijon_hashint(pos.0 as u32, pos.1 as u32));
-
         }
     });
 }
