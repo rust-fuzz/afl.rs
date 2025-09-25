@@ -314,6 +314,7 @@ where
             -Z llvm-plugins={p}/SanitizerCoveragePCGUARD.so \
             -Z llvm-plugins={p}/cmplog-instructions-pass.so  \
             -Z llvm-plugins={p}/cmplog-routines-pass.so \
+            -Z llvm-plugins={p}/afl-llvm-ijon-pass.so
             "
         ));
 
