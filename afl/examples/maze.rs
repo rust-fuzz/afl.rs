@@ -37,6 +37,8 @@ The maze:
 cddbddcccacaaaccaaaaaabbbbbbbbbbaaccccccccccccaaccaabbbbbbbbbbbbbbbbbbbbbbbbbaacccccccccccccccccccccccccccccdddddddddddddddddddddddddddddbbbbbbbbbbbbbbbd
 */
 
+#![allow(clippy::too_many_lines, clippy::manual_assert, clippy::cast_possible_truncation)]
+
 use afl::ijon_hashint;
 use afl::ijon_hashstr;
 use afl::ijon_set;
