@@ -19,7 +19,7 @@ anyhow = { version = "1.0", features = ["backtrace"] }
 clap = { version = "4.5", features = ["cargo", "derive"] }
 home = "0.5"
 rustc_version = "0.4"
-tempfile = "3.22"
+tempfile = "3.23"
 xdg = "3.0"
 
 [dependencies]
@@ -27,14 +27,14 @@ anyhow = { version = "1.0", features = ["backtrace"] }
 clap = { version = "4.5", features = ["cargo", "derive", "string"] }
 home = "0.5"
 rustc_version = "0.4"
-tempfile = "3.22"
+tempfile = "3.23"
 xdg = "3.0"
 
 [dev-dependencies]
 assert_cmd = "2.0"
 ctor = "0.5"
 predicates = "3.1"
-tempfile = "3.22"
+tempfile = "3.23"
 
 [features]
 default = []
