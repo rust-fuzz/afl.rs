@@ -286,8 +286,7 @@ where
              -C overflow_checks \
              -C codegen-units=1 \
              -C opt-level={opt_level} \
-             -C target-cpu=native \
-             -C link-arg=-Wl,-znostart-stop-gc ",
+             -C target-cpu=native ",
     );
     let mut environment_variables = HashMap::<&str, String>::new();
     environment_variables.insert("ASAN_OPTIONS", asan_options);
