@@ -10,12 +10,6 @@ use super::common;
 
 const AFL_SRC_PATH: &str = "AFLplusplus";
 
-// https://github.com/rust-fuzz/afl.rs/issues/148
-#[cfg(target_os = "macos")]
-static AR_CMD: &str = "/usr/bin/ar";
-#[cfg(not(target_os = "macos"))]
-static AR_CMD: &str = "ar";
-
 #[allow(clippy::struct_excessive_bools)]
 #[derive(Default, Parser)]
 #[clap(after_help = "\
@@ -37,8 +31,8 @@ pub struct Args {
 }
 
 pub fn config(args: &Args) -> Result<()> {
-    let archive_file_path = common::archive_file_path()?;
-    if !args.force && archive_file_path.exists() && args.plugins == common::plugins_available()? {
+    let object_file_path = common::object_file_path()?;
+    if !args.force && object_file_path.exists() && args.plugins == common::plugins_available()? {
         let version = common::afl_rustc_version()?;
         bail!(
             "AFL LLVM runtime was already built for Rust {version}; run `cargo afl config --build \
@@ -129,25 +123,10 @@ fn build_afl(args: &Args, work_dir: &Path) -> Result<()> {
     Ok(())
 }
 
-fn build_afl_llvm_runtime(args: &Args, work_dir: &Path) -> Result<()> {
+fn build_afl_llvm_runtime(_args: &Args, work_dir: &Path) -> Result<()> {
     let object_file_path = common::object_file_path()?;
     let _: u64 = std::fs::copy(work_dir.join("afl-compiler-rt.o"), &object_file_path)
         .with_context(|| "could not copy object file")?;
-
-    let archive_file_path = common::archive_file_path()?;
-    let mut command = Command::new(AR_CMD);
-    command
-        .arg("r")
-        .arg(archive_file_path)
-        .arg(object_file_path);
-
-    if !args.verbose {
-        command.stdout(Stdio::null());
-        command.stderr(Stdio::null());
-    }
-
-    let success = command.status().as_ref().is_ok_and(ExitStatus::success);
-    ensure!(success, "could not run 'ar'");
 
     Ok(())
 }

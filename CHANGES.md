@@ -1,5 +1,9 @@
 # Changes
 
+## 0.15.23
+
+- Internal refactor. The changes should not be noticeable to end users. If you experience breakage, please open an [issue](https://github.com/rust-fuzz/afl.rs/issues).
+
 ## 0.15.22
 
 - Go back to conventional publishing. Attempting to use trusted publishing caused the AFLplusplus submodule to not be included.
