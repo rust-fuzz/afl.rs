@@ -1,7 +1,12 @@
 use std::{
+    io::Write,
     path,
     process::{self, ExitStatus},
 };
+
+#[allow(dead_code)]
+#[path = "../src/common.rs"]
+mod common;
 
 fn target_dir_path() -> &'static path::Path {
     if path::Path::new("../target/debug/cargo-afl").exists() {
@@ -56,6 +61,15 @@ fn integration_cfg() {
 
 #[test]
 fn integration_maze() {
+    if !common::plugins_available().unwrap_or_default() {
+        writeln!(
+            std::io::stderr(),
+            "Skipping `integration_maze` test as plugins are unavailable"
+        )
+        .unwrap();
+        return;
+    }
+
     assert_cmd::Command::new(cargo_afl_path())
         .arg("afl")
         .arg("build")
