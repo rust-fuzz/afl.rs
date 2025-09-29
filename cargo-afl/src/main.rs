@@ -104,7 +104,7 @@ declare_afl_subcommand_enum! {
     Addseeds("Invoke afl-addseeds"),
     Analyze("Invoke afl-analyze"),
     Cmin("Invoke afl-cmin"),
-    Config("Build or rebuild AFL++", config::Args),
+    Config("Build, rebuild, or update AFL++", config::Args),
     Fuzz("Invoke afl-fuzz"),
     Gotcpu("Invoke afl-gotcpu"),
     Plot("Invoke afl-plot"),
@@ -182,7 +182,7 @@ fn command_with_afl_version() -> clap::Command {
 
     (|| -> Option<()> {
         let afl_version = afl_version()?;
-        let with_plugins = common::plugins_available().ok()?;
+        let with_plugins = common::plugins_installed().ok()?;
 
         let subcmd = command.find_subcommand_mut("afl").unwrap();
         let ver = format!(
@@ -292,7 +292,7 @@ where
     environment_variables.insert("ASAN_OPTIONS", asan_options);
     environment_variables.insert("TSAN_OPTIONS", tsan_options);
 
-    let has_plugins = common::plugins_available().unwrap();
+    let has_plugins = common::plugins_installed().unwrap();
     if require_plugins || has_plugins {
         // Make sure we are on nightly for the -Z flags
         assert!(
@@ -532,6 +532,16 @@ mod tests {
                     .starts_with("cargo-afl")
             );
         }
+    }
+
+    #[test]
+    fn tag_requires_update() {
+        let output = cargo_afl(&["config", "--tag", "v4.33c"]).output().unwrap();
+        assert_failure(&output, None);
+        assert!(String::from_utf8(output.stderr).unwrap().contains(
+            "error: the following required arguments were not provided:
+  --update"
+        ));
     }
 
     fn cargo_afl<T: AsRef<OsStr>>(args: &[T]) -> Command {

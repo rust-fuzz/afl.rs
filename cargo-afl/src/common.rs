@@ -5,7 +5,10 @@ use std::env;
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 
-fn xdg_base_dir() -> xdg::BaseDirectories {
+/// Return the [`xdg::BaseDirectories`] used by afl.rs
+///
+/// This function is public only for tests. Non-test code should use [`data_dir`], etc.
+pub fn xdg_base_dir() -> xdg::BaseDirectories {
     xdg::BaseDirectories::with_prefix("afl.rs")
 }
 
@@ -55,7 +58,20 @@ pub fn object_file_path() -> Result<PathBuf> {
     afl_llvm_dir().map(|path| path.join("libafl-llvm-rt.o"))
 }
 
-pub fn plugins_available() -> Result<bool> {
+pub fn aflplusplus_dir() -> Result<PathBuf> {
+    aflplusplus_dir_from_base_dir(&xdg_base_dir())
+}
+
+/// Construct the AFLplusplus directory from [`xdg::BaseDirectories`]
+///
+/// This function exists only for tests. Non-test code should use [`aflplusplus_dir`].
+pub fn aflplusplus_dir_from_base_dir(base_dir: &xdg::BaseDirectories) -> Result<PathBuf> {
+    base_dir
+        .create_data_directory("AFLplusplus")
+        .map_err(Into::into)
+}
+
+pub fn plugins_installed() -> Result<bool> {
     let afl_llvm_dir = afl_llvm_dir()?;
     for result in afl_llvm_dir
         .read_dir()
