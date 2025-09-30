@@ -43,9 +43,13 @@ cddbddcccacaaaccaaaaaabbbbbbbbbbaaccccccccccccaaccaabbbbbbbbbbbbbbbbbbbbbbbbbaac
     clippy::cast_possible_truncation
 )]
 
+#[cfg(fuzzing)]
 use afl::ijon_hashint;
+#[cfg(fuzzing)]
 use afl::ijon_hashstr;
+#[cfg(fuzzing)]
 use afl::ijon_set;
+#[cfg(fuzzing)]
 use std::ffi::CString;
 
 fn main() {
