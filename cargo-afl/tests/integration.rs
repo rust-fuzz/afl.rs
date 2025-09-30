@@ -62,6 +62,7 @@ fn integration_cfg() {
 #[test]
 fn integration_maze() {
     if !common::plugins_available().unwrap_or_default() {
+        #[allow(clippy::explicit_write)]
         writeln!(
             std::io::stderr(),
             "Skipping `integration_maze` test as plugins are unavailable"
