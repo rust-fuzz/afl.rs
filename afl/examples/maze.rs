@@ -197,6 +197,7 @@ fn main() {
                 panic!("Exited the maze!");
             }
 
+            #[cfg(fuzzing)]
             ijon_set!(ijon_hashint(pos.0 as u32, pos.1 as u32));
         }
     });
