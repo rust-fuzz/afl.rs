@@ -1,5 +1,9 @@
 # Changes
 
+## 0.15.24
+
+- [Update AFLplusplus to 4.34c](https://github.com/rust-fuzz/afl.rs/pull/660)
+
 ## 0.15.23
 
 - Internal refactor. The changes should not be noticeable to end users. If you experience breakage, please open an [issue](https://github.com/rust-fuzz/afl.rs/issues).
