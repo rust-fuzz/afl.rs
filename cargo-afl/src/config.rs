@@ -125,7 +125,7 @@ fn build_afl(args: &Args, work_dir: &Path) -> Result<()> {
 
 fn build_afl_llvm_runtime(_args: &Args, work_dir: &Path) -> Result<()> {
     let object_file_path = common::object_file_path()?;
-    let _: u64 = std::fs::copy(work_dir.join("afl-compiler-rt.o"), &object_file_path)
+    let _: u64 = std::fs::copy(work_dir.join(common::OBJECT_FILE_NAME), &object_file_path)
         .with_context(|| "could not copy object file")?;
 
     Ok(())

@@ -5,6 +5,8 @@ use std::env;
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 
+pub const OBJECT_FILE_NAME: &str = "afl-compiler-rt.o";
+
 fn xdg_base_dir() -> xdg::BaseDirectories {
     xdg::BaseDirectories::with_prefix("afl.rs")
 }
@@ -52,7 +54,7 @@ pub fn afl_llvm_dir() -> Result<PathBuf> {
 }
 
 pub fn object_file_path() -> Result<PathBuf> {
-    afl_llvm_dir().map(|path| path.join("libafl-llvm-rt.o"))
+    afl_llvm_dir().map(|path| path.join(OBJECT_FILE_NAME))
 }
 
 pub fn plugins_available() -> Result<bool> {
