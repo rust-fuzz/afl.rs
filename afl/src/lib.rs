@@ -42,14 +42,10 @@ unsafe extern "C" {
 #[macro_export]
 macro_rules! ijon_inc {
     ($x:expr) => {{
-        use std::sync::atomic::{AtomicU32, Ordering};
-        static LOC_CACHE: AtomicU32 = AtomicU32::new(0);
-        let mut loc = LOC_CACHE.load(Ordering::Relaxed);
+        static mut loc: u32 = 0;
         if loc == 0 {
             let cfile = std::ffi::CString::new(file!()).unwrap();
-            let new_val = unsafe { afl::ijon_hashstr(line!(), cfile.as_ptr()) };
-            LOC_CACHE.store(new_val, Ordering::Relaxed);
-            loc = new_val;
+            loc = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
         }
         unsafe { ijon_inc(loc, $x) };
     }};
@@ -58,30 +54,22 @@ macro_rules! ijon_inc {
 #[macro_export]
 macro_rules! ijon_max {
     ($($x:expr),+ $(,)?) => {{
-        use std::sync::atomic::{AtomicU32, Ordering};
-        static LOC_CACHE: AtomicU32 = AtomicU32::new(0);
-        let mut loc = LOC_CACHE.load(Ordering::Relaxed);
+        static mut loc: u32 = 0;
         if loc == 0 {
-            let cfile = CString::new(file!()).unwrap();
-            let new_val = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
-            LOC_CACHE.store(new_val, Ordering::Relaxed);
-            loc = new_val;
+            let cfile = std::ffi::CString::new(file!()).unwrap();
+            loc = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
         }
-        unsafe {  ijon_max_variadic(loc, $($x),+, 0u64) };
+        unsafe { ijon_max_variadic(_IJON_LOC_CACHE, $($x),+, 0u64) };
     }};
 }
 
 #[macro_export]
 macro_rules! ijon_min {
     ($($x:expr),+ $(,)?) => {{
-        use std::sync::atomic::{AtomicU32, Ordering};
-        static LOC_CACHE: AtomicU32 = AtomicU32::new(0);
-        let mut loc = LOC_CACHE.load(Ordering::Relaxed);
+        static mut loc: u32 = 0;
         if loc == 0 {
-            let cfile = CString::new(file!()).unwrap();
-            let new_val = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
-            LOC_CACHE.store(new_val, Ordering::Relaxed);
-            loc = new_val;
+            let cfile = std::ffi::CString::new(file!()).unwrap();
+            loc = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
         }
         unsafe { ijon_min_variadic(loc, $($x),+, 0u64) };
     }};
@@ -90,14 +78,10 @@ macro_rules! ijon_min {
 #[macro_export]
 macro_rules! ijon_set {
     ($x:expr) => {{
-        use std::sync::atomic::{AtomicU32, Ordering};
-        static LOC_CACHE: AtomicU32 = AtomicU32::new(0);
-        let mut loc = LOC_CACHE.load(Ordering::Relaxed);
+        static mut loc: u32 = 0;
         if loc == 0 {
-            let cfile = CString::new(file!()).unwrap();
-            let new_val = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
-            LOC_CACHE.store(new_val, Ordering::Relaxed);
-            loc = new_val;
+            let cfile = std::ffi::CString::new(file!()).unwrap();
+            loc = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
         }
         unsafe { ijon_set(loc, $x) };
     }};
@@ -113,7 +97,7 @@ macro_rules! ijon_state {
 #[macro_export]
 macro_rules! ijon_ctx {
     ($x:expr) => {{
-        let cfile = CString::new(file!()).unwrap();
+        let cfile = std::ffi::CString::new(file!()).unwrap();
         let hash = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
         unsafe { ijon_xor_state(hash) };
         let temp = $x;
@@ -188,14 +172,10 @@ macro_rules! ijon_cmp {
 #[macro_export]
 macro_rules! ijon_stack_max {
     ($x:expr) => {{
-        use std::sync::atomic::{AtomicU32, Ordering};
-        static LOC: AtomicU32 = AtomicU32::new(0);
-        let mut loc = LOC.load(Ordering::Relaxed);
+        static mut loc: u32 = 0;
         if loc == 0 {
-            let cfile = CString::new(file!()).unwrap();
-            let new_val = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
-            LOC.store(new_val, Ordering::Relaxed);
-            loc = new_val;
+            let cfile = std::ffi::CString::new(file!()).unwrap();
+            loc = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
         }
         unsafe { ijon_max(ijon_hashint(loc, ijon_hashstack()), $x) };
     }};
@@ -204,14 +184,10 @@ macro_rules! ijon_stack_max {
 #[macro_export]
 macro_rules! ijon_stack_min {
     ($x:expr) => {{
-        use std::sync::atomic::{AtomicU32, Ordering};
-        static LOC: AtomicU32 = AtomicU32::new(0);
-        let mut loc = LOC.load(Ordering::Relaxed);
+        static mut loc: u32 = 0;
         if loc == 0 {
-            let cfile = CString::new(file!()).unwrap();
-            let new_val = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
-            LOC.store(new_val, Ordering::Relaxed);
-            loc = new_val;
+            let cfile = std::ffi::CString::new(file!()).unwrap();
+            loc = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
         }
         unsafe { ijon_min(ijon_hashint(loc, ijon_hashstack()), $x) };
     }};
