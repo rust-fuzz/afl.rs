@@ -54,7 +54,7 @@ environment variable `AFL_NO_CFG_FUZZING` to `1` when building.
 
 ## IJON
 
-If you want to use IJON - helping fuzzer coverage through code annotation - then
+If you want to use [IJON](https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/IJON.md) - helping fuzzer coverage through code annotation - then
 have a look at the [maze example](afl/examples/maze.rs).
 
 You can find the AFL++ IJON documentation at [https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/IJON.md](https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/IJON.md)
