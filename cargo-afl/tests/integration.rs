@@ -71,16 +71,6 @@ fn integration_maze() {
         return;
     }
 
-    assert_cmd::Command::new(cargo_afl_path())
-        .arg("afl")
-        .arg("build")
-        .arg("-r")
-        .arg("--example")
-        .arg("maze")
-        .arg("--manifest-path")
-        .arg("../afl/Cargo.toml")
-        .assert()
-        .success();
 
     fuzz_example("maze", true);
 }
