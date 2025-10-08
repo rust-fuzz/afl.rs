@@ -46,9 +46,9 @@ macro_rules! ijon_inc {
             static mut loc: u32 = 0;
             if loc == 0 {
                 let cfile = std::ffi::CString::new(file!()).unwrap();
-                loc = ijon_hashstr(line!(), cfile.as_ptr());
+                loc = afl::ijon_hashstr(line!(), cfile.as_ptr());
             }
-            ijon_inc(loc, $x)
+            afl::ijon_inc(loc, $x)
         };
     }};
 }
@@ -60,9 +60,9 @@ macro_rules! ijon_max {
         static mut loc: u32 = 0;
         if loc == 0 {
             let cfile = std::ffi::CString::new(file!()).unwrap();
-            loc = ijon_hashstr(line!(), cfile.as_ptr());
+            loc = afl::ijon_hashstr(line!(), cfile.as_ptr());
         }
-        ijon_max_variadic(_IJON_LOC_CACHE, $($x),+, 0u64)
+        afl::ijon_max_variadic(_IJON_LOC_CACHE, $($x),+, 0u64)
         };
     }};
 }
@@ -74,9 +74,9 @@ macro_rules! ijon_min {
         static mut loc: u32 = 0;
         if loc == 0 {
             let cfile = std::ffi::CString::new(file!()).unwrap();
-            loc = ijon_hashstr(line!(), cfile.as_ptr());
+            loc = afl::ijon_hashstr(line!(), cfile.as_ptr());
         }
-        ijon_min_variadic(loc, $($x),+, 0u64)
+        afl::ijon_min_variadic(loc, $($x),+, 0u64)
         };
     }};
 }
@@ -88,9 +88,9 @@ macro_rules! ijon_set {
             static mut loc: u32 = 0;
             if loc == 0 {
                 let cfile = std::ffi::CString::new(file!()).unwrap();
-                loc = ijon_hashstr(line!(), cfile.as_ptr());
+                loc = afl::ijon_hashstr(line!(), cfile.as_ptr());
             }
-            ijon_set(loc, $x)
+            afl::ijon_set(loc, $x)
         };
     }};
 }
@@ -98,7 +98,7 @@ macro_rules! ijon_set {
 #[macro_export]
 macro_rules! ijon_state {
     ($n:expr) => {
-        unsafe { ijon_xor_state($n) }
+        unsafe { afl::ijon_xor_state($n) }
     };
 }
 
@@ -106,10 +106,10 @@ macro_rules! ijon_state {
 macro_rules! ijon_ctx {
     ($x:expr) => {{
         let cfile = std::ffi::CString::new(file!()).unwrap();
-        let hash = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
-        unsafe { ijon_xor_state(hash) };
+        let hash = unsafe { afl::ijon_hashstr(line!(), cfile.as_ptr()) };
+        unsafe { afl::ijon_xor_state(hash) };
         let temp = $x;
-        unsafe { ijon_xor_state(hash) };
+        unsafe { afl::ijon_xor_state(hash) };
         temp
     }};
 }
@@ -117,14 +117,14 @@ macro_rules! ijon_ctx {
 #[macro_export]
 macro_rules! ijon_max_at {
     ($addr:expr, $x:expr) => {
-        unsafe { ijon_max($addr, $x) }
+        unsafe { afl::ijon_max($addr, $x) }
     };
 }
 
 #[macro_export]
 macro_rules! ijon_min_at {
     ($addr:expr, $x:expr) => {
-        unsafe { ijon_min($addr, $x) }
+        unsafe { afl::ijon_min($addr, $x) }
     };
 }
 
@@ -139,8 +139,8 @@ macro_rules! _ijon_abs_dist {
 macro_rules! ijon_bits {
     ($x:expr) => {
         unsafe {
-            ijon_set(ijon_hashint(
-                ijon_hashstack(),
+            afl::ijon_set(afl::ijon_hashint(
+                afl::ijon_hashstack(),
                 if $x == 0 {
                     0
                 } else {
@@ -154,7 +154,7 @@ macro_rules! ijon_bits {
 #[macro_export]
 macro_rules! ijon_strdist {
     ($x:expr, $y:expr) => {
-        unsafe { ijon_set(ijon_hashint(ijon_hashstack(), ijon_strdist($x, $y))) }
+        unsafe { afl::ijon_set(afl::ijon_hashint(afl::ijon_hashstack(), afl::ijon_strdist($x, $y))) }
     };
 }
 
@@ -162,8 +162,8 @@ macro_rules! ijon_strdist {
 macro_rules! ijon_dist {
     ($x:expr, $y:expr) => {
         unsafe {
-            ijon_set(ijon_hashint(
-                ijon_hashstack(),
+            afl::ijon_set(afl::ijon_hashint(
+                afl::ijon_hashstack(),
                 $crate::_ijon_abs_dist!($x, $y),
             ))
         }
@@ -173,7 +173,7 @@ macro_rules! ijon_dist {
 #[macro_export]
 macro_rules! ijon_cmp {
     ($x:expr, $y:expr) => {
-        unsafe { ijon_inc(ijon_hashint(ijon_hashstack(), ($x ^ $y).count_ones())) }
+        unsafe { afl::ijon_inc(afl::ijon_hashint(afl::ijon_hashstack(), ($x ^ $y).count_ones())) }
     };
 }
 
@@ -184,9 +184,9 @@ macro_rules! ijon_stack_max {
             static mut loc: u32 = 0;
             if loc == 0 {
                 let cfile = std::ffi::CString::new(file!()).unwrap();
-                loc = ijon_hashstr(line!(), cfile.as_ptr());
+                loc = afl::ijon_hashstr(line!(), cfile.as_ptr());
             }
-            ijon_max(ijon_hashint(loc, ijon_hashstack()), $x)
+            afl::ijon_max(afl::ijon_hashint(loc, afl::ijon_hashstack()), $x)
         };
     }};
 }
@@ -198,9 +198,9 @@ macro_rules! ijon_stack_min {
             static mut loc: u32 = 0;
             if loc == 0 {
                 let cfile = std::ffi::CString::new(file!()).unwrap();
-                loc = ijon_hashstr(line!(), cfile.as_ptr());
+                loc = afl::ijon_hashstr(line!(), cfile.as_ptr());
             }
-            ijon_min(ijon_hashint(loc, ijon_hashstack()), $x)
+            afl::ijon_min(afl::ijon_hashint(loc, afl::ijon_hashstack()), $x)
         };
     }};
 }
