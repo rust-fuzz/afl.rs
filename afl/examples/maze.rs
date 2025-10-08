@@ -37,11 +37,7 @@ The maze:
 cddbddcccacaaaccaaaaaabbbbbbbbbbaaccccccccccccaaccaabbbbbbbbbbbbbbbbbbbbbbbbbaacccccccccccccccccccccccccccccdddddddddddddddddddddddddddddbbbbbbbbbbbbbbbd
 */
 
-#![allow(
-    clippy::too_many_lines,
-    clippy::manual_assert,
-    clippy::cast_possible_truncation
-)]
+#![allow(clippy::cast_possible_truncation)]
 
 #[cfg(fuzzing)]
 use afl::ijon_hashint;
