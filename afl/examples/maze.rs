@@ -1,4 +1,7 @@
-/* Solution:
+/*
+This example tests the AFL++ IJON feature.
+
+Solution to the maze:
 cddbddcccacaaaccaaaaaabbbbbbbbbbaaccccccccccccaaccaabbbbbbbbbbbbbbbbbbbbbbbbbaacccccccccccccccccccccccccccccdddddddddddddddddddddddddddddbbbbbbbbbbbbbbbd
 */
 

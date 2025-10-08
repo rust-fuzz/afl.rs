@@ -71,7 +71,6 @@ fn integration_maze() {
         return;
     }
 
-
     fuzz_example("maze", true);
 }
 
