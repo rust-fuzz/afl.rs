@@ -5,7 +5,7 @@ Solution to the maze:
 cddbddcccacaaaccaaaaaabbbbbbbbbbaaccccccccccccaaccaabbbbbbbbbbbbbbbbbbbbbbbbbaacccccccccccccccccccccccccccccdddddddddddddddddddddddddddddbbbbbbbbbbbbbbbd
 */
 
-#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::manual_assert, clippy::cast_possible_truncation)]
 
 #[cfg(fuzzing)]
 use afl::{ijon_hashint, ijon_set};
