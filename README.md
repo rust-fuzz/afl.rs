@@ -61,7 +61,7 @@ You can find the AFL++ IJON documentation at [https://github.com/AFLplusplus/AFL
 
 Note that the IJON macros have been rustyfied to lowercase - hence `IJON_MAX(x)` is `ijon_max(x)` in Rust.
 
-You will need to the following parts of cargo AFL:
+You will need to the following imports from `afl`, in addition to any macros that you use (e.g., `afl::ijon_max`):
 
 ```
 use afl::ijon_hashint;
