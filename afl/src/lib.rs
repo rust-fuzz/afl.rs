@@ -46,7 +46,7 @@ macro_rules! ijon_inc {
         static LOC_CACHE: AtomicU32 = AtomicU32::new(0);
         let mut loc = LOC_CACHE.load(Ordering::Relaxed);
         if loc == 0 {
-            let cfile = CString::new(file!()).unwrap();
+            let cfile = std::ffi::CString::new(file!()).unwrap();
             let new_val = unsafe { ijon_hashstr(line!(), cfile.as_ptr()) };
             LOC_CACHE.store(new_val, Ordering::Relaxed);
             loc = new_val;
