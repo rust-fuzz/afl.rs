@@ -68,5 +68,3 @@ use afl::ijon_hashint;
 use afl::ijon_hashstr;
 use std::ffi::CString;
 ```
-
-plus any macros that you use, e.g. `afl::ijon_max`.
