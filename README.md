@@ -66,5 +66,4 @@ You will need to the following imports from `afl`, in addition to any macros tha
 ```
 use afl::ijon_hashint;
 use afl::ijon_hashstr;
-use std::ffi::CString;
 ```
