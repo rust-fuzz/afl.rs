@@ -71,11 +71,10 @@ fn integration_maze() {
         return;
     }
 
-    let mut fail = 0;
     let temp_dir = tempfile::TempDir::new().expect("Could not create temporary directory");
     let temp_dir_path = temp_dir.path();
 
-    for i in 0..3 {
+    for _i in 0..3 {
         let _: ExitStatus = process::Command::new(cargo_afl_path())
             .arg("afl")
             .arg("fuzz")
@@ -96,7 +95,7 @@ fn integration_maze() {
         let crashes = std::fs::read_dir(temp_dir_path.join("default").join("crashes"))
             .unwrap()
             .count();
-        if (crashes >= 1) {
+        if crashes >= 1 {
             return;
         }
     }
