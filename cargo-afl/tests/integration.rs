@@ -101,7 +101,7 @@ fn integration_maze() {
         }
     }
 
-    assert!(false);
+    unreachable!();
 }
 
 fn fuzz_example(name: &str, should_crash: bool) {
