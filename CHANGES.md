@@ -1,5 +1,9 @@
 # Changes
 
+## 0.16.0
+
+- [Add AFL++ IJON functionality](https://github.com/rust-fuzz/afl.rs/pull/655)
+
 ## 0.15.24
 
 - [Update AFLplusplus to 4.34c](https://github.com/rust-fuzz/afl.rs/pull/660)
