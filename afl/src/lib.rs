@@ -57,12 +57,12 @@ macro_rules! ijon_inc {
 macro_rules! ijon_max {
     ($($x:expr),+ $(,)?) => {{
         unsafe {
-        static mut loc: u32 = 0;
-        if loc == 0 {
-            let cfile = std::ffi::CString::new(file!()).unwrap();
-            loc = afl::ijon_hashstr(line!(), cfile.as_ptr());
-        }
-        afl::ijon_max_variadic(_IJON_LOC_CACHE, $($x),+, 0u64)
+            static mut loc: u32 = 0;
+            if loc == 0 {
+                let cfile = std::ffi::CString::new(file!()).unwrap();
+                loc = afl::ijon_hashstr(line!(), cfile.as_ptr());
+            }
+            afl::ijon_max_variadic(_IJON_LOC_CACHE, $($x),+, 0u64)
         };
     }};
 }
@@ -71,12 +71,12 @@ macro_rules! ijon_max {
 macro_rules! ijon_min {
     ($($x:expr),+ $(,)?) => {{
         unsafe {
-        static mut loc: u32 = 0;
-        if loc == 0 {
-            let cfile = std::ffi::CString::new(file!()).unwrap();
-            loc = afl::ijon_hashstr(line!(), cfile.as_ptr());
-        }
-        afl::ijon_min_variadic(loc, $($x),+, 0u64)
+            static mut loc: u32 = 0;
+            if loc == 0 {
+                let cfile = std::ffi::CString::new(file!()).unwrap();
+                loc = afl::ijon_hashstr(line!(), cfile.as_ptr());
+            }
+            afl::ijon_min_variadic(loc, $($x),+, 0u64)
         };
     }};
 }
