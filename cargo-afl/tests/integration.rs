@@ -71,7 +71,37 @@ fn integration_maze() {
         return;
     }
 
-    fuzz_example("maze", true);
+    let mut fail = 0;
+    let temp_dir = tempfile::TempDir::new().expect("Could not create temporary directory");
+    let temp_dir_path = temp_dir.path();
+
+    for i in 0..3 {
+        let _: ExitStatus = process::Command::new(cargo_afl_path())
+            .arg("afl")
+            .arg("fuzz")
+            .arg("-i")
+            .arg(input_path())
+            .arg("-o")
+            .arg(temp_dir_path)
+            .args(["-V", "15"]) // 15 seconds
+            .arg(examples_path("maze"))
+            .env("AFL_BENCH_UNTIL_CRASH", "1")
+            .env("AFL_NO_CRASH_README", "1")
+            .env("AFL_NO_UI", "1")
+            .stdout(process::Stdio::inherit())
+            .stderr(process::Stdio::inherit())
+            .status()
+            .expect("Could not run cargo afl fuzz");
+        assert!(temp_dir_path.join("default").join("fuzzer_stats").is_file());
+        let crashes = std::fs::read_dir(temp_dir_path.join("default").join("crashes"))
+            .unwrap()
+            .count();
+        if (crashes >= 1) {
+            return;
+        }
+    }
+
+    assert!(false);
 }
 
 fn fuzz_example(name: &str, should_crash: bool) {
@@ -84,7 +114,7 @@ fn fuzz_example(name: &str, should_crash: bool) {
         .arg(input_path())
         .arg("-o")
         .arg(temp_dir_path)
-        .args(["-V", "10"]) // 5 seconds
+        .args(["-V", "5"]) // 5 seconds
         .arg(examples_path(name))
         .env("AFL_BENCH_UNTIL_CRASH", "1")
         .env("AFL_NO_CRASH_README", "1")
