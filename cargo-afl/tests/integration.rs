@@ -46,7 +46,7 @@ fn integration_cfg() {
             .arg("--manifest-path")
             .arg("../afl/Cargo.toml")
             .envs(if cfg_fuzzing {
-                vec![("AFL_BENCH_UNTIL_CRASH", "1")]
+                vec![]
             } else {
                 vec![("AFL_NO_CFG_FUZZING", "1")]
             })
