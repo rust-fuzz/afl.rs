@@ -154,7 +154,12 @@ macro_rules! ijon_bits {
 #[macro_export]
 macro_rules! ijon_strdist {
     ($x:expr, $y:expr) => {
-        unsafe { afl::ijon_set(afl::ijon_hashint(afl::ijon_hashstack(), afl::ijon_strdist($x, $y))) }
+        unsafe {
+            afl::ijon_set(afl::ijon_hashint(
+                afl::ijon_hashstack(),
+                afl::ijon_strdist($x, $y),
+            ))
+        }
     };
 }
 
@@ -173,7 +178,12 @@ macro_rules! ijon_dist {
 #[macro_export]
 macro_rules! ijon_cmp {
     ($x:expr, $y:expr) => {
-        unsafe { afl::ijon_inc(afl::ijon_hashint(afl::ijon_hashstack(), ($x ^ $y).count_ones())) }
+        unsafe {
+            afl::ijon_inc(afl::ijon_hashint(
+                afl::ijon_hashstack(),
+                ($x ^ $y).count_ones(),
+            ))
+        }
     };
 }
 
