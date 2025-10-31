@@ -1,5 +1,9 @@
 # Changes
 
+## 0.17.0
+
+- [Change how `cargo-afl` manages AFL++ source code](https://github.com/rust-fuzz/afl.rs/pull/605)
+
 ## 0.16.0
 
 - [Add AFL++ IJON functionality](https://github.com/rust-fuzz/afl.rs/pull/655)
