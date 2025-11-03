@@ -31,7 +31,7 @@ tempfile = "3.23"
 xdg = "3.0"
 
 [dev-dependencies]
-assert_cmd = "2.0"
+assert_cmd = "2.1"
 ctor = "0.6"
 predicates = "3.1"
 tempfile = "3.23"
