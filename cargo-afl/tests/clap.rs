@@ -1,4 +1,5 @@
 use assert_cmd::Command;
+use assert_cmd::cargo::cargo_bin_cmd;
 use std::ffi::OsStr;
 use std::process::Output;
 
@@ -128,7 +129,7 @@ fn cargo_afl<T: AsRef<OsStr>>(args: &[T]) -> Command {
 }
 
 fn command() -> Command {
-    Command::cargo_bin("cargo-afl").unwrap()
+    cargo_bin_cmd!("cargo-afl")
 }
 
 fn assert_success(output: &Output, subcommand: Option<&str>) {

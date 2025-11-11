@@ -1,4 +1,4 @@
-use assert_cmd::Command;
+use assert_cmd::{Command, cargo::cargo_bin_cmd};
 use predicates::prelude::*;
 use std::{env, fs::OpenOptions, io::Write, path::Path};
 use tempfile::tempdir;
@@ -60,8 +60,7 @@ fn build() {
             predicates::str::contains(BUILD_MSGS[0]).and(predicates::str::contains(BUILD_MSGS[1])),
         );
 
-    Command::cargo_bin("cargo-afl")
-        .unwrap()
+    cargo_bin_cmd!("cargo-afl")
         .current_dir(&tempdir)
         .args(["afl", "build"])
         .env("TESTING_BUILD", "1")
