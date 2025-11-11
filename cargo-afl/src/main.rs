@@ -1,10 +1,10 @@
+use cargo_afl_common as common;
 use clap::{CommandFactory, FromArgMatches, Parser, crate_version};
 use std::collections::HashMap;
 use std::env;
 use std::ffi::{OsStr, OsString};
 use std::process::{self, Command, Stdio};
 
-mod common;
 mod config;
 
 const HELP: &str = "In addition to the subcommands above, Cargo subcommands are also \
@@ -378,9 +378,8 @@ fn is_nightly() -> bool {
 #[cfg(all(test, unix))]
 mod tests {
     use super::*;
+    use cargo_afl_common::SUBCOMMANDS;
     use std::os::unix::ffi::OsStringExt;
-
-    use common::SUBCOMMANDS;
 
     #[test]
     fn test_app() {

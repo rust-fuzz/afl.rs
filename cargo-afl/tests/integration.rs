@@ -1,12 +1,9 @@
+use cargo_afl_common as common;
 use std::{
     io::Write,
     path,
     process::{self, ExitStatus},
 };
-
-#[allow(dead_code)]
-#[path = "../src/common/mod.rs"]
-mod common;
 
 fn target_dir_path() -> &'static path::Path {
     if path::Path::new("../target/debug/cargo-afl").exists() {

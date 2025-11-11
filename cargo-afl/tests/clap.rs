@@ -1,13 +1,8 @@
 use assert_cmd::Command;
 use assert_cmd::cargo::cargo_bin_cmd;
+use cargo_afl_common::SUBCOMMANDS;
 use std::ffi::OsStr;
 use std::process::Output;
-
-#[allow(dead_code)]
-#[path = "../src/common/mod.rs"]
-mod common;
-
-use common::SUBCOMMANDS;
 
 #[test]
 fn display_name() {

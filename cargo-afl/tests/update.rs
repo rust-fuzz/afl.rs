@@ -1,15 +1,13 @@
 use anyhow::Result;
 use assert_cmd::cargo::cargo_bin_cmd;
+use cargo_afl_common::{
+    self as common,
+    config::{
+        copy_aflplusplus_submodule, is_repo, remove_aflplusplus_dir, update_to_stable_or_tag,
+    },
+};
 use std::path::Path;
 use tempfile::tempdir;
-
-#[allow(dead_code)]
-#[path = "../src/common/mod.rs"]
-mod common;
-
-use common::config::{
-    copy_aflplusplus_submodule, is_repo, remove_aflplusplus_dir, update_to_stable_or_tag,
-};
 
 #[derive(Clone, Copy, Debug)]
 enum State {

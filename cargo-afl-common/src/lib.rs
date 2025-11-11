@@ -9,7 +9,6 @@ pub mod config;
 
 pub const OBJECT_FILE_NAME: &str = "afl-compiler-rt.o";
 
-#[cfg(test)]
 pub const SUBCOMMANDS: &[&str] = &[
     "addseeds",
     "analyze",
@@ -26,6 +25,7 @@ pub const SUBCOMMANDS: &[&str] = &[
 /// Return the [`xdg::BaseDirectories`] used by afl.rs
 ///
 /// This function is public only for tests. Non-test code should use [`data_dir`], etc.
+#[must_use]
 pub fn xdg_base_dir() -> xdg::BaseDirectories {
     xdg::BaseDirectories::with_prefix("afl.rs")
 }

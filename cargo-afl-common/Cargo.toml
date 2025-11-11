@@ -1,0 +1,21 @@
+[package]
+name = "cargo-afl-common"
+version = "0.17.0"
+readme = "README.md"
+license = "Apache-2.0"
+authors = ["Samuel Moelius <sam@moeli.us>"]
+description = "Fuzzing Rust code with american-fuzzy-lop"
+repository = "https://github.com/rust-fuzz/afl.rs"
+homepage = "https://github.com/rust-fuzz/afl.rs"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0"
+rustc_version = "0.4"
+xdg = "3.0"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+disallowed-macros = "allow"
+missing-errors-doc = "allow"
+missing-panics-doc = "allow"

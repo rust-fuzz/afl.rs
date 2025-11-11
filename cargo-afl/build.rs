@@ -1,9 +1,6 @@
 use std::env;
 use std::path::Path;
 
-#[path = "src/common/mod.rs"]
-mod common;
-
 #[path = "src/config.rs"]
 mod config;
 
