@@ -1,8 +1,6 @@
+use cargo_afl_common::config;
 use std::env;
 use std::path::Path;
-
-#[path = "src/config.rs"]
-mod config;
 
 fn main() {
     let installing = home::cargo_home()

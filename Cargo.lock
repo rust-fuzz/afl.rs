@@ -179,6 +179,7 @@ name = "cargo-afl-common"
 version = "0.17.0"
 dependencies = [
  "anyhow",
+ "clap",
  "rustc_version",
  "xdg",
 ]
