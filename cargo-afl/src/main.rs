@@ -1,11 +1,9 @@
-use cargo_afl_common as common;
+use cargo_afl_common::{self as common, config};
 use clap::{CommandFactory, FromArgMatches, Parser, crate_version};
 use std::collections::HashMap;
 use std::env;
 use std::ffi::{OsStr, OsString};
 use std::process::{self, Command, Stdio};
-
-mod config;
 
 const HELP: &str = "In addition to the subcommands above, Cargo subcommands are also \
 supported (see `cargo help` for a list of all Cargo subcommands).";
