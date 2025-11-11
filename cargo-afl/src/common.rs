@@ -7,6 +7,20 @@ use std::path::{Path, PathBuf};
 
 pub const OBJECT_FILE_NAME: &str = "afl-compiler-rt.o";
 
+#[cfg(test)]
+pub const SUBCOMMANDS: &[&str] = &[
+    "addseeds",
+    "analyze",
+    "cmin",
+    "fuzz",
+    "gotcpu",
+    "plot",
+    "showmap",
+    "system-config",
+    "tmin",
+    "whatsup",
+];
+
 /// Return the [`xdg::BaseDirectories`] used by afl.rs
 ///
 /// This function is public only for tests. Non-test code should use [`data_dir`], etc.
