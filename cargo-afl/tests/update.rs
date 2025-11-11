@@ -1,6 +1,6 @@
 use anyhow::Result;
-use assert_cmd::cargo::CommandCargoExt;
-use std::{path::Path, process::Command};
+use assert_cmd::cargo::cargo_bin_cmd;
+use std::path::Path;
 use tempfile::tempdir;
 
 #[allow(dead_code)]
@@ -92,7 +92,7 @@ fn update() {
 
         set_aflplusplus_dir_contents(before, &aflplusplus_dir).unwrap();
 
-        let mut command = Command::cargo_bin("cargo-afl").unwrap();
+        let mut command = cargo_bin_cmd!("cargo-afl");
         command.args(["afl", "config", "--update"]);
         command.env("XDG_DATA_HOME", tempdir.path());
         match after {
