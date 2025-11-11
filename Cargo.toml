@@ -1,5 +1,5 @@
 [workspace]
-members = ["afl", "cargo-afl"]
+members = ["afl", "cargo-afl", "cargo-afl-common"]
 resolver = "2"
 
 [workspace.lints.rust.unexpected_cfgs]

@@ -22,6 +22,8 @@ rustc_version = "0.4"
 tempfile = "3.23"
 xdg = "3.0"
 
+cargo-afl-common = { version = "0.17", path = "../cargo-afl-common" }
+
 [dependencies]
 anyhow = { version = "1.0", features = ["backtrace"] }
 clap = { version = "4.5", features = ["cargo", "derive", "string"] }
@@ -30,11 +32,15 @@ rustc_version = "0.4"
 tempfile = "3.23"
 xdg = "3.0"
 
+cargo-afl-common = { version = "0.17", path = "../cargo-afl-common" }
+
 [dev-dependencies]
 assert_cmd = "2.1"
 ctor = "0.6"
 predicates = "3.1"
 tempfile = "3.23"
+
+cargo-afl-common = { version = "0.17", path = "../cargo-afl-common" }
 
 [features]
 default = []

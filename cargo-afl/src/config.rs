@@ -1,6 +1,8 @@
-use crate::common;
-use crate::common::config::{copy_aflplusplus_submodule, is_repo, update_to_stable_or_tag};
 use anyhow::{Context, Result, bail, ensure};
+use cargo_afl_common::{
+    self as common,
+    config::{copy_aflplusplus_submodule, is_repo, update_to_stable_or_tag},
+};
 use clap::Parser;
 use std::ffi::OsStr;
 use std::path::Path;

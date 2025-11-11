@@ -164,12 +164,22 @@ version = "0.17.0"
 dependencies = [
  "anyhow",
  "assert_cmd",
+ "cargo-afl-common",
  "clap",
  "ctor",
  "home",
  "predicates",
  "rustc_version",
  "tempfile",
+ "xdg",
+]
+
+[[package]]
+name = "cargo-afl-common"
+version = "0.17.0"
+dependencies = [
+ "anyhow",
+ "rustc_version",
  "xdg",
 ]
 
