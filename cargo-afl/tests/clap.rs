@@ -3,7 +3,7 @@ use std::ffi::OsStr;
 use std::process::Output;
 
 #[allow(dead_code)]
-#[path = "../src/common.rs"]
+#[path = "../src/common/mod.rs"]
 mod common;
 
 use common::SUBCOMMANDS;
