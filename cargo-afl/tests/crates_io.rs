@@ -154,6 +154,7 @@ fn cargo_afl_build_command(home: &Path, cargo_afl: &Path) -> Command {
 }
 
 #[test]
+#[ignore = "while `cargo-afl-common` is being added"]
 fn package() {
     for subdir in ["afl", "cargo-afl"] {
         Command::new("cargo")
