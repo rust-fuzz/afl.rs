@@ -5,7 +5,7 @@ use std::{
 };
 
 #[allow(dead_code)]
-#[path = "../src/common.rs"]
+#[path = "../src/common/mod.rs"]
 mod common;
 
 fn target_dir_path() -> &'static path::Path {
