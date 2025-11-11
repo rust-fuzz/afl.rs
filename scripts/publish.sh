@@ -3,7 +3,7 @@
 # set -x
 set -euo pipefail
 
-for X in afl cargo-afl; do
+for X in afl cargo-afl-common cargo-afl; do
     pushd "$X"
     cargo publish "$@"
     popd
