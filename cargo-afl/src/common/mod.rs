@@ -5,6 +5,8 @@ use std::env;
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 
+pub mod config;
+
 pub const OBJECT_FILE_NAME: &str = "afl-compiler-rt.o";
 
 #[cfg(test)]
