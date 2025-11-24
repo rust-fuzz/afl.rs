@@ -25,7 +25,7 @@ jobs:
     if: needs.check-up-to-dateness.outputs.is-up-to-date != 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
       - run: sudo apt-get install llvm
@@ -60,7 +60,7 @@ jobs:
       CC: ${{ matrix.cc }}
       CXX: ${{ matrix.cxx }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
       - name: Rustup
