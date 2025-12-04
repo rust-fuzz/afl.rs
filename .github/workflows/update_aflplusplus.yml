@@ -22,7 +22,7 @@ jobs:
           URL='https://api.github.com/repos/AFLplusplus/AFLplusplus/releases/latest'
           TAG="$(curl -H "Accept: application/vnd.github+json" --silent --show-error "$URL" \
             | jq -r .tag_name)"
-          cd cargo-afl/AFLplusplus
+          cd cargo-afl-common/AFLplusplus
           git fetch --tags
           git checkout "$TAG"
 
