@@ -8,7 +8,7 @@ cddbddcccacaaaccaaaaaabbbbbbbbbbaaccccccccccccaaccaabbbbbbbbbbbbbbbbbbbbbbbbbaac
 #![allow(clippy::manual_assert, clippy::cast_possible_truncation)]
 
 #[cfg(fuzzing)]
-use afl::{ijon_hashint, ijon_hashstr, ijon_set};
+use afl::{ijon_hashint, ijon_set};
 
 fn main() {
     afl::fuzz!(|data: &[u8]| {
