@@ -1,5 +1,10 @@
 # Changes
 
+## 0.17.1
+
+- [Fix a bug affecting afl-cmin](https://github.com/rust-fuzz/afl.rs/pull/686)
+- [Upgrade AFLplusplus to commit afbcb07e](https://github.com/rust-fuzz/afl.rs/pull/688)
+
 ## 0.17.0
 
 - [Change how `cargo-afl` manages AFL++ source code](https://github.com/rust-fuzz/afl.rs/pull/605)
