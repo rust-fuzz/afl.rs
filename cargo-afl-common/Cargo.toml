@@ -11,7 +11,7 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0"
-clap = "4.5"
+clap = { version = "4.5", features = ["cargo", "derive"] }
 rustc_version = "0.4"
 xdg = "3.0"
 
