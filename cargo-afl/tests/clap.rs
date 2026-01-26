@@ -127,6 +127,7 @@ fn command() -> Command {
     cargo_bin_cmd!("cargo-afl")
 }
 
+#[track_caller]
 fn assert_success(output: &Output, subcommand: Option<&str>) {
     assert!(
         output.status.success(),
@@ -139,6 +140,7 @@ fn assert_success(output: &Output, subcommand: Option<&str>) {
     );
 }
 
+#[track_caller]
 fn assert_failure(output: &Output, subcommand: Option<&str>) {
     assert!(
         !output.status.success(),
