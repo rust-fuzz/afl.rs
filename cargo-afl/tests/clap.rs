@@ -51,7 +51,11 @@ fn subcommands_help_subcommand_disabled() {
 
     for &subcommand in SUBCOMMANDS {
         let output = cargo_afl(&[subcommand, "help"]).output().unwrap();
-        assert_failure(&output, Some(subcommand));
+        if ["cmin"].contains(&subcommand) {
+            assert_success(&output, Some(subcommand));
+        } else {
+            assert_failure(&output, Some(subcommand));
+        }
         assert!(
             !String::from_utf8(output.stdout)
                 .unwrap()
@@ -98,7 +102,11 @@ fn subcommands_version_flag_disabled() {
 
     for &subcommand in SUBCOMMANDS {
         let output = cargo_afl(&[subcommand, "-V"]).output().unwrap();
-        assert_failure(&output, Some(subcommand));
+        if ["cmin"].contains(&subcommand) {
+            assert_success(&output, Some(subcommand));
+        } else {
+            assert_failure(&output, Some(subcommand));
+        }
         assert!(
             !String::from_utf8(output.stdout)
                 .unwrap()
