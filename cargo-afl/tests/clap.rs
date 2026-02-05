@@ -1,8 +1,8 @@
 use assert_cmd::Command;
 use assert_cmd::cargo::cargo_bin_cmd;
-use cargo_afl_common::SUBCOMMANDS;
 use std::ffi::OsStr;
 use std::process::Output;
+use yare::parameterized;
 
 #[test]
 fn display_name() {
@@ -40,7 +40,7 @@ fn subcommand_required_else_help() {
 }
 
 #[test]
-fn subcommands_help_subcommand_disabled() {
+fn help_subcommand_disabled() {
     let output = cargo_afl(&["help"]).output().unwrap();
     assert_success(&output, None);
     assert!(
@@ -48,24 +48,36 @@ fn subcommands_help_subcommand_disabled() {
             .unwrap()
             .starts_with("Usage:")
     );
+}
 
-    for &subcommand in SUBCOMMANDS {
-        let output = cargo_afl(&[subcommand, "help"]).output().unwrap();
-        if ["cmin"].contains(&subcommand) {
-            assert_success(&output, Some(subcommand));
-        } else {
-            assert_failure(&output, Some(subcommand));
-        }
-        assert!(
-            !String::from_utf8(output.stdout)
-                .unwrap()
-                .starts_with("Usage:")
-        );
+#[parameterized(
+    addseeds = { "addseeds" },
+    analyze = { "analyze" },
+    cmin = { "cmin" },
+    fuzz = { "fuzz" },
+    gotcpu = { "gotcpu" },
+    plot = { "plot" },
+    showmap = { "showmap" },
+    system_config = { "system-config" },
+    tmin = { "tmin" },
+    whatsup = { "whatsup" },
+)]
+fn subcommands_help_subcommand_disabled(subcommand: &str) {
+    let output = cargo_afl(&[subcommand, "help"]).output().unwrap();
+    if ["cmin"].contains(&subcommand) {
+        assert_success(&output, Some(subcommand));
+    } else {
+        assert_failure(&output, Some(subcommand));
     }
+    assert!(
+        !String::from_utf8(output.stdout)
+            .unwrap()
+            .starts_with("Usage:")
+    );
 }
 
 #[test]
-fn subcommands_help_flag_disabled() {
+fn help_flag_disabled() {
     let output = cargo_afl(&["--help"]).output().unwrap();
     assert_success(&output, None);
     assert!(
@@ -73,25 +85,37 @@ fn subcommands_help_flag_disabled() {
             .unwrap()
             .starts_with("Usage:")
     );
+}
 
-    for &subcommand in SUBCOMMANDS {
-        let output = cargo_afl(&[subcommand, "--help"]).output().unwrap();
-        // smoelius: `afl-addseeds`, `cmin`, and `afl-system-config` have `--help` flags.
-        if ["addseeds", "cmin", "system-config"].contains(&subcommand) {
-            assert_success(&output, Some(subcommand));
-        } else {
-            assert_failure(&output, Some(subcommand));
-        }
-        assert!(
-            !String::from_utf8(output.stdout)
-                .unwrap()
-                .starts_with("Usage:")
-        );
+#[parameterized(
+    addseeds = { "addseeds" },
+    analyze = { "analyze" },
+    cmin = { "cmin" },
+    fuzz = { "fuzz" },
+    gotcpu = { "gotcpu" },
+    plot = { "plot" },
+    showmap = { "showmap" },
+    system_config = { "system-config" },
+    tmin = { "tmin" },
+    whatsup = { "whatsup" },
+)]
+fn subcommands_help_flag_disabled(subcommand: &str) {
+    let output = cargo_afl(&[subcommand, "--help"]).output().unwrap();
+    // smoelius: `afl-addseeds`, `cmin`, and `afl-system-config` have `--help` flags.
+    if ["addseeds", "cmin", "system-config"].contains(&subcommand) {
+        assert_success(&output, Some(subcommand));
+    } else {
+        assert_failure(&output, Some(subcommand));
     }
+    assert!(
+        !String::from_utf8(output.stdout)
+            .unwrap()
+            .starts_with("Usage:")
+    );
 }
 
 #[test]
-fn subcommands_version_flag_disabled() {
+fn version_flag_disabled() {
     let output = cargo_afl(&["-V"]).output().unwrap();
     assert_success(&output, None);
     assert!(
@@ -99,20 +123,32 @@ fn subcommands_version_flag_disabled() {
             .unwrap()
             .starts_with("cargo-afl")
     );
+}
 
-    for &subcommand in SUBCOMMANDS {
-        let output = cargo_afl(&[subcommand, "-V"]).output().unwrap();
-        if ["cmin"].contains(&subcommand) {
-            assert_success(&output, Some(subcommand));
-        } else {
-            assert_failure(&output, Some(subcommand));
-        }
-        assert!(
-            !String::from_utf8(output.stdout)
-                .unwrap()
-                .starts_with("cargo-afl")
-        );
+#[parameterized(
+    addseeds = { "addseeds" },
+    analyze = { "analyze" },
+    cmin = { "cmin" },
+    fuzz = { "fuzz" },
+    gotcpu = { "gotcpu" },
+    plot = { "plot" },
+    showmap = { "showmap" },
+    system_config = { "system-config" },
+    tmin = { "tmin" },
+    whatsup = { "whatsup" },
+)]
+fn subcommands_version_flag_disabled(subcommand: &str) {
+    let output = cargo_afl(&[subcommand, "-V"]).output().unwrap();
+    if ["cmin"].contains(&subcommand) {
+        assert_success(&output, Some(subcommand));
+    } else {
+        assert_failure(&output, Some(subcommand));
     }
+    assert!(
+        !String::from_utf8(output.stdout)
+            .unwrap()
+            .starts_with("cargo-afl")
+    );
 }
 
 #[test]

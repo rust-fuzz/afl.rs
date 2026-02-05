@@ -39,6 +39,7 @@ assert_cmd = "2.1"
 ctor = "0.6"
 predicates = "3.1"
 tempfile = "3.24"
+yare = "3.0"
 
 cargo-afl-common = { version = "0.17", path = "../cargo-afl-common" }
 
