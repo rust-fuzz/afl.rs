@@ -376,8 +376,8 @@ fn is_nightly() -> bool {
 #[cfg(all(test, unix))]
 mod tests {
     use super::*;
-    use cargo_afl_common::SUBCOMMANDS;
     use std::os::unix::ffi::OsStringExt;
+    use yare::parameterized;
 
     #[test]
     fn test_app() {
@@ -395,25 +395,43 @@ mod tests {
         .unwrap();
     }
 
-    #[test]
-    fn subcommands_allow_invalid_utf8() {
-        for &subcommand in SUBCOMMANDS {
-            let _arg_matches = Args::try_parse_from([
-                OsStr::new("cargo"),
-                OsStr::new("afl"),
-                OsStr::new(subcommand),
-                &invalid_utf8(),
-            ])
-            .unwrap();
-        }
+    #[parameterized(
+        addseeds = { "addseeds" },
+        analyze = { "analyze" },
+        cmin = { "cmin" },
+        fuzz = { "fuzz" },
+        gotcpu = { "gotcpu" },
+        plot = { "plot" },
+        showmap = { "showmap" },
+        system_config = { "system-config" },
+        tmin = { "tmin" },
+        whatsup = { "whatsup" },
+    )]
+    fn subcommands_allow_invalid_utf8(subcommand: &str) {
+        let _arg_matches = Args::try_parse_from([
+            OsStr::new("cargo"),
+            OsStr::new("afl"),
+            OsStr::new(subcommand),
+            &invalid_utf8(),
+        ])
+        .unwrap();
     }
 
-    #[test]
-    fn subcommands_allow_hyphen_values() {
-        for &subcommand in SUBCOMMANDS {
-            let _arg_matches =
-                Args::try_parse_from(["cargo", "afl", subcommand, "-i", "--input"]).unwrap();
-        }
+    #[parameterized(
+        addseeds = { "addseeds" },
+        analyze = { "analyze" },
+        cmin = { "cmin" },
+        fuzz = { "fuzz" },
+        gotcpu = { "gotcpu" },
+        plot = { "plot" },
+        showmap = { "showmap" },
+        system_config = { "system-config" },
+        tmin = { "tmin" },
+        whatsup = { "whatsup" },
+    )]
+    fn subcommands_allow_hyphen_values(subcommand: &str) {
+        let _arg_matches =
+            Args::try_parse_from(["cargo", "afl", subcommand, "-i", "--input"]).unwrap();
     }
 
     fn invalid_utf8() -> OsString {
