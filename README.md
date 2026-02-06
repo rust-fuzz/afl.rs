@@ -52,6 +52,38 @@ environment variable `AFL_NO_CFG_FUZZING` to `1` when building.
 [AFLplusplus]: https://aflplus.plus/
 [rust]: https://www.rust-lang.org
 
+## Resettable State (`fuzz_with_reset!`)
+
+AFL++ persistent mode runs the fuzz target in a loop. Static initialization (e.g., `OnceLock`, `lazy_static`, `once_cell::Lazy`) only executes on the first iteration — subsequent iterations skip those code paths, causing AFL's stability metric to drop.
+
+Use `fuzz_with_reset!` to provide a reset closure that clears static state after each iteration.
+
+Note: the example uses `Mutex<Option<T>>` instead of `OnceLock` or `once_cell::OnceCell` because those types only support resetting via `&mut self` (`take(&mut self)`). Since statics only provide shared references (`&self`), they cannot be reset. `Mutex` provides interior mutability — `lock(&self)` returns a guard with `&mut` access, making reset possible. If you need `OnceLock`/`OnceCell` semantics with reset support, you would need a fork or wrapper crate that exposes a reset method through a shared reference (e.g., the now-unmaintained `resettable-lazy-static`).
+
+```rust
+use std::sync::Mutex;
+
+static CACHE: Mutex<Option<Vec<u8>>> = Mutex::new(None);
+
+fn main() {
+    afl::fuzz_with_reset!(|data: &[u8]| {
+        let mut cache = CACHE.lock().unwrap();
+        if cache.is_none() {
+            *cache = Some(data.to_vec());
+        }
+        drop(cache);
+        // ... fuzz logic ...
+    }, || {
+        // Reset closure: called after each successful iteration
+        *CACHE.lock().unwrap() = None;
+    });
+}
+```
+
+A `fuzz_with_reset_nohook!` variant is also available (like `fuzz_nohook!`, it does not override the panic hook).
+
+See [`afl/examples/reset_demo.rs`](afl/examples/reset_demo.rs) for a complete example.
+
 ## IJON
 
 If you want to use [IJON](https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/IJON.md) - helping fuzzer coverage through code annotation - then
