@@ -242,9 +242,39 @@ pub static mut __afl_sharedmem_fuzzing: i32 = 1;
 /// });
 /// # }
 /// ```
-pub fn fuzz<F>(hook: bool, mut closure: F)
+pub fn fuzz<F>(hook: bool, closure: F)
 where
     F: FnMut(&[u8]) + std::panic::RefUnwindSafe,
+{
+    fuzz_with_reset(hook, closure, || {});
+}
+
+/// Like [`fuzz`], but calls a `reset` closure after each successful iteration.
+///
+/// This is useful when the fuzz target uses static state (e.g., `OnceLock`, `lazy_static`)
+/// that must be cleared between iterations in AFL++ persistent mode. Without resetting,
+/// code paths that run only on the first iteration cause AFL's stability metric to drop.
+///
+/// ```rust,no_run
+/// # extern crate afl;
+/// # use afl::fuzz_with_reset;
+/// # use std::sync::Mutex;
+/// # static CACHE: Mutex<Option<Vec<u8>>> = Mutex::new(None);
+/// # fn main() {
+/// fuzz_with_reset(true, |data| {
+///     let mut cache = CACHE.lock().unwrap();
+///     if cache.is_none() {
+///         *cache = Some(data.to_vec());
+///     }
+/// }, || {
+///     *CACHE.lock().unwrap() = None;
+/// });
+/// # }
+/// ```
+pub fn fuzz_with_reset<F, R>(hook: bool, mut closure: F, mut reset: R)
+where
+    F: FnMut(&[u8]) + std::panic::RefUnwindSafe,
+    R: FnMut(),
 {
     // this marker strings needs to be in the produced executable for
     // afl-fuzz to detect `persistent mode` and `defered mode`
@@ -299,6 +329,8 @@ where
             // process before the stack frames are unwinded.
             std::process::abort();
         }
+
+        reset();
     } else {
         while unsafe { __afl_persistent_loop(loop_count) } != 0 {
             // get the testcase from the fuzzer
@@ -322,6 +354,8 @@ where
                 // process before the stack frames are unwinded.
                 std::process::abort();
             }
+
+            reset();
             input.clear();
         }
     }
@@ -383,5 +417,66 @@ macro_rules! __fuzz {
 
             $body
         });
+    };
+}
+
+/// Like [`fuzz!`], but accepts a second closure that resets state after each iteration.
+///
+/// This is useful when the fuzz target uses static state (e.g., `OnceLock`, `lazy_static`)
+/// that must be cleared between iterations in AFL++ persistent mode.
+///
+/// ```rust,no_run
+/// # #[macro_use] extern crate afl;
+/// # use std::sync::Mutex;
+/// # static CACHE: Mutex<Option<Vec<u8>>> = Mutex::new(None);
+/// # fn main() {
+/// fuzz_with_reset!(|data: &[u8]| {
+///     let mut cache = CACHE.lock().unwrap();
+///     if cache.is_none() {
+///         *cache = Some(data.to_vec());
+///     }
+/// }, || {
+///     *CACHE.lock().unwrap() = None;
+/// });
+/// # }
+/// ```
+#[macro_export]
+macro_rules! fuzz_with_reset {
+    ( $($x:tt)* ) => { $crate::__fuzz_with_reset!(true, $($x)*) }
+}
+
+/// Like [`fuzz_with_reset!`], but panics that are caught inside the fuzzed code are not turned
+/// into crashes.
+#[macro_export]
+macro_rules! fuzz_with_reset_nohook {
+    ( $($x:tt)* ) => { $crate::__fuzz_with_reset!(false, $($x)*) }
+}
+
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __fuzz_with_reset {
+    ($hook:expr, |$buf:ident| $body:expr, $reset:expr) => {
+        $crate::fuzz_with_reset($hook, |$buf| $body, $reset);
+    };
+    ($hook:expr, |$buf:ident: &[u8]| $body:expr, $reset:expr) => {
+        $crate::fuzz_with_reset($hook, |$buf| $body, $reset);
+    };
+    ($hook:expr, |$buf:ident: $dty: ty| $body:expr, $reset:expr) => {
+        $crate::fuzz_with_reset(
+            $hook,
+            |$buf| {
+                let $buf: $dty = {
+                    let mut data = ::arbitrary::Unstructured::new($buf);
+                    if let Ok(d) = ::arbitrary::Arbitrary::arbitrary(&mut data).map_err(|_| "") {
+                        d
+                    } else {
+                        return;
+                    }
+                };
+
+                $body
+            },
+            $reset,
+        );
     };
 }
