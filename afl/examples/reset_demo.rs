@@ -1,11 +1,20 @@
-// Demonstrates how fuzz_with_reset! improves AFL++ persistent mode stability
+// Demonstrates how `fuzz_with_reset!` improves AFL++ persistent mode stability
 // when using static state.
 //
+// Setup:
+//   `cargo run -p cargo-afl -- afl build --example reset_demo --manifest-path afl/Cargo.toml`
+//   `mkdir -p /tmp/afl-input && echo "test" > /tmp/afl-input/seed`
+//
 // Without reset (low stability):
-//   cargo run -p cargo-afl -- afl fuzz -i input -o /tmp/out target/debug/examples/reset_demo
+//   `AFL_NO_UI=1 cargo run -p cargo-afl -- afl fuzz \
+//     -i /tmp/afl-input -o /tmp/afl-out-bad -V 15 target/debug/examples/reset_demo`
 //
 // With reset (high stability):
-//   USE_RESET=1 cargo run -p cargo-afl -- afl fuzz -i input -o /tmp/out target/debug/examples/reset_demo
+//   `USE_RESET=1 AFL_NO_UI=1 cargo run -p cargo-afl -- afl fuzz \
+//     -i /tmp/afl-input -o /tmp/afl-out-reset -V 15 target/debug/examples/reset_demo`
+//
+// Compare stability:
+//   `grep stability /tmp/afl-out-bad/default/fuzzer_stats /tmp/afl-out-reset/default/fuzzer_stats`
 
 use std::sync::Mutex;
 
