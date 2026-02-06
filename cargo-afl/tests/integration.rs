@@ -100,7 +100,26 @@ fn integration_maze() {
     unreachable!();
 }
 
+#[test]
+fn integration_fuzz_with_reset() {
+    assert_cmd::Command::new(cargo_afl_path())
+        .arg("afl")
+        .arg("build")
+        .arg("--example")
+        .arg("reset_demo")
+        .arg("--manifest-path")
+        .arg("../afl/Cargo.toml")
+        .assert()
+        .success();
+
+    fuzz_example_with_env("reset_demo", true, vec![("USE_RESET", "1")]);
+}
+
 fn fuzz_example(name: &str, should_crash: bool) {
+    fuzz_example_with_env(name, should_crash, vec![]);
+}
+
+fn fuzz_example_with_env(name: &str, should_crash: bool, envs: Vec<(&str, &str)>) {
     let temp_dir = tempfile::TempDir::new().expect("Could not create temporary directory");
     let temp_dir_path = temp_dir.path();
     let _: ExitStatus = process::Command::new(cargo_afl_path())
@@ -115,6 +134,7 @@ fn fuzz_example(name: &str, should_crash: bool) {
         .env("AFL_BENCH_UNTIL_CRASH", "1")
         .env("AFL_NO_CRASH_README", "1")
         .env("AFL_NO_UI", "1")
+        .envs(envs)
         .stdout(process::Stdio::inherit())
         .stderr(process::Stdio::inherit())
         .status()
