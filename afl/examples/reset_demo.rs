@@ -26,9 +26,7 @@ fn fuzz_body(data: &[u8]) {
         *cache = Some(data.to_vec());
     }
     drop(cache);
-    if data.len() > 2 && data[0] == b'x' {
-        panic!("crash");
-    }
+    assert!(!(data.len() > 2 && data[0] == b'x'), "crash");
 }
 
 fn main() {
