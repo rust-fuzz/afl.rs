@@ -249,7 +249,7 @@ where
     fuzz_with_reset(hook, closure, || {});
 }
 
-/// Like [`fuzz`], but calls a `reset` closure after each successful iteration.
+/// Like [`fuzz()`], but calls a `reset` closure after each successful iteration.
 ///
 /// This is useful when the fuzz target uses static state (e.g., `OnceLock`, `lazy_static`)
 /// that must be cleared between iterations in AFL++ persistent mode. Without resetting,

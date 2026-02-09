@@ -58,7 +58,7 @@ AFL++ persistent mode runs the fuzz target in a loop. Static initialization (e.g
 
 Use `fuzz_with_reset!` to provide a reset closure that clears static state after each iteration.
 
-Note: the example uses `Mutex<Option<T>>` instead of `OnceLock` or `once_cell::OnceCell` because those types only support resetting via `&mut self` (`take(&mut self)`). Since statics only provide shared references (`&self`), they cannot be reset. `Mutex` provides interior mutability — `lock(&self)` returns a guard with `&mut` access, making reset possible. If you need `OnceLock`/`OnceCell` semantics with reset support, you would need a fork or wrapper crate that exposes a reset method through a shared reference (e.g., the now-unmaintained `resettable-lazy-static`).
+Note: the example uses `Mutex<Option<T>>` instead of `OnceLock`/`OnceCell` because those types do not support resetting out-of-the-box.
 
 ```rust
 use std::sync::Mutex;
