@@ -418,43 +418,6 @@ macro_rules! __fuzz {
             $body
         });
     };
-}
-
-/// Like [`fuzz!`], but accepts a second closure that resets state after each iteration.
-///
-/// This is useful when the fuzz target uses static state (e.g., `OnceLock`, `lazy_static`)
-/// that must be cleared between iterations in AFL++ persistent mode.
-///
-/// ```rust,no_run
-/// # #[macro_use] extern crate afl;
-/// # use std::sync::Mutex;
-/// # static CACHE: Mutex<Option<Vec<u8>>> = Mutex::new(None);
-/// # fn main() {
-/// fuzz_with_reset!(|data: &[u8]| {
-///     let mut cache = CACHE.lock().unwrap();
-///     if cache.is_none() {
-///         *cache = Some(data.to_vec());
-///     }
-/// }, || {
-///     *CACHE.lock().unwrap() = None;
-/// });
-/// # }
-/// ```
-#[macro_export]
-macro_rules! fuzz_with_reset {
-    ( $($x:tt)* ) => { $crate::__fuzz_with_reset!(true, $($x)*) }
-}
-
-/// Like [`fuzz_with_reset!`], but panics that are caught inside the fuzzed code are not turned
-/// into crashes.
-#[macro_export]
-macro_rules! fuzz_with_reset_nohook {
-    ( $($x:tt)* ) => { $crate::__fuzz_with_reset!(false, $($x)*) }
-}
-
-#[doc(hidden)]
-#[macro_export]
-macro_rules! __fuzz_with_reset {
     ($hook:expr, |$buf:ident| $body:expr, $reset:expr) => {
         $crate::fuzz_with_reset($hook, |$buf| $body, $reset);
     };
@@ -479,4 +442,36 @@ macro_rules! __fuzz_with_reset {
             $reset,
         );
     };
+}
+
+/// Like [`fuzz!`], but accepts a second closure that resets state after each iteration.
+///
+/// This is useful when the fuzz target uses static state (e.g., `OnceLock`, `lazy_static`)
+/// that must be cleared between iterations in AFL++ persistent mode.
+///
+/// ```rust,no_run
+/// # #[macro_use] extern crate afl;
+/// # use std::sync::Mutex;
+/// # static CACHE: Mutex<Option<Vec<u8>>> = Mutex::new(None);
+/// # fn main() {
+/// fuzz_with_reset!(|data: &[u8]| {
+///     let mut cache = CACHE.lock().unwrap();
+///     if cache.is_none() {
+///         *cache = Some(data.to_vec());
+///     }
+/// }, || {
+///     *CACHE.lock().unwrap() = None;
+/// });
+/// # }
+/// ```
+#[macro_export]
+macro_rules! fuzz_with_reset {
+    ( $($x:tt)* ) => { $crate::__fuzz!(true, $($x)*) }
+}
+
+/// Like [`fuzz_with_reset!`], but panics that are caught inside the fuzzed code are not turned
+/// into crashes.
+#[macro_export]
+macro_rules! fuzz_with_reset_nohook {
+    ( $($x:tt)* ) => { $crate::__fuzz!(false, $($x)*) }
 }
