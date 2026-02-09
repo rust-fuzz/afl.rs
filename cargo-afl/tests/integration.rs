@@ -111,15 +111,17 @@ fn integration_fuzz_with_reset() {
     let stability_no_reset = parse_stability(dir_no_reset.path());
     let stability_with_reset = parse_stability(dir_with_reset.path());
 
-    assert!(
-        stability_no_reset < 90.0,
-        "Stability without reset ({stability_no_reset}%) should be below 90%"
-    );
     // On Linux/x86_64 we observe ~95% stability, on macOS/aarch64 ~85%
     // due to ARM's relaxed memory model affecting bitmap synchronization.
+    let min_stability_expected = 80.0;
+
     assert!(
-        stability_with_reset > 80.0,
-        "Stability with reset ({stability_with_reset}%) should be above 80%"
+        stability_no_reset < min_stability_expected,
+        "Stability without reset ({stability_no_reset}%) should be below {min_stability_expected}%"
+    );
+    assert!(
+        stability_with_reset > min_stability_expected,
+        "Stability with reset ({stability_with_reset}%) should be above {min_stability_expected}%"
     );
 }
 
