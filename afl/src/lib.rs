@@ -329,8 +329,6 @@ where
             // process before the stack frames are unwinded.
             std::process::abort();
         }
-
-        reset();
     } else {
         while unsafe { __afl_persistent_loop(loop_count) } != 0 {
             // get the testcase from the fuzzer
@@ -355,8 +353,8 @@ where
                 std::process::abort();
             }
 
-            reset();
             input.clear();
+            reset();
         }
     }
 }
