@@ -20,15 +20,6 @@ use std::sync::Mutex;
 
 static CACHE: Mutex<Option<Vec<u8>>> = Mutex::new(None);
 
-fn fuzz_body(data: &[u8]) {
-    let mut cache = CACHE.lock().unwrap();
-    if cache.is_none() {
-        *cache = Some(data.to_vec());
-    }
-    drop(cache);
-    assert!(!(data.len() > 2 && data[0] == b'x'), "crash");
-}
-
 fn main() {
     if std::env::var("USE_RESET").is_ok() {
         afl::fuzz_with_reset!(|data: &[u8]| { fuzz_body(data) }, || {
@@ -39,4 +30,13 @@ fn main() {
             fuzz_body(data);
         });
     }
+}
+
+fn fuzz_body(data: &[u8]) {
+    let mut cache = CACHE.lock().unwrap();
+    if cache.is_none() {
+        *cache = Some(data.to_vec());
+    }
+    drop(cache);
+    assert!(!(data.len() > 2 && data[0] == b'x'), "crash");
 }
