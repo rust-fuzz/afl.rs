@@ -24,9 +24,16 @@ jobs:
             | jq -r .tag_name)"
           cd cargo-afl-common/AFLplusplus
           git fetch --tags
+          CURR="$(git rev-parse HEAD)"
+          NEXT="$(git rev-parse "$TAG")"
+          if ! git merge-base --is-ancestor "$CURR" "$NEXT"; then
+            echo "SKIP=true" >> "$GITHUB_ENV"
+            exit
+          fi
           git checkout "$TAG"
 
       - name: Create pull request
+        if: env.SKIP != 'true'
         uses: peter-evans/create-pull-request@v8
         with:
           title: "Update AFLplusplus"
