@@ -19,7 +19,7 @@ anyhow = { version = "1.0", features = ["backtrace"] }
 clap = "4.5"
 home = "0.5"
 rustc_version = "0.4"
-tempfile = "3.24"
+tempfile = "3.25"
 xdg = "3.0"
 
 cargo-afl-common = { version = "0.17", path = "../cargo-afl-common" }
@@ -29,7 +29,7 @@ anyhow = { version = "1.0", features = ["backtrace"] }
 clap = { version = "4.5", features = ["cargo", "derive", "string"] }
 home = "0.5"
 rustc_version = "0.4"
-tempfile = "3.24"
+tempfile = "3.25"
 xdg = "3.0"
 
 cargo-afl-common = { version = "0.17", path = "../cargo-afl-common" }
@@ -38,7 +38,7 @@ cargo-afl-common = { version = "0.17", path = "../cargo-afl-common" }
 assert_cmd = "2.1"
 ctor = "0.6"
 predicates = "3.1"
-tempfile = "3.24"
+tempfile = "3.25"
 yare = "3.0"
 
 cargo-afl-common = { version = "0.17", path = "../cargo-afl-common" }
