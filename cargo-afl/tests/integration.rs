@@ -100,25 +100,34 @@ fn integration_maze() {
     unreachable!();
 }
 
+#[test]
+fn integration_fuzz_with_reset() {
+    // Run without reset (expect low stability)
+    let dir_no_reset = fuzz_example_with_envs("reset_demo", 15, &[]);
+
+    // Run with reset (expect high stability)
+    let dir_with_reset = fuzz_example_with_envs("reset_demo", 15, &[("USE_RESET", "1")]);
+
+    let stability_no_reset = parse_stability(dir_no_reset.path());
+    let stability_with_reset = parse_stability(dir_with_reset.path());
+
+    // On Linux/x86_64 we observe ~95% stability, on macOS/aarch64 ~85%
+    // due to ARM's relaxed memory model affecting bitmap synchronization.
+    let min_stability_expected = 80.0;
+
+    assert!(
+        stability_no_reset < min_stability_expected,
+        "Stability without reset ({stability_no_reset}%) should be below {min_stability_expected}%"
+    );
+    assert!(
+        stability_with_reset > min_stability_expected,
+        "Stability with reset ({stability_with_reset}%) should be above {min_stability_expected}%"
+    );
+}
+
 fn fuzz_example(name: &str, should_crash: bool) {
-    let temp_dir = tempfile::TempDir::new().expect("Could not create temporary directory");
+    let temp_dir = fuzz_example_with_envs(name, 5, &[("AFL_BENCH_UNTIL_CRASH", "1")]);
     let temp_dir_path = temp_dir.path();
-    let _: ExitStatus = process::Command::new(cargo_afl_path())
-        .arg("afl")
-        .arg("fuzz")
-        .arg("-i")
-        .arg(input_path())
-        .arg("-o")
-        .arg(temp_dir_path)
-        .args(["-V", "5"]) // 5 seconds
-        .arg(examples_path(name))
-        .env("AFL_BENCH_UNTIL_CRASH", "1")
-        .env("AFL_NO_CRASH_README", "1")
-        .env("AFL_NO_UI", "1")
-        .stdout(process::Stdio::inherit())
-        .stderr(process::Stdio::inherit())
-        .status()
-        .expect("Could not run cargo afl fuzz");
     assert!(temp_dir_path.join("default").join("fuzzer_stats").is_file());
     let crashes = std::fs::read_dir(temp_dir_path.join("default").join("crashes"))
         .unwrap()
@@ -128,4 +137,48 @@ fn fuzz_example(name: &str, should_crash: bool) {
     } else {
         assert_eq!(0, crashes);
     }
+}
+
+fn fuzz_example_with_envs(
+    name: &str,
+    timeout_secs: u32,
+    envs: &[(&str, &str)],
+) -> tempfile::TempDir {
+    let temp_dir = tempfile::TempDir::new().expect("Could not create temporary directory");
+    let _: ExitStatus = process::Command::new(cargo_afl_path())
+        .arg("afl")
+        .arg("fuzz")
+        .arg("-i")
+        .arg(input_path())
+        .arg("-o")
+        .arg(temp_dir.path())
+        .args(["-V", &timeout_secs.to_string()])
+        .arg(examples_path(name))
+        .env("AFL_NO_CRASH_README", "1")
+        .env("AFL_NO_UI", "1")
+        .envs(envs.iter().copied())
+        .stdout(process::Stdio::inherit())
+        .stderr(process::Stdio::inherit())
+        .status()
+        .expect("Could not run cargo afl fuzz");
+    temp_dir
+}
+
+fn parse_stability(output_dir: &path::Path) -> f64 {
+    let stats_path = output_dir.join("default").join("fuzzer_stats");
+    let contents = std::fs::read_to_string(&stats_path)
+        .unwrap_or_else(|e| panic!("Failed to read {}: {e}", stats_path.display()));
+    for line in contents.lines() {
+        if let Some(value) = line.strip_prefix("stability") {
+            let value = value
+                .trim()
+                .trim_start_matches(':')
+                .trim()
+                .trim_end_matches('%');
+            return value
+                .parse()
+                .unwrap_or_else(|e| panic!("Failed to parse stability value '{value}': {e}"));
+        }
+    }
+    panic!("No stability line found in {}", stats_path.display());
 }
