@@ -231,14 +231,17 @@ where
     let status = cmd.status().unwrap();
 
     if tool == "afl-fuzz" && !status.success() {
-        eprintln!(
-            "
+        if env::var("CONDA_PREFIX").is_ok() && env::var("LD_LIBRARY_PATH").is_err() {
+            eprintln!("You appear to be running under Conda. You may need to set LD_LIBRARY_PATH.");
+        } else {
+            eprintln!("
 If you see an error message like `shmget() failed` above, try running the following command:
 
     cargo afl system-config
 
 Note: You might be prompted to enter your password as root privileges are required and hence sudo is run within this command."
-        );
+            );
+        }
     }
     process::exit(status.code().unwrap_or(1));
 }
