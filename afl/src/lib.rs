@@ -395,34 +395,25 @@ macro_rules! fuzz_nohook {
 
 #[doc(hidden)]
 #[macro_export]
-macro_rules! __fuzz {
-    ($hook:expr, |$buf:ident| $body:expr) => {
-        $crate::fuzz($hook, |$buf| $body);
+macro_rules! __reset_or_noop {
+    () => {
+        || {}
     };
-    ($hook:expr, |$buf:ident: &[u8]| $body:expr) => {
-        $crate::fuzz($hook, |$buf| $body);
+    ($reset:expr) => {
+        $reset
     };
-    ($hook:expr, |$buf:ident: $dty: ty| $body:expr) => {
-        $crate::fuzz($hook, |$buf| {
-            let $buf: $dty = {
-                let mut data = ::arbitrary::Unstructured::new($buf);
-                if let Ok(d) = ::arbitrary::Arbitrary::arbitrary(&mut data).map_err(|_| "") {
-                    d
-                } else {
-                    return;
-                }
-            };
+}
 
-            $body
-        });
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __fuzz {
+    ($hook:expr, |$buf:ident| $body:expr $(, $reset:expr)?) => {
+        $crate::fuzz_with_reset($hook, |$buf| $body, $crate::__reset_or_noop!($($reset)?));
     };
-    ($hook:expr, |$buf:ident| $body:expr, $reset:expr) => {
-        $crate::fuzz_with_reset($hook, |$buf| $body, $reset);
+    ($hook:expr, |$buf:ident: &[u8]| $body:expr $(, $reset:expr)?) => {
+        $crate::fuzz_with_reset($hook, |$buf| $body, $crate::__reset_or_noop!($($reset)?));
     };
-    ($hook:expr, |$buf:ident: &[u8]| $body:expr, $reset:expr) => {
-        $crate::fuzz_with_reset($hook, |$buf| $body, $reset);
-    };
-    ($hook:expr, |$buf:ident: $dty: ty| $body:expr, $reset:expr) => {
+    ($hook:expr, |$buf:ident: $dty: ty| $body:expr $(, $reset:expr)?) => {
         $crate::fuzz_with_reset(
             $hook,
             |$buf| {
@@ -437,7 +428,7 @@ macro_rules! __fuzz {
 
                 $body
             },
-            $reset,
+            $crate::__reset_or_noop!($($reset)?),
         );
     };
 }
