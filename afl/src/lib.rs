@@ -311,8 +311,9 @@ where
     unsafe { __afl_manual_init() };
 
     if unsafe { __afl_fuzz_ptr.is_null() } {
-        // in-memory testcase delivery is not enabled
-        // get buffer from AFL++ through stdin
+        // In-memory testcase delivery is not enabled; the target is not running
+        // in a persistent loop, so `reset` is not needed here.
+        // Get buffer from AFL++ through stdin.
         let result = io::stdin().read_to_end(&mut input);
         if result.is_err() {
             return;
