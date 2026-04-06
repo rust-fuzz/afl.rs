@@ -36,7 +36,7 @@ cargo-afl-common = { version = "0.17", path = "../cargo-afl-common" }
 
 [dev-dependencies]
 assert_cmd = "2.2"
-ctor = "0.6"
+ctor = "0.8"
 predicates = "3.1"
 tempfile = "3.27"
 yare = "3.0"
