@@ -1,5 +1,11 @@
 # Changes
 
+## 0.18.0
+
+- [Validate AFLplusplus submodule during build](https://github.com/rust-fuzz/afl.rs/commit/672467b36980ba4e31c9d0c09e186da893f5e2f7)
+- [Upgrade AFLplusplus to 4.40c](https://github.com/rust-fuzz/afl.rs/pull/711)
+- [Add `fuzz_with_reset!` macro](https://github.com/rust-fuzz/afl.rs/commit/9cf0d57a65d0bf608924124019712448db2ae943))
+
 ## 0.17.1
 
 - [Fix a bug affecting afl-cmin](https://github.com/rust-fuzz/afl.rs/pull/686)
