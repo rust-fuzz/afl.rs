@@ -291,6 +291,11 @@ fn copy_afl_llvm_plugins(_args: &Args, work_dir: &Path) -> Result<()> {
 }
 
 fn check_llvm_and_get_config() -> Result<String> {
+    // smoelius: Honor `LLVM_CONFIG` environment variable if already set.
+    if let Ok(llvm_config) = std::env::var("LLVM_CONFIG") {
+        return Ok(llvm_config);
+    }
+
     // Make sure we are on nightly for the -Z flags
     let version_meta = rustc_version::version_meta()?;
     if version_meta.channel != rustc_version::Channel::Nightly {
