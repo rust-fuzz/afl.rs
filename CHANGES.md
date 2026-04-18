@@ -1,5 +1,9 @@
 # Changes
 
+## 0.18.1
+
+- [Honor `LLVM_CONFIG` environment variable if already set](https://github.com/rust-fuzz/afl.rs/commit/672467b36980ba4e31c9d0c09e186da893f5e2f7)
+
 ## 0.18.0
 
 - [Validate AFLplusplus submodule during build](https://github.com/rust-fuzz/afl.rs/commit/672467b36980ba4e31c9d0c09e186da893f5e2f7)
