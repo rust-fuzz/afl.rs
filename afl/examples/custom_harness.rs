@@ -1,3 +1,5 @@
+#![allow(clippy::manual_assert)]
+
 use std::io::Read;
 
 fn main() {
