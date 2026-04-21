@@ -217,6 +217,34 @@ macro_rules! ijon_stack_min {
 
 // end if AFL++ IJON functions
 
+/// Embeds AFL++ marker strings into the binary so that AFL++ detects
+/// persistent mode and deferred forkserver mode.
+///
+/// This is called automatically by [`fuzz!`]. You only need to call this
+/// directly if you are writing a custom harness that does not use `fuzz!`.
+///
+/// ```rust,no_run
+/// use std::io::Read;
+///
+/// fn main() {
+///     afl::afl_init!();
+///
+///     let mut input = Vec::new();
+///     std::io::stdin().read_to_end(&mut input).unwrap();
+///     // test logic here
+/// }
+/// ```
+#[macro_export]
+macro_rules! afl_init {
+    () => {
+        static _AFL_PERSIST_MARKER: &str = "##SIG_AFL_PERSISTENT##\0";
+        static _AFL_DEFER_MARKER: &str = "##SIG_AFL_DEFER_FORKSRV##\0";
+
+        unsafe { ::std::ptr::read_volatile(&raw const _AFL_PERSIST_MARKER) };
+        unsafe { ::std::ptr::read_volatile(&raw const _AFL_DEFER_MARKER) };
+    };
+}
+
 #[allow(non_upper_case_globals)]
 #[doc(hidden)]
 #[unsafe(no_mangle)]
@@ -276,17 +304,7 @@ where
     F: FnMut(&[u8]) + std::panic::RefUnwindSafe,
     R: FnMut(),
 {
-    // this marker strings needs to be in the produced executable for
-    // afl-fuzz to detect `persistent mode` and `defered mode`
-    static PERSIST_MARKER: &str = "##SIG_AFL_PERSISTENT##\0";
-    static DEFERED_MARKER: &str = "##SIG_AFL_DEFER_FORKSRV##\0";
-
-    // we now need a fake instruction to prevent the compiler from optimizing out
-    // those marker strings
-    unsafe { std::ptr::read_volatile(&raw const PERSIST_MARKER) }; // hack used in https://github.com/bluss/bencher for black_box()
-    unsafe { std::ptr::read_volatile(&raw const DEFERED_MARKER) };
-    // unsafe { asm!("" : : "r"(&PERSIST_MARKER)) }; // hack used in nightly's back_box(), requires feature asm
-    // unsafe { asm!("" : : "r"(&DEFERED_MARKER)) };
+    afl_init!();
 
     if hook {
         let prev_hook = std::panic::take_hook();
