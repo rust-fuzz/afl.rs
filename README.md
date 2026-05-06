@@ -31,6 +31,8 @@ By default, the AFL++ [CMPLOG](https://github.com/AFLplusplus/AFLplusplus/blob/s
 feature is activated, which helps to achieve good code coverage.
 However, it is not beneficial to activate CMPLOG on more than two instances.
 So if you run multiple AFL++ instances on your fuzzing target, you can disable CMPLOG by specifying the command line parameter '-c -'.
+To omit CMPLOG instrumentation from the built target entirely, set the environment variable
+`AFLRS_NO_CMPLOG` to `1` when building.
 
 This [document](https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/fuzzing_in_depth.md)
 will familiarize you with AFL++ features to help in running a successful fuzzing campaign.

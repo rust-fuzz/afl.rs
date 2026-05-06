@@ -3,6 +3,7 @@ use clap::{CommandFactory, FromArgMatches, Parser, crate_version};
 use std::collections::HashMap;
 use std::env;
 use std::ffi::{OsStr, OsString};
+use std::path::Path;
 use std::process::{self, Command, Stdio};
 
 const HELP: &str = "In addition to the subcommands above, Cargo subcommands are also \
@@ -277,7 +278,6 @@ where
     // https://github.com/rust-fuzz/afl.rs/pull/193#issuecomment-933550430
 
     let binding = common::afl_llvm_dir().unwrap();
-    let p = binding.display();
 
     let mut rustflags = format!(
         "-C debug-assertions \
@@ -305,16 +305,8 @@ where
             );
         }
 
-        rustflags.push_str(&format!(
-            "-Z llvm-plugins={p}/afl-llvm-dict2file.so \
-            -Z llvm-plugins={p}/cmplog-switches-pass.so \
-            -Z llvm-plugins={p}/split-switches-pass.so \
-            -Z llvm-plugins={p}/SanitizerCoveragePCGUARD.so \
-            -Z llvm-plugins={p}/cmplog-instructions-pass.so  \
-            -Z llvm-plugins={p}/cmplog-routines-pass.so \
-            -Z llvm-plugins={p}/afl-llvm-ijon-pass.so
-            "
-        ));
+        let cmplog_enabled = env::var("AFLRS_NO_CMPLOG").is_err();
+        rustflags.push_str(&llvm_plugin_rustflags(&binding, cmplog_enabled));
 
         environment_variables.insert("AFL_QUIET", "1".to_string());
     } else {
@@ -362,6 +354,30 @@ where
         .status()
         .unwrap();
     process::exit(status.code().unwrap_or(1));
+}
+
+fn llvm_plugin_rustflags(plugin_dir: &Path, cmplog_enabled: bool) -> String {
+    let mut passes = vec!["afl-llvm-dict2file.so"];
+
+    if cmplog_enabled {
+        passes.push("cmplog-switches-pass.so");
+    }
+
+    passes.extend(["split-switches-pass.so", "SanitizerCoveragePCGUARD.so"]);
+
+    if cmplog_enabled {
+        passes.extend(["cmplog-instructions-pass.so", "cmplog-routines-pass.so"]);
+    }
+
+    passes.push("afl-llvm-ijon-pass.so");
+
+    let mut rustflags = String::new();
+    for pass in passes {
+        rustflags.push_str("-Z llvm-plugins=");
+        rustflags.push_str(&plugin_dir.join(pass).display().to_string());
+        rustflags.push(' ');
+    }
+    rustflags
 }
 
 fn is_nightly() -> bool {
@@ -441,5 +457,28 @@ mod tests {
     #[test]
     fn invalid_utf8_is_invalid() {
         assert!(String::from_utf8(invalid_utf8().into_vec()).is_err());
+    }
+
+    #[test]
+    fn llvm_plugin_rustflags_include_cmplog_by_default() {
+        let rustflags = llvm_plugin_rustflags(Path::new("/afl-llvm"), true);
+
+        assert!(rustflags.contains("/afl-llvm/afl-llvm-dict2file.so"));
+        assert!(rustflags.contains("/afl-llvm/cmplog-switches-pass.so"));
+        assert!(rustflags.contains("/afl-llvm/cmplog-instructions-pass.so"));
+        assert!(rustflags.contains("/afl-llvm/cmplog-routines-pass.so"));
+        assert!(rustflags.contains("/afl-llvm/SanitizerCoveragePCGUARD.so"));
+    }
+
+    #[test]
+    fn llvm_plugin_rustflags_can_omit_cmplog() {
+        let rustflags = llvm_plugin_rustflags(Path::new("/afl-llvm"), false);
+
+        assert!(rustflags.contains("/afl-llvm/afl-llvm-dict2file.so"));
+        assert!(!rustflags.contains("cmplog-switches-pass.so"));
+        assert!(!rustflags.contains("cmplog-instructions-pass.so"));
+        assert!(!rustflags.contains("cmplog-routines-pass.so"));
+        assert!(rustflags.contains("/afl-llvm/SanitizerCoveragePCGUARD.so"));
+        assert!(rustflags.contains("/afl-llvm/afl-llvm-ijon-pass.so"));
     }
 }
