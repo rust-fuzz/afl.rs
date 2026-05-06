@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: main
-        uses: trailofbits/check-up-to-dateness@v1
+        uses: trailofbits/check-up-to-dateness@v2
   lint:
     needs: [check-up-to-dateness]
     if: needs.check-up-to-dateness.outputs.is-up-to-date != 'true'
