@@ -9,7 +9,7 @@ const BUILD_MSGS: &[&str] = &[
     "Perhaps you used `cargo build` instead of `cargo afl build`?",
 ];
 
-#[ctor::ctor]
+#[ctor::ctor(unsafe)]
 fn init() {
     unsafe {
         env::set_var("CARGO_TERM_COLOR", "never");
