@@ -133,7 +133,6 @@ dependencies = [
  "assert_cmd",
  "cargo-afl-common",
  "clap",
- "ctor",
  "home",
  "predicates",
  "rustc_version",
@@ -203,16 +202,6 @@ name = "colorchoice"
 version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1d07550c9036bf2ae0c684c4297d503f838287c83c53686d05370d0e139ae570"
-
-[[package]]
-name = "ctor"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2d9055288750fb7dd379447bc8b5ebbc89e6a70c233258f5ec6e8ade1c4b413b"
-dependencies = [
- "link-section",
- "linktime-proc-macro",
-]
 
 [[package]]
 name = "derive_arbitrary"
@@ -352,18 +341,6 @@ name = "libc"
 version = "0.2.186"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "68ab91017fe16c622486840e4c83c9a37afeff978bd239b5293d61ece587de66"
-
-[[package]]
-name = "link-section"
-version = "0.13.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ea2c24837c4fd5ab6a31d64133eae954f5199247523cf29586117e85245c0dd3"
-
-[[package]]
-name = "linktime-proc-macro"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a44cd706ff0d503ee32b2071166510ca27e281228de10cd3aa8d35ff94560f81"
 
 [[package]]
 name = "linux-raw-sys"
