@@ -82,7 +82,7 @@ jobs:
         env:
           HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
       - name: Build
-        run: cargo build -vv
+        run: cargo build
       - name: Run `cargo afl config`
         run: |
           PLUGINS="$(${{ matrix.plugins }} && echo --plugins)" || true
@@ -90,9 +90,9 @@ jobs:
       - name: Run afl-system-config
         run: cargo run -- afl system-config
       - name: Build examples (with AFL instrumentation)
-        run: cargo run -- afl build --examples -vv
+        run: cargo run -- afl build --examples
       - name: Run tests
-        run: cargo test -p cargo-afl -vv
+        run: cargo test -p cargo-afl
   all-checks:
     needs: [lint, build]
     runs-on: ubuntu-latest
