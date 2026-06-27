@@ -94,7 +94,7 @@ jobs:
       - name: Run tests
         run: |
           ipcs -m
-          cargo test -p cargo-afl -vv
+          cargo test -p cargo-afl -vv -- --nocapture
         env:
           RUST_TEST_THREADS: 1
   all-checks:
