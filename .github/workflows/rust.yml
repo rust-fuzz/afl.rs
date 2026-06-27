@@ -63,6 +63,9 @@ jobs:
       - uses: actions/checkout@v7
         with:
           submodules: true
+      - name: Configure AFL child sync on macOS
+        if: runner.os == 'macOS'
+        run: echo "AFL_OLD_CHILD_SYNC=1" >> "$GITHUB_ENV"
       - name: Rustup
         run: rustup default ${{ matrix.toolchain }}
       - name: Install LLVM
