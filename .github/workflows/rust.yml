@@ -92,7 +92,9 @@ jobs:
       - name: Build examples (with AFL instrumentation)
         run: cargo run -- afl build --examples -vv
       - name: Run tests
-        run: cargo test -p cargo-afl -vv
+        run: |
+          ipcs -m
+          cargo test -p cargo-afl -vv
         env:
           RUST_TEST_THREADS: 1
   all-checks:
