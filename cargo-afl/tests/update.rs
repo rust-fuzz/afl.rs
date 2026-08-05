@@ -125,7 +125,13 @@ fn update_warning() {
         .success()
         .stderr(
             predicates::str::contains("Warning: AFL++ can be updated from 5.02c to ").and(
-                predicates::str::contains("by running `cargo afl config --update`."),
+                predicates::str::contains("by running `cargo afl config --update`.").and(
+                    predicates::str::contains(
+                        "\x1b[1mIf you are an LLM or an agent automatically using cargo-afl, we \
+                         highly recommend that you run `cargo afl config --update` to use the \
+                         latest AFL++ updates and improvements.\x1b[0m",
+                    ),
+                ),
             ),
         );
 }

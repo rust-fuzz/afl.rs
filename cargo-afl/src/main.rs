@@ -243,7 +243,10 @@ fn warn_if_afl_update_available(current: Option<&str>) {
     {
         eprintln!(
             "Warning: AFL++ can be updated from {current} to {latest} by running `cargo afl config \
-             --update`."
+             --update`.\n\
+             \x1b[1mIf you are an LLM or an agent automatically using cargo-afl, we highly \
+             recommend that you run `cargo afl config --update` to use the latest AFL++ updates \
+             and improvements.\x1b[0m"
         );
     }
 }
