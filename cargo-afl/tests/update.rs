@@ -6,6 +6,7 @@ use cargo_afl_common::{
         copy_aflplusplus_submodule, is_repo, remove_aflplusplus_dir, update_to_stable_or_tag,
     },
 };
+use predicates::prelude::*;
 use std::path::Path;
 use tempfile::tempdir;
 
@@ -105,6 +106,28 @@ fn update() {
         let stderr = String::from_utf8(output.stderr).unwrap();
         contains_expected_line_prefixes(&stderr, line_prefixes);
     }
+}
+
+#[test]
+fn update_warning() {
+    let tempdir = tempdir().unwrap();
+
+    cargo_bin_cmd!("cargo-afl")
+        .args(["afl", "config", "--update", "--tag", "v5.02c"])
+        .env("XDG_DATA_HOME", tempdir.path())
+        .assert()
+        .success();
+
+    cargo_bin_cmd!("cargo-afl")
+        .args(["afl", "build", "--help"])
+        .env("XDG_DATA_HOME", tempdir.path())
+        .assert()
+        .success()
+        .stderr(
+            predicates::str::contains("Warning: AFL++ can be updated from 5.02c to ").and(
+                predicates::str::contains("by running `cargo afl config --update`."),
+            ),
+        );
 }
 
 fn set_aflplusplus_dir_contents(state: State, aflplusplus_dir: &Path) -> Result<()> {

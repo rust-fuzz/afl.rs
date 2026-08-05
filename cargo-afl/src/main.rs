@@ -8,6 +8,8 @@ use std::process::{self, Command, Stdio};
 
 const HELP: &str = "In addition to the subcommands above, Cargo subcommands are also \
 supported (see `cargo help` for a list of all Cargo subcommands).";
+const AFLPLUSPLUS_VERSION_URL: &str =
+    "https://raw.githubusercontent.com/AFLplusplus/AFLplusplus/stable/include/config.h";
 
 #[derive(Parser)]
 #[clap(
@@ -114,7 +116,8 @@ declare_afl_subcommand_enum! {
 }
 
 fn main() {
-    let command = command_with_afl_version();
+    let afl_version = afl_version();
+    let command = command_with_afl_version(afl_version.as_deref());
 
     let afl_args = match Args::from_arg_matches(&command.get_matches()).unwrap() {
         Args {
@@ -122,15 +125,17 @@ fn main() {
         } => afl_args,
     };
 
-    if !matches!(afl_args.subcmd, Some(AflSubcommand::Config(..)))
-        && !common::object_file_path().unwrap().exists()
-    {
-        let version = common::afl_rustc_version().unwrap();
-        eprintln!(
-            "AFL LLVM runtime was not built for Rust {version}; run `cargo \
-             afl config --build` to build it."
-        );
-        process::exit(1);
+    if !matches!(afl_args.subcmd, Some(AflSubcommand::Config(..))) {
+        warn_if_afl_update_available(afl_version.as_deref());
+
+        if !common::object_file_path().unwrap().exists() {
+            let version = common::afl_rustc_version().unwrap();
+            eprintln!(
+                "AFL LLVM runtime was not built for Rust {version}; run `cargo \
+                 afl config --build` to build it."
+            );
+            process::exit(1);
+        }
     }
 
     match &afl_args.subcmd {
@@ -176,11 +181,11 @@ fn main() {
     }
 }
 
-fn command_with_afl_version() -> clap::Command {
+fn command_with_afl_version(afl_version: Option<&str>) -> clap::Command {
     let mut command = Args::command();
 
     (|| -> Option<()> {
-        let afl_version = afl_version()?;
+        let afl_version = afl_version?;
         let with_plugins = common::plugins_installed().ok()?;
 
         let subcmd = command.find_subcommand_mut("afl").unwrap();
@@ -201,7 +206,7 @@ fn command_with_afl_version() -> clap::Command {
 fn afl_version() -> Option<String> {
     const PREFIX: &str = "afl-fuzz++";
     let afl_fuzz_path = common::afl_dir().unwrap().join("bin/afl-fuzz");
-    let output = Command::new(afl_fuzz_path).output().ok()?;
+    let output = Command::new(afl_fuzz_path).arg("--version").output().ok()?;
     let stdout = String::from_utf8(output.stdout).ok()?;
     let index = stdout.find(PREFIX)?;
     Some(
@@ -210,6 +215,50 @@ fn afl_version() -> Option<String> {
             .take_while(|c| !c.is_ascii_whitespace())
             .collect(),
     )
+}
+
+fn warn_if_afl_update_available(current: Option<&str>) {
+    let Some(current) = current else {
+        return;
+    };
+    let Ok(output) = Command::new("curl")
+        .args(["-fs", "--max-time", "3", AFLPLUSPLUS_VERSION_URL])
+        .output()
+    else {
+        return;
+    };
+    let Ok(config) = String::from_utf8(output.stdout) else {
+        return;
+    };
+    let Some(latest) = config.lines().find_map(|line| {
+        line.strip_prefix("#define VERSION \"++")
+            .and_then(|version| version.strip_suffix('"'))
+    }) else {
+        return;
+    };
+
+    if afl_version_key(current)
+        .zip(afl_version_key(latest))
+        .is_some_and(|(current, latest)| current < latest)
+    {
+        eprintln!(
+            "Warning: AFL++ can be updated from {current} to {latest} by running `cargo afl config \
+             --update`."
+        );
+    }
+}
+
+fn afl_version_key(version: &str) -> Option<(u32, u32, char)> {
+    let (major, rest) = version.split_once('.')?;
+    let suffix = rest.chars().next_back()?;
+    if !suffix.is_ascii_alphabetic() {
+        return None;
+    }
+    Some((
+        major.parse().ok()?,
+        rest.strip_suffix(suffix)?.parse().ok()?,
+        suffix,
+    ))
 }
 
 fn run_afl<I, S>(tool: &str, args: I)
@@ -397,7 +446,30 @@ mod tests {
 
     #[test]
     fn test_app() {
-        command_with_afl_version().debug_assert();
+        command_with_afl_version(afl_version().as_deref()).debug_assert();
+    }
+
+    #[test]
+    fn all_historical_afl_versions_parse_in_order() {
+        // All VERSION values in AFL++'s config.h history through 5.03a.
+        const VERSIONS: &[&str] = &[
+            "2.52c", "2.52d", "2.53c", "2.53d", "2.54c", "2.54d", "2.57c", "2.57d", "2.58c",
+            "2.58d", "2.59c", "2.59d", "2.60d", "2.61c", "2.61d", "2.62c", "2.62d", "2.63c",
+            "2.63d", "2.64c", "2.64d", "2.65c", "2.65d", "2.66c", "2.66d", "2.67c", "2.67d",
+            "2.68c", "3.00a", "3.00c", "3.01a", "3.10c", "3.11a", "3.11c", "3.12a", "3.12c",
+            "3.13a", "3.13c", "3.14a", "3.14c", "3.15a", "4.00c", "4.01a", "4.01c", "4.02a",
+            "4.02c", "4.03a", "4.03c", "4.04a", "4.04c", "4.05a", "4.05c", "4.06a", "4.06c",
+            "4.07a", "4.07c", "4.08a", "4.08c", "4.09a", "4.09c", "4.10a", "4.10c", "4.20a",
+            "4.20c", "4.21a", "4.21c", "4.22a", "4.30c", "4.31a", "4.31c", "4.32a", "4.32c",
+            "4.33a", "4.33c", "4.34a", "4.34c", "4.35a", "4.35c", "4.36a", "4.40c", "4.41a",
+            "5.00a", "5.00c", "5.01a", "5.01c", "5.02a", "5.02c", "5.03a",
+        ];
+
+        for versions in VERSIONS.windows(2) {
+            let current = afl_version_key(versions[0]).unwrap();
+            let next = afl_version_key(versions[1]).unwrap();
+            assert!(current < next, "{versions:?}");
+        }
     }
 
     #[test]
