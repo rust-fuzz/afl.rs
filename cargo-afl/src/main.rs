@@ -126,7 +126,9 @@ fn main() {
     };
 
     if !matches!(afl_args.subcmd, Some(AflSubcommand::Config(..))) {
-        warn_if_afl_update_available(afl_version.as_deref());
+        if env::var_os("AFLRS_NO_UPDATE_CHECK").is_none() {
+            warn_if_afl_update_available(afl_version.as_deref());
+        }
 
         if !common::object_file_path().unwrap().exists() {
             let version = common::afl_rustc_version().unwrap();
