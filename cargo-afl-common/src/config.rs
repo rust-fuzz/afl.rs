@@ -64,11 +64,7 @@ pub fn config(args: &Args) -> Result<()> {
 
     // smoelius: If updating and AFL++ was built with plugins before, build with plugins again.
     let args = Args {
-        plugins: if args.update {
-            common::plugins_installed().is_ok_and(|is_true| is_true)
-        } else {
-            args.plugins
-        },
+        plugins: args.plugins || (args.update && matches!(common::plugins_installed(), Ok(true))),
         tag: args.tag.clone(),
         ..*args
     };
