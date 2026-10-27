@@ -97,8 +97,8 @@ fn help_flag_disabled() {
 )]
 fn subcommands_help_flag_disabled(subcommand: &str) {
     let output = cargo_afl(&[subcommand, "--help"]).output().unwrap();
-    // smoelius: `afl-addseeds`, `cmin`, and `afl-system-config` have `--help` flags.
-    if ["addseeds", "cmin", "system-config"].contains(&subcommand) {
+    // smoelius: `afl-addseeds` and `afl-system-config` have `--help` flags.
+    if ["addseeds", "system-config"].contains(&subcommand) {
         assert_success(&output, Some(subcommand));
     } else {
         assert_failure(&output, Some(subcommand));
@@ -108,6 +108,12 @@ fn subcommands_help_flag_disabled(subcommand: &str) {
             .unwrap()
             .starts_with("Usage:")
     );
+}
+
+#[test]
+fn cmin_short_help() {
+    let output = cargo_afl(&["cmin", "-h"]).output().unwrap();
+    assert_success(&output, Some("cmin"));
 }
 
 #[test]
