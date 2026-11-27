@@ -1,5 +1,14 @@
 # Changes
 
+## 0.19.0
+
+- [Upgrade AFLplusplus to 5.03c](https://github.com/rust-fuzz/afl.rs/commit/d40bb93e93e5109a40edb74e39fce3ce11dcdd7a)
+- [Warn when an AFLplusplus update is available](https://github.com/rust-fuzz/afl.rs/commit/2d3414993146e07495d5acbd3873fa7c4e00939f)
+- [Eliminate reliance on `ctor`](https://github.com/rust-fuzz/afl.rs/commit/5717ba361dbb92de227671148dd0d7d6e221b3d5)
+- [Set `AFL_OLD_CHILD_SYNC=1` on macOS](https://github.com/rust-fuzz/afl.rs/commit/6f471bf0254742c63e1ce46e9d574f1388e6c43f)
+- [Fix futex-related problem on macOS](https://github.com/rust-fuzz/afl.rs/commit/fc62483c2b01434f1975eb8304b6e2ac862674d2)
+- [Eliminate verbose output](https://github.com/rust-fuzz/afl.rs/commit/9f1792f4324c6dd0d10557471fbfad866a1f952f)
+
 ## 0.18.2
 
 - [Add option to omit CmpLog instrumentation](https://github.com/rust-fuzz/afl.rs/pull/723)

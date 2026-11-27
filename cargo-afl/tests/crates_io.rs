@@ -147,7 +147,7 @@ fn cargo_afl_build_command(home: &Path, cargo_afl: &Path) -> Command {
     command
 }
 
-#[ignore = "while afl.rs 0.18 is being published"]
+#[ignore = "while afl.rs 0.19 is being published"]
 #[parameterized(
     afl = { "afl" },
     cargo_afl = { "cargo-afl" },
