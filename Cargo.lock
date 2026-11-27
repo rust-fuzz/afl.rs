@@ -8,9 +8,6 @@ version = "0.18.2"
 dependencies = [
  "arbitrary",
  "home",
- "libc",
- "rustc_version",
- "xdg",
 ]
 
 [[package]]
