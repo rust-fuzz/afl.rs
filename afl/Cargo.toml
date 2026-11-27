@@ -9,17 +9,11 @@ authors = [
 ]
 description = "Fuzzing Rust code with american-fuzzy-lop"
 repository = "https://github.com/rust-fuzz/afl.rs"
-homepage = "https://github.com/rust-fuzz/afl.rs"
 edition = "2024"
 exclude = ["etc"]
 
 [build-dependencies]
 home = "0.5"
-
-[dependencies]
-libc = "0.2"
-rustc_version = "0.4"
-xdg = "3.0"
 
 [dev-dependencies]
 arbitrary = { version = "1", features = ["derive"] }
