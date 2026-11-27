@@ -58,7 +58,7 @@ fn pkg_version() -> String {
     let mut ret = String::from("afl.rs-");
 
     let version = env!("CARGO_PKG_VERSION");
-    assert!(!version.is_empty());
+    assert_ne!(version, "");
 
     ret.push_str(version);
     ret
